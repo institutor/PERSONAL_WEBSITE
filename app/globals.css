@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "../lib/generated/rough-boxes.css";
 
 /* ---------------------------------------------------------------------------
    Theme tokens. Two hand-drawn worlds:
@@ -21,7 +22,8 @@
 }
 
 :root,
-html[data-theme="light"] {
+html[data-theme="light"],
+.theme-light {
   --paper: #f3edde;
   --paper-2: #faf5e9;
   --ink: #2a2d3a;
@@ -32,7 +34,8 @@ html[data-theme="light"] {
   color-scheme: light;
 }
 
-html[data-theme="dark"] {
+html[data-theme="dark"],
+.theme-dark {
   --paper: #131722;
   --paper-2: #1a1f2d;
   --ink: #e9e4d6;
@@ -76,11 +79,47 @@ body {
   letter-spacing: 0.01em;
 }
 
+/* Theme toggle: both drawn icons are server-rendered; CSS picks one. */
+html[data-theme="light"] .icon-moon,
+html[data-theme="dark"] .icon-sun {
+  display: none;
+}
+
 /* Focus visibly, in accent ink, slightly rough offset */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
   border-radius: 2px;
+}
+
+/* ---------------------------------------------------------------------------
+   The "boil": every ornament/lettering has 3 seed-variant frames that swap
+   at ~6.7fps — the hand-drawn tell. Hard-cut keyframes, compositor-only
+   opacity. Negative delays stagger frames with no initial pop.
+--------------------------------------------------------------------------- */
+
+@keyframes boil3 {
+  0%,
+  33.32% {
+    opacity: 1;
+  }
+  33.33%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.boil {
+  opacity: 0;
+  animation: boil3 0.45s linear infinite;
+}
+
+.boil-f1 {
+  animation-delay: -0.3s;
+}
+
+.boil-f2 {
+  animation-delay: -0.15s;
 }
 
 /* Reduced motion: kill everything animated, globally, before JS even loads */
@@ -92,5 +131,15 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  /* Boil frames must not all land on opacity:0 — pin frame 0 visible. */
+  .boil {
+    animation: none !important;
+    opacity: 0;
+  }
+
+  .boil-f0 {
+    opacity: 1;
   }
 }

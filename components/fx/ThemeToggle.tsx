@@ -1,40 +1,34 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 type Theme = "light" | "dark";
 
 /**
- * Naive Phase-0 toggle: swaps html[data-theme] + persists. Phase 3 replaces
- * the glyphs with generated rough sun/moon art and re-rasterizes bird sprites.
+ * Theme toggle. The sun/moon artwork arrives as server-rendered children
+ * (drawn Sketch SVGs) — CSS shows the right one per html[data-theme], so
+ * this client component ships zero sketch data and needs no state.
  */
-export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme | null>(null);
-
-  useEffect(() => {
-    setTheme((document.documentElement.dataset.theme as Theme) ?? "dark");
-  }, []);
-
+export function ThemeToggle({ children }: { children: React.ReactNode }) {
   function toggle() {
-    const next: Theme = theme === "dark" ? "light" : "dark";
+    const current = (document.documentElement.dataset.theme as Theme) ?? "dark";
+    const next: Theme = current === "dark" ? "light" : "dark";
     document.documentElement.dataset.theme = next;
     try {
       localStorage.setItem("theme", next);
     } catch {
       // private mode etc. — theme still applies for this page view
     }
-    setTheme(next);
+    window.dispatchEvent(new CustomEvent("themechange", { detail: next }));
   }
 
   return (
     <button
       type="button"
       onClick={toggle}
-      aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-      className="fixed right-5 top-5 z-40 flex h-11 w-11 items-center justify-center rounded-full border-2 border-ink bg-paper-2 text-xl transition-transform hover:-rotate-12"
+      aria-label="Toggle color theme"
+      className="fixed right-5 top-5 z-40 flex h-11 w-11 items-center justify-center rounded-full text-ink transition-transform hover:-rotate-12"
       data-theme-toggle
     >
-      <span aria-hidden="true">{theme === "dark" ? "☾" : "☀"}</span>
+      {children}
     </button>
   );
 }

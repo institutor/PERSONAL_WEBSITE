@@ -1,5 +1,6 @@
 import { awards, programs } from "@/lib/resume-data";
 import { HandHeading } from "./ornaments/HandHeading";
+import { Sketch } from "./ornaments/Sketch";
 
 /**
  * Deterministic pin-board rotations — constants, never Math.random
@@ -10,7 +11,7 @@ const ROTATIONS = [-2.5, 1.5, -1, 2.5, -2, 1, -1.5] as const;
 export function AwardsPrograms() {
   return (
     <section data-section="awards" className="mx-auto max-w-5xl px-6 py-24">
-      <HandHeading eyebrow="the trophy wall">Programs &amp; Awards</HandHeading>
+      <HandHeading art="awards" text="Programs & Awards" eyebrow="the trophy wall" />
 
       <div className="grid gap-12 md:grid-cols-[1.2fr_1fr]">
         <div>
@@ -34,7 +35,7 @@ export function AwardsPrograms() {
             {awards.map((a, i) => (
               <li
                 key={a.title}
-                className="rounded-md border border-ink-faint bg-paper-2 px-4 py-3"
+                className="rough-chip bg-paper-2 px-3 py-2"
                 style={{ transform: `rotate(${ROTATIONS[i % ROTATIONS.length]}deg)` }}
                 data-pin-card
               >
@@ -47,9 +48,7 @@ export function AwardsPrograms() {
                       {a.big}
                     </span>
                   ) : (
-                    <span aria-hidden="true" className="text-accent" data-star>
-                      ✳
-                    </span>
+                    <Sketch name="star" className="w-4 shrink-0 self-center text-accent" />
                   )}
                   <div>
                     <p className="font-medium leading-snug">

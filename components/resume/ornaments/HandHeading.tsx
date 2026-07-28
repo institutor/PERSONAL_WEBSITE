@@ -1,29 +1,33 @@
+import type { LetteringName } from "@/lib/generated/lettering-paths";
+import { Lettering } from "./Lettering";
+import { Sketch } from "./Sketch";
+
 interface HandHeadingProps {
+  /** Which generated lettering artwork to render. */
+  art: LetteringName;
+  /** Real heading text (sr-only, for SEO/a11y). */
+  text: string;
   eyebrow?: string;
-  children: React.ReactNode;
+  /** Tailwind height classes controlling the lettering size. */
+  sizeClass?: string;
 }
 
 /**
- * Section heading in Shantell Sans. Phase 1 replaces the plain underline with
- * a generated rough.js stroke; Phase 2 adds the SplitText line-mask reveal
- * (hook: [data-heading] / [data-underline]).
+ * Section heading as REAL drawn stroke lettering (not a font), with a rough
+ * underline. Phase 2 adds the staggered DrawSVG draw-on via [data-draw-group].
  */
-export function HandHeading({ eyebrow, children }: HandHeadingProps) {
+export function HandHeading({ art, text, eyebrow, sizeClass = "h-12 sm:h-16" }: HandHeadingProps) {
   return (
     <header className="mb-12">
       {eyebrow && (
-        <p className="font-note text-2xl text-accent mb-1" aria-hidden="true">
+        <p className="font-note text-2xl text-accent mb-2" aria-hidden="true">
           {eyebrow}
         </p>
       )}
-      <h2 className="font-hand text-4xl sm:text-5xl font-semibold" data-heading>
-        {children}
+      <h2 data-heading>
+        <Lettering name={art} label={text} fit="height" className={`${sizeClass} max-w-full text-ink`} draw />
       </h2>
-      <div
-        className="mt-4 h-[3px] w-28 rounded-full bg-ink-faint"
-        data-underline
-        aria-hidden="true"
-      />
+      <Sketch name="underline1" className="mt-3 w-36 text-accent" draw />
     </header>
   );
 }

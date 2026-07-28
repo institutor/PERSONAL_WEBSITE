@@ -1,13 +1,17 @@
 import { colophon, identity } from "@/lib/resume-data";
+import { Lettering } from "./ornaments/Lettering";
+import { Sketch } from "./ornaments/Sketch";
 
 /** Bookend: the signature draws once more here (Phase 2); a bird lands on the rule (Phase 3). */
 export function Footer() {
   return (
     <footer data-section="footer" className="mx-auto max-w-3xl px-6 pb-16 pt-24 text-center">
-      <div className="mb-10 h-[2px] w-full bg-ink-faint" data-final-rule aria-hidden="true" />
+      <div data-final-rule>
+        <Sketch name="divider" className="mb-10 w-full text-ink-faint" draw />
+      </div>
 
-      <p className="font-note text-4xl -rotate-2 text-ink" data-signature-footer>
-        {identity.signature}
+      <p aria-hidden="true" data-signature-footer>
+        <Lettering name="signature" className="w-44 -rotate-2 text-ink" draw />
       </p>
 
       <nav aria-label="Contact" className="mt-8 flex flex-wrap justify-center gap-x-8 gap-y-3">

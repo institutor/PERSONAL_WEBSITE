@@ -1,8 +1,11 @@
 import { identity } from "@/lib/resume-data";
+import { Lettering } from "./ornaments/Lettering";
+import { Sketch } from "./ornaments/Sketch";
 
 /**
- * "The desk" — what the 3D monitor screen becomes. Phase 6 pixel-matches
- * screen-placeholder.webp to this section, so keep its first paint stable.
+ * "The desk" — what the 3D monitor screen becomes. The name is REAL drawn
+ * stroke artwork (massive, boiling, draw-on animated in Phase 2). Phase 6
+ * pixel-matches screen-placeholder.webp to this section.
  */
 export function Hero() {
   return (
@@ -11,16 +14,24 @@ export function Hero() {
       data-section="hero"
       className="relative flex min-h-svh flex-col items-center justify-center px-6 text-center"
     >
-      {/* Signature lockup — Phase 4 swaps in the animated SVG artwork */}
-      <p className="font-note text-3xl text-ink-muted -rotate-2" data-signature>
-        {identity.signature}
+      {/* The signature — same artwork the loader draws (continuity trick) */}
+      <p aria-hidden="true" data-signature>
+        <Lettering name="signature" className="w-40 -rotate-3 text-ink-muted sm:w-48" />
       </p>
 
-      <h1 className="font-hand mt-4 text-6xl font-bold tracking-tight sm:text-8xl">
-        {identity.name}
+      {/* The massive hand-drawn title */}
+      <h1 className="mt-6 w-full">
+        <Lettering
+          name="name"
+          label={identity.name}
+          className="mx-auto w-[min(92vw,1000px)] text-ink"
+          draw
+        />
       </h1>
 
-      <p className="mt-6 max-w-xl text-lg text-ink-muted">{identity.tagline}</p>
+      <Sketch name="underline2" className="mt-4 w-[min(60vw,420px)] text-accent" draw />
+
+      <p className="mt-8 max-w-xl text-lg text-ink-muted">{identity.tagline}</p>
 
       <p className="mt-2 text-sm text-ink-muted">
         {identity.location} · {identity.scholar}
@@ -32,8 +43,7 @@ export function Hero() {
       >
         <a
           href={identity.links.resumePdf}
-          className="rounded-md border-2 border-ink px-5 py-2.5 font-hand text-lg font-medium transition-transform hover:-translate-y-0.5"
-          data-rough-box
+          className="rough-box bg-paper-2 px-4 py-1.5 font-hand text-lg font-medium transition-transform hover:-translate-y-0.5"
         >
           Download resume
         </a>
@@ -41,28 +51,25 @@ export function Hero() {
           href={identity.links.github}
           target="_blank"
           rel="noopener noreferrer"
-          className="rounded-md border-2 border-ink px-5 py-2.5 font-hand text-lg font-medium transition-transform hover:-translate-y-0.5"
-          data-rough-box
+          className="rough-box bg-paper-2 px-4 py-1.5 font-hand text-lg font-medium transition-transform hover:-translate-y-0.5"
         >
           GitHub
         </a>
         <a
           href={`mailto:${identity.links.email}`}
-          className="rounded-md border-2 border-ink px-5 py-2.5 font-hand text-lg font-medium transition-transform hover:-translate-y-0.5"
-          data-rough-box
+          className="rough-box bg-paper-2 px-4 py-1.5 font-hand text-lg font-medium transition-transform hover:-translate-y-0.5"
         >
           Email me
         </a>
       </nav>
 
-      {/* Scroll cue — Phase 1 swaps in the boiling hand-drawn arrow */}
       <div
         className="absolute bottom-8 left-1/2 -translate-x-1/2 text-ink-muted"
         data-scroll-cue
         aria-hidden="true"
       >
         <span className="font-note text-xl">scroll</span>
-        <span className="ml-2 inline-block animate-bounce">↓</span>
+        <Sketch name="arrowDown" className="mx-auto mt-1 w-4" />
       </div>
     </section>
   );

@@ -1,11 +1,12 @@
 import { leadership } from "@/lib/resume-data";
 import { HandHeading } from "./ornaments/HandHeading";
+import { Sketch } from "./ornaments/Sketch";
 
-/** Three-column layout; Science Olympiad's 9 medals become a drawn medal shelf (Phase 1). */
+/** Three-column layout; the 9 medals are a drawn medal shelf (staggered draw-on in Phase 2). */
 export function Leadership() {
   return (
     <section data-section="leadership" className="mx-auto max-w-5xl px-6 py-24">
-      <HandHeading eyebrow="teams I run with">Leadership</HandHeading>
+      <HandHeading art="leadership" text="Leadership" eyebrow="teams I run with" />
 
       <div className="grid gap-10 md:grid-cols-3">
         {leadership.map((entry) => (
@@ -27,13 +28,13 @@ export function Leadership() {
               </p>
             )}
             {entry.org === "Science Olympiad" && (
-              <div className="mt-4 flex gap-1.5" data-medal-shelf aria-label="9 invitational medals">
+              <div
+                className="mt-4 flex gap-2"
+                data-medal-shelf
+                aria-label="9 invitational medals"
+              >
                 {Array.from({ length: 9 }, (_, i) => (
-                  <span
-                    key={i}
-                    aria-hidden="true"
-                    className="inline-block h-3.5 w-3.5 rounded-full border-2 border-accent"
-                  />
+                  <Sketch key={i} name="medal" className="w-4 text-accent" />
                 ))}
               </div>
             )}

@@ -1,14 +1,30 @@
 import { experience } from "@/lib/resume-data";
 import { HandHeading } from "./ornaments/HandHeading";
+import { Sketch } from "./ornaments/Sketch";
+
+/** Splits "A → B" roles so the arrow renders as drawn artwork, not a glyph. */
+function RoleWithArrow({ role }: { role: string }) {
+  const parts = role.split("→").map((s) => s.trim());
+  if (parts.length !== 2) {
+    return <>{role}</>;
+  }
+  return (
+    <>
+      {parts[0]}
+      <Sketch name="arrowRight" className="mx-2 inline-block w-8 align-middle" />
+      {parts[1]}
+    </>
+  );
+}
 
 /**
- * The centerpiece. Featured entry (24/7 Teach / NaomiAI) gets the big card
+ * The centerpiece. Featured entry (24/7 Teach / NaomiAI) gets the rough box
  * + stat callouts ([data-stat] → SplitText stamp-in, Phase 2).
  */
 export function Experience() {
   return (
     <section data-section="experience" className="mx-auto max-w-4xl px-6 py-24">
-      <HandHeading eyebrow="things that shipped">Experience</HandHeading>
+      <HandHeading art="experience" text="Experience" eyebrow="things that shipped" />
 
       <div className="space-y-14">
         {experience.map((job) => (
@@ -16,7 +32,7 @@ export function Experience() {
             key={job.company}
             className={
               job.featured
-                ? "rounded-lg border-2 border-ink bg-paper-2 p-8 sm:p-10"
+                ? "rough-box bg-paper-2 p-6 sm:p-8"
                 : "border-l-2 border-ink-faint pl-6 sm:pl-8"
             }
             data-rough-card={job.featured ? "featured" : undefined}
@@ -28,7 +44,7 @@ export function Experience() {
               <p className="text-sm text-ink-muted">{job.period}</p>
             </div>
             <p className="mt-1 font-medium text-accent" data-role-circle>
-              {job.role}
+              <RoleWithArrow role={job.role} />
             </p>
             <p className="text-sm text-ink-muted">{job.location}</p>
 
@@ -65,7 +81,7 @@ export function Experience() {
                 {job.tech.map((t) => (
                   <li
                     key={t}
-                    className="rounded border border-ink-faint px-2.5 py-0.5 text-xs text-ink-muted"
+                    className="rough-chip px-1.5 py-0 text-xs text-ink-muted"
                     data-tech-underline
                   >
                     {t}
