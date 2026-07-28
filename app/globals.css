@@ -1,167 +1,128 @@
 @import "tailwindcss";
-@import "../lib/generated/rough-boxes.css";
 
 /* ---------------------------------------------------------------------------
-   Theme tokens. Two hand-drawn worlds:
-   light = "pen on cream"  — graphite ink + ballpoint-blue accent on warm paper
-   dark  = "chalk on midnight" — warm chalk + lantern-gold accent on night paper
-   Runtime vars swap via html[data-theme]; @theme inline maps them to utilities.
+   "Mission control" void system — dark only, by design.
+   Signature motif: the universe lives inside the type (knockout text).
 --------------------------------------------------------------------------- */
 
 @theme inline {
-  --color-paper: var(--paper);
-  --color-paper-2: var(--paper-2);
-  --color-ink: var(--ink);
-  --color-ink-muted: var(--ink-muted);
-  --color-ink-faint: var(--ink-faint);
-  --color-accent: var(--accent);
-  --color-highlight: var(--highlight);
-  --font-hand: var(--font-shantell), "Comic Sans MS", cursive;
+  --color-void: var(--void);
+  --color-panel: var(--panel);
+  --color-star: var(--star);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-ion: var(--ion);
+  --font-display: var(--font-grotesk), system-ui, sans-serif;
   --font-body: var(--font-inter), system-ui, sans-serif;
-  --font-note: var(--font-caveat), cursive;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
-:root,
-html[data-theme="light"],
-.theme-light {
-  --paper: #f3edde;
-  --paper-2: #faf5e9;
-  --ink: #2a2d3a;
-  --ink-muted: #5c5f6e;
-  --ink-faint: rgba(42, 45, 58, 0.35);
-  --accent: #2f55b8; /* ballpoint blue */
-  --highlight: #f2c94c; /* highlighter yellow */
-  color-scheme: light;
-}
-
-html[data-theme="dark"],
-.theme-dark {
-  --paper: #131722;
-  --paper-2: #1a1f2d;
-  --ink: #e9e4d6;
-  --ink-muted: #a3a496;
-  --ink-faint: rgba(233, 228, 214, 0.32);
-  --accent: #e0b04f; /* lantern gold */
-  --highlight: #e0b04f;
+:root {
+  --void: #050608;
+  --panel: #0b0e15;
+  --star: #f2f4f8;
+  --muted: #8a93a6;
+  --faint: rgba(242, 244, 248, 0.14);
+  --ion: #7dd8e8;
   color-scheme: dark;
 }
 
-/* ------------------------------------------------------------------------ */
-
 html {
-  background: var(--paper);
-  color: var(--ink);
+  background: var(--void);
+  color: var(--star);
 }
 
 body {
   font-family: var(--font-body);
   font-size: 1rem;
-  line-height: 1.65;
+  line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background: var(--highlight);
-  color: #2a2d3a;
+  background: var(--ion);
+  color: #050608;
 }
 
-/* Headings carry the hand-drawn personality: Shantell Sans with the informal
-   + bounce variation axes — the axes Google Fonts strips, hence self-hosted. */
-.font-hand {
-  font-variation-settings:
-    "INFM" 55,
-    "BNCE" 8;
-  letter-spacing: 0.01em;
-}
-
-.font-note {
-  letter-spacing: 0.01em;
-}
-
-/* Theme toggle: both drawn icons are server-rendered; CSS picks one. */
-html[data-theme="light"] .icon-moon,
-html[data-theme="dark"] .icon-sun {
-  display: none;
-}
-
-/* Focus visibly, in accent ink, slightly rough offset */
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 1.5px solid var(--ion);
   outline-offset: 3px;
-  border-radius: 2px;
 }
 
 /* ---------------------------------------------------------------------------
-   The "boil": every ornament/lettering has 3 seed-variant frames that swap
-   at ~6.7fps — the hand-drawn tell. Hard-cut keyframes, compositor-only
-   opacity. Negative delays stagger frames with no initial pop.
+   Knockout type — the site's signature. Space imagery clipped inside glyphs.
+   Used by section headings; the hero does the same thing in WebGL.
 --------------------------------------------------------------------------- */
 
-@keyframes boil3 {
-  0%,
-  33.32% {
-    opacity: 1;
-  }
-  33.33%,
-  100% {
-    opacity: 0;
-  }
+.knockout {
+  background-image: url("/textures/nebula.webp");
+  background-size: 160% auto;
+  background-position: var(--kx, 50%) var(--ky, 50%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-.boil {
-  opacity: 0;
-  animation: boil3 0.45s linear infinite;
-}
-
-.boil-f1 {
-  animation-delay: -0.3s;
-}
-
-.boil-f2 {
-  animation-delay: -0.15s;
-}
-
-/* While a draw-on runs, pin frame 0 so DrawSVG has a stable target. */
-.is-drawing .boil {
-  animation: none;
-  opacity: 0;
-}
-
-.is-drawing .boil-f0 {
-  opacity: 1;
-}
-
-/* Draw-on targets stay hidden until GSAP sets stroke state (pre-paint in a
-   layout effect). Time-based fallback un-hides if JS never arrives. */
-html[data-motion="on"] .draw-pending {
-  visibility: hidden;
-  animation: draw-unhide 0s 2.5s forwards;
-}
-
-@keyframes draw-unhide {
-  to {
-    visibility: visible;
+/* Fallback when the texture hasn't loaded / very old engines: solid star. */
+@supports not (background-clip: text) {
+  .knockout {
+    color: var(--star);
+    background: none;
   }
 }
 
-/* Skill chips: native scroll-driven fade-up — zero main-thread cost. */
+/* Mono micro-labels (telemetry style) */
+.microlabel {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Hairline panel */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--faint);
+}
+
+/* Buttons */
+.btn-void {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  border: 1px solid var(--faint);
+  padding: 0.625rem 1.125rem;
+  transition:
+    border-color 0.25s ease,
+    background-color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.btn-void:hover {
+  border-color: var(--ion);
+  background: color-mix(in srgb, var(--ion) 8%, transparent);
+  transform: translateY(-1px);
+}
+
+/* Card/list scroll fade-up via native scroll-timeline where supported. */
 @supports (animation-timeline: view()) {
-  html[data-motion="on"] [data-chip] {
-    animation: chip-up linear both;
+  html[data-motion="on"] [data-vt] {
+    animation: vt-up linear both;
     animation-timeline: view();
-    animation-range: entry 10% entry 45%;
+    animation-range: entry 5% entry 40%;
   }
 }
 
-@keyframes chip-up {
+@keyframes vt-up {
   from {
     opacity: 0;
-    transform: translateY(12px) rotate(-1deg);
+    transform: translateY(18px);
   }
 }
 
-/* Top ink progress bar via scroll-timeline; absent when unsupported. */
+/* Top scroll progress hairline */
 .progress-ink {
   transform: scaleX(0);
   transform-origin: 0 50%;
@@ -192,22 +153,6 @@ html[data-motion="on"] .draw-pending {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
-  }
-
-  /* Boil frames must not all land on opacity:0 — pin frame 0 visible. */
-  .boil {
-    animation: none !important;
-    opacity: 0;
-  }
-
-  .boil-f0 {
-    opacity: 1;
-  }
-
-  /* Draw-on gating must never hide content under reduced motion. */
-  .draw-pending {
-    visibility: visible !important;
-    animation: none !important;
   }
 
   .progress-ink {

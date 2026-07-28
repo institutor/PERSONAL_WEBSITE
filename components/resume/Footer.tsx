@@ -1,38 +1,35 @@
-import { colophon, identity } from "@/lib/resume-data";
-import { Lettering } from "./ornaments/Lettering";
-import { Sketch } from "./ornaments/Sketch";
+import { identity } from "@/lib/resume-data";
 
-/** Bookend: the signature draws once more here (Phase 2); a bird lands on the rule (Phase 3). */
 export function Footer() {
   return (
-    <footer data-section="footer" className="mx-auto max-w-3xl px-6 pb-16 pt-24 text-center">
-      <div data-final-rule>
-        <Sketch name="divider" className="mb-10 w-full text-ink-faint" draw />
+    <footer data-section="footer" className="mx-auto w-full max-w-6xl px-6 pb-14 pt-28">
+      <p className="microlabel">07 / Contact</p>
+
+      <a
+        href={`mailto:${identity.links.email}`}
+        className="knockout mt-5 block break-all font-display text-[clamp(1.6rem,5.2vw,4.5rem)] font-bold tracking-tight transition-opacity hover:opacity-80"
+        style={{ "--kx": "40%", "--ky": "60%" } as React.CSSProperties}
+      >
+        {identity.links.email}
+      </a>
+
+      <div className="mt-14 flex flex-wrap items-baseline justify-between gap-6 border-t border-faint pt-6">
+        <nav aria-label="Contact" className="flex gap-6 font-mono text-xs tracking-wider">
+          <a className="text-muted transition-colors hover:text-ion" href={identity.links.github} target="_blank" rel="noopener noreferrer">
+            GITHUB
+          </a>
+          <a className="text-muted transition-colors hover:text-ion" href={identity.links.linkedin} target="_blank" rel="noopener noreferrer">
+            LINKEDIN
+          </a>
+          <a className="text-muted transition-colors hover:text-ion" href={identity.links.resumePdf}>
+            RESUME.PDF
+          </a>
+        </nav>
+        <p className="font-mono text-[11px] tracking-wider text-muted">
+          DESIGNED &amp; ENGINEERED IN THE VOID — NEXT.JS · THREE.JS · GSAP · ©{" "}
+          {new Date().getFullYear()} JIEWEN HUANG
+        </p>
       </div>
-
-      <p aria-hidden="true" data-signature-footer>
-        <Lettering name="signature" className="w-44 -rotate-2 text-ink" draw />
-      </p>
-
-      <nav aria-label="Contact" className="mt-8 flex flex-wrap justify-center gap-x-8 gap-y-3">
-        <a className="underline decoration-ink-faint underline-offset-4 hover:text-accent" href={`mailto:${identity.links.email}`}>
-          {identity.links.email}
-        </a>
-        <a className="underline decoration-ink-faint underline-offset-4 hover:text-accent" href={identity.links.linkedin} target="_blank" rel="noopener noreferrer">
-          LinkedIn
-        </a>
-        <a className="underline decoration-ink-faint underline-offset-4 hover:text-accent" href={identity.links.github} target="_blank" rel="noopener noreferrer">
-          GitHub
-        </a>
-        <a className="underline decoration-ink-faint underline-offset-4 hover:text-accent" href={identity.links.resumePdf}>
-          Resume (PDF)
-        </a>
-      </nav>
-
-      <p className="mt-10 text-xs text-ink-muted">{colophon}</p>
-      <p className="mt-1 text-xs text-ink-muted">
-        © {new Date().getFullYear()} Jiewen Huang · {identity.location}
-      </p>
     </footer>
   );
 }

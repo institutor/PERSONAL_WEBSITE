@@ -1,40 +1,40 @@
 import { liveStack, skills } from "@/lib/resume-data";
-import { HandHeading } from "./ornaments/HandHeading";
-import { Sketch } from "./ornaments/Sketch";
+import { SectionHeading } from "./SectionHeading";
 
-/** Rough-chip cloud. Chips fade up via CSS scroll-timeline (Phase 2). */
 export function Skills() {
   return (
-    <section data-section="skills" className="mx-auto max-w-4xl px-6 py-24">
-      <HandHeading art="skills" text="Skills" eyebrow="the toolbox" />
+    <section data-section="skills" className="mx-auto max-w-6xl px-6 py-28">
+      <SectionHeading index="05" label="Stack" title="Instruments" kx="15%" ky="85%" />
 
-      <div className="space-y-8">
+      <div className="space-y-8 border-t border-faint pt-10">
         {Object.entries(skills).map(([group, items]) => (
-          <div key={group}>
-            <h3 className="font-note mb-3 text-2xl text-ink-muted">{group}</h3>
-            <ul className="flex flex-wrap gap-3">
-              {items.map((item) => (
-                <li
-                  key={item}
-                  className={`px-2 py-0.5 text-sm font-medium ${
-                    liveStack.includes(item)
-                      ? "rough-chip-accent text-accent"
-                      : "rough-chip"
-                  }`}
-                  data-chip
-                  data-live-stack={liveStack.includes(item) ? "" : undefined}
-                >
-                  {item}
-                </li>
-              ))}
+          <div key={group} className="grid gap-3 sm:grid-cols-[220px_1fr]">
+            <h3 className="microlabel pt-1.5">{group}</h3>
+            <ul className="flex flex-wrap gap-2">
+              {items.map((item) => {
+                const live = liveStack.includes(item);
+                return (
+                  <li
+                    key={item}
+                    className={`border px-3 py-1 font-mono text-xs tracking-wider ${
+                      live ? "border-ion/40 text-ion" : "border-faint text-muted"
+                    }`}
+                    data-chip
+                  >
+                    {live && (
+                      <span aria-hidden="true" className="mr-1.5 inline-block h-1 w-1 -translate-y-[2px] rounded-full bg-ion" />
+                    )}
+                    {item}
+                  </li>
+                );
+              })}
             </ul>
           </div>
         ))}
       </div>
 
-      <p className="font-note mt-8 flex items-center gap-2 text-xl text-accent" data-margin-note>
-        <Sketch name="arrowRight" className="w-8 rotate-180" />
-        you&apos;re looking at some of these right now
+      <p className="mt-8 font-mono text-xs text-ion/80">
+        {"// items marked ● are rendering this page right now"}
       </p>
     </section>
   );

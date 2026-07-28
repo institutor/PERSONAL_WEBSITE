@@ -1,76 +1,65 @@
 import { identity } from "@/lib/resume-data";
-import { Lettering } from "./ornaments/Lettering";
-import { Sketch } from "./ornaments/Sketch";
+
+const LETTERS = ["J", "I", "E", "W", "E", "N"] as const;
 
 /**
- * "The desk" — what the 3D monitor screen becomes. The name is REAL drawn
- * stroke artwork (massive, boiling, draw-on animated in Phase 2). Phase 6
- * pixel-matches screen-placeholder.webp to this section.
+ * The title screen. JIEWEN sits at the bottom-left screen edge — barely not
+ * clipped — as individual letter spans (the intro floats them up one by one;
+ * the WebGL layer later knocks the space scene out inside them).
  */
 export function Hero() {
   return (
     <section
       id="hero"
       data-section="hero"
-      className="relative flex min-h-svh flex-col items-center justify-center px-6 text-center"
+      className="relative flex min-h-svh flex-col overflow-hidden"
     >
-      {/* The signature — same artwork the loader draws (continuity trick) */}
-      <p aria-hidden="true" data-signature>
-        <Lettering name="signature" className="w-40 -rotate-3 text-ink-muted sm:w-48" />
-      </p>
-
-      {/* The massive hand-drawn title */}
-      <h1 className="mt-6 w-full">
-        <Lettering
-          name="name"
-          label={identity.name}
-          className="mx-auto w-[min(92vw,1000px)] text-ink"
-          draw
-        />
-      </h1>
-
-      <Sketch name="underline2" className="mt-4 w-[min(60vw,420px)] text-accent" draw />
-
-      <p className="mt-8 max-w-xl text-lg text-ink-muted">{identity.tagline}</p>
-
-      <p className="mt-2 text-sm text-ink-muted">
-        {identity.location} · {identity.scholar}
+      <p className="microlabel absolute left-6 top-6">
+        JH — Portfolio / 2026
       </p>
 
       <nav
         aria-label="Primary links"
-        className="mt-10 flex flex-wrap items-center justify-center gap-4"
+        className="absolute right-6 top-6 flex gap-6 font-mono text-xs tracking-wider"
       >
-        <a
-          href={identity.links.resumePdf}
-          className="rough-box bg-paper-2 px-4 py-1.5 font-hand text-lg font-medium transition-transform hover:-translate-y-0.5"
-        >
-          Download resume
+        <a className="text-muted transition-colors hover:text-ion" href={identity.links.github} target="_blank" rel="noopener noreferrer">
+          GITHUB
         </a>
-        <a
-          href={identity.links.github}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="rough-box bg-paper-2 px-4 py-1.5 font-hand text-lg font-medium transition-transform hover:-translate-y-0.5"
-        >
-          GitHub
+        <a className="text-muted transition-colors hover:text-ion" href={identity.links.linkedin} target="_blank" rel="noopener noreferrer">
+          LINKEDIN
         </a>
-        <a
-          href={`mailto:${identity.links.email}`}
-          className="rough-box bg-paper-2 px-4 py-1.5 font-hand text-lg font-medium transition-transform hover:-translate-y-0.5"
-        >
-          Email me
+        <a className="text-muted transition-colors hover:text-ion" href={`mailto:${identity.links.email}`}>
+          EMAIL
+        </a>
+        <a className="text-muted transition-colors hover:text-ion" href={identity.links.resumePdf}>
+          RESUME.PDF
         </a>
       </nav>
 
-      <div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-ink-muted"
-        data-scroll-cue
-        aria-hidden="true"
-      >
-        <span className="font-note text-xl">scroll</span>
-        <Sketch name="arrowDown" className="mx-auto mt-1 w-4" />
+      <div className="absolute bottom-10 right-6 hidden max-w-xs text-right sm:block">
+        <p className="text-sm text-muted">{identity.tagline}</p>
+        <p className="microlabel mt-3">
+          {identity.location} · QuestBridge Match Scholar
+        </p>
       </div>
+
+      {/* The name — hugging the bottom-left edge by design */}
+      <h1
+        aria-label="I'm Jiewen — Jiewen Huang"
+        className="absolute -bottom-[0.035em] left-0 select-none"
+        data-hero-name
+      >
+        <span aria-hidden="true" className="mb-1 ml-[0.08em] block font-body text-xl italic text-muted sm:text-2xl" data-hero-im>
+          I&rsquo;m
+        </span>
+        <span aria-hidden="true" className="block font-display text-[clamp(5.5rem,21vw,19rem)] font-bold uppercase leading-[0.78] tracking-[-0.02em]">
+          {LETTERS.map((ch, i) => (
+            <span key={i} className="inline-block will-change-transform" data-hero-letter>
+              {ch}
+            </span>
+          ))}
+        </span>
+      </h1>
     </section>
   );
 }

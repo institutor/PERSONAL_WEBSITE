@@ -1,64 +1,42 @@
 import { awards, programs } from "@/lib/resume-data";
-import { HandHeading } from "./ornaments/HandHeading";
-import { Sketch } from "./ornaments/Sketch";
-
-/**
- * Deterministic pin-board rotations — constants, never Math.random
- * (hydration safety, architectural rule #2).
- */
-const ROTATIONS = [-2.5, 1.5, -1, 2.5, -2, 1, -1.5] as const;
+import { SectionHeading } from "./SectionHeading";
 
 export function AwardsPrograms() {
   return (
-    <section data-section="awards" className="mx-auto max-w-5xl px-6 py-24">
-      <HandHeading art="awards" text="Programs & Awards" eyebrow="the trophy wall" />
+    <section data-section="awards" className="mx-auto max-w-6xl px-6 py-28">
+      <SectionHeading index="04" label="Recognition" title="Signal" kx="80%" ky="20%" />
 
-      <div className="grid gap-12 md:grid-cols-[1.2fr_1fr]">
+      <div className="grid gap-16 md:grid-cols-[1fr_1.1fr]">
         <div>
-          <h3 className="font-hand mb-6 text-2xl font-semibold">Summers</h3>
-          <div className="space-y-8">
+          <p className="microlabel mb-8">Programs</p>
+          <div className="space-y-10">
             {programs.map((p) => (
-              <article key={p.name}>
+              <article key={p.name} data-vt>
                 <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-                  <h4 className="font-hand text-xl font-semibold">{p.name}</h4>
-                  <p className="text-xs text-ink-muted">{p.period}</p>
+                  <h3 className="font-display text-xl font-semibold">{p.name}</h3>
+                  <p className="font-mono text-xs text-muted">{p.period}</p>
                 </div>
-                <p className="mt-2 text-sm text-ink-muted">{p.detail}</p>
+                <p className="mt-2 text-sm leading-relaxed text-muted">{p.detail}</p>
               </article>
             ))}
           </div>
         </div>
 
         <div>
-          <h3 className="font-hand mb-6 text-2xl font-semibold">Awards</h3>
-          <ul className="space-y-4">
-            {awards.map((a, i) => (
-              <li
-                key={a.title}
-                className="rough-chip bg-paper-2 px-3 py-2"
-                style={{ transform: `rotate(${ROTATIONS[i % ROTATIONS.length]}deg)` }}
-                data-pin-card
-              >
-                <div className="flex items-baseline gap-3">
-                  {a.big ? (
-                    <span
-                      className="font-hand text-3xl font-bold text-accent"
-                      data-big-place
-                    >
-                      {a.big}
-                    </span>
-                  ) : (
-                    <Sketch name="star" className="w-4 shrink-0 self-center text-accent" />
-                  )}
-                  <div>
-                    <p className="font-medium leading-snug">
-                      {a.big ? a.detail : a.title}
-                    </p>
-                    <p className="text-xs text-ink-muted">
-                      {a.big ? a.year : `${a.detail} · ${a.year}`}
-                    </p>
-                  </div>
+          <p className="microlabel mb-8">Awards</p>
+          <ul className="divide-y divide-faint border-t border-faint">
+            {awards.map((a) => (
+              <li key={a.title} className="flex items-baseline gap-5 py-4" data-vt>
+                <span className="w-14 shrink-0 font-mono text-lg text-ion">
+                  {a.big ?? "—"}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium leading-snug">
+                    {a.big ? a.detail : a.title}
+                  </p>
+                  {!a.big && <p className="mt-0.5 text-xs text-muted">{a.detail}</p>}
                 </div>
+                <span className="shrink-0 font-mono text-xs text-muted">{a.year}</span>
               </li>
             ))}
           </ul>
