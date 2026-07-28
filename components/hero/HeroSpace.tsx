@@ -2,6 +2,8 @@
 
 import { useRef } from "react";
 import { ScrollTrigger, gsap, useGSAP } from "@/lib/gsap";
+import { useIntroStore } from "@/lib/intro-store";
+import { orchestrator } from "@/lib/load-orchestrator";
 import { SpaceScene } from "./space-scene";
 
 /**
@@ -39,8 +41,12 @@ export default function HeroSpace() {
       // Static fallback: CSS knockout on the letters, no motion, no GL.
       lettersWrap.classList.add("knockout");
       canvas.style.display = "none";
+      orchestrator.completeAll(); // never strand the loader on GL tasks
+      document.documentElement.dataset.intro = "done"; // never strand scroll
       return;
     }
+
+    orchestrator.set("chunk", 1); // this module (three.js chunk) is loaded
 
     let killed = false;
     let active = true;
@@ -48,6 +54,7 @@ export default function HeroSpace() {
     // Created after awaits → outside the useGSAP context; killed manually.
     let scrollScrub: ScrollTrigger | null = null;
     let introTl: gsap.core.Timeline | null = null;
+    let unsubPhase: (() => void) | null = null;
 
     const tick = (time: number) => {
       if (active) scene?.render(time);
@@ -74,12 +81,14 @@ export default function HeroSpace() {
       const s = new SpaceScene(canvas, letters);
       scene = s;
       await s.load();
+      orchestrator.set("textures", 1);
       if (killed) {
         // cleanup may have already disposed + nulled the shared ref
         s.dispose();
         return;
       }
       s.layout();
+      orchestrator.set("compile", 1);
       gsap.ticker.add(tick);
 
       const u = s.uniforms;
@@ -95,6 +104,8 @@ export default function HeroSpace() {
         },
       });
 
+      const docEl = document.documentElement;
+
       const finalState = () => {
         gsap.set(letters, { yPercent: 0 });
         gsap.set(im, { autoAlpha: 1 });
@@ -105,31 +116,27 @@ export default function HeroSpace() {
         u.uReveal.value = 1;
         u.uPunch.value = 0;
         u.uTexZoom.value = 1;
+        docEl.dataset.intro = "done"; // unlocks scroll (CSS)
+        ScrollTrigger.refresh();
       };
 
-      // Refresh / deep-link mid-page: skip the cinematic.
-      if (window.scrollY > window.innerHeight * 0.4) {
-        finalState();
-        ScrollTrigger.refresh();
-        return;
-      }
+      const playIntro = () => {
+        // Refresh / deep-link mid-page: skip the cinematic.
+        if (window.scrollY > window.innerHeight * 0.4) {
+          finalState();
+          return;
+        }
 
-      // ---- the intro ----
-      const docEl = document.documentElement;
-      gsap.set(letters, { yPercent: 115 });
-      gsap.set(im, { autoAlpha: 0 });
-      gsap.set(docEl, { overflow: "hidden" }); // scroll locked for the show
+        const tl = gsap.timeline({
+          defaults: { ease: "power2.out" },
+          onComplete: () => {
+            docEl.dataset.intro = "done";
+            ScrollTrigger.refresh();
+          },
+        });
+        introTl = tl;
 
-      const tl = gsap.timeline({
-        defaults: { ease: "power2.out" },
-        onComplete: () => {
-          gsap.set(docEl, { clearProps: "overflow" });
-          ScrollTrigger.refresh();
-        },
-      });
-      introTl = tl;
-
-      tl
+        tl
         // 1. letters float up one by one, overshoot, settle
         .to(letters, {
           yPercent: 0,
@@ -154,6 +161,31 @@ export default function HeroSpace() {
         .to(u.uPunch, { value: 0, duration: 0.9 }, "<+0.15")
         .to(u.uBlurMix, { value: 0.45, duration: 0.9 }, "<")
         .to(u.uTexZoom, { value: 1.0, duration: 0.9 }, "<");
+      };
+
+      // Loader gates the show: hidden state set NOW (pre-reveal, covered by
+      // the opaque overlay), then play/skip per the intro phase machine.
+      gsap.set(letters, { yPercent: 115 });
+      gsap.set(im, { autoAlpha: 0 });
+
+      const { phase } = useIntroStore.getState();
+      if (phase === "reveal") {
+        playIntro();
+      } else if (phase === "skipped" || phase === "done") {
+        finalState();
+      } else {
+        unsubPhase = useIntroStore.subscribe((state) => {
+          if (state.phase === "reveal") {
+            unsubPhase?.();
+            unsubPhase = null;
+            playIntro();
+          } else if (state.phase === "skipped" || state.phase === "done") {
+            unsubPhase?.();
+            unsubPhase = null;
+            finalState();
+          }
+        });
+      }
     })();
 
     return () => {
@@ -162,9 +194,9 @@ export default function HeroSpace() {
       window.removeEventListener("resize", onResize);
       clearTimeout(resizeT);
       gsap.ticker.remove(tick);
+      unsubPhase?.();
       introTl?.kill();
       scrollScrub?.kill();
-      gsap.set(document.documentElement, { clearProps: "overflow" });
       scene?.dispose();
       scene = null;
     };

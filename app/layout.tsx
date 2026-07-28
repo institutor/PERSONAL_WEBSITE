@@ -25,10 +25,11 @@ export const metadata: Metadata = {
 };
 
 /**
- * Runs before first paint: motion preference gates CSS-driven animation.
- * The loader phase decision (play/skip) extends this in the intro build.
+ * Runs before first paint: motion preference gates CSS animation AND decides
+ * whether the intro plays. data-intro='play' locks scroll (CSS) until the
+ * cinematic hands off; 'skip' hides the loader entirely for reduced motion.
  */
-const noFlashScript = `(function(){var d=document.documentElement;try{d.dataset.motion=window.matchMedia('(prefers-reduced-motion: reduce)').matches?'off':'on'}catch(e){d.dataset.motion='on'}})();`;
+const noFlashScript = `(function(){var d=document.documentElement;var rm=false;try{rm=window.matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){}d.dataset.motion=rm?'off':'on';d.dataset.intro=rm?'skip':'play'})();`;
 
 export default function RootLayout({
   children,
@@ -43,6 +44,9 @@ export default function RootLayout({
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: noFlashScript }} />
+        <noscript>
+          <style>{`[data-loader]{display:none!important}`}</style>
+        </noscript>
       </head>
       <body className="min-h-full flex flex-col bg-void text-star">
         <SmoothScroll>{children}</SmoothScroll>

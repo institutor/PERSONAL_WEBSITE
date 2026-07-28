@@ -32,6 +32,17 @@ html {
   color: var(--star);
 }
 
+/* Scroll stays locked while the loader + cinematic run; JS flips to 'done'.
+   <noscript> users never get 'play' JS handoff — but the inline script that
+   sets 'play' also requires JS, so no-JS visitors scroll freely. */
+html[data-intro="play"] {
+  overflow: hidden;
+}
+
+html[data-intro="skip"] [data-loader] {
+  display: none;
+}
+
 body {
   font-family: var(--font-body);
   font-size: 1rem;
