@@ -1,3 +1,4 @@
+import { HeroSpaceClient } from "@/components/hero/HeroSpaceClient";
 import { identity } from "@/lib/resume-data";
 
 const LETTERS = ["J", "I", "E", "W", "E", "N"] as const;
@@ -12,8 +13,10 @@ export function Hero() {
     <section
       id="hero"
       data-section="hero"
-      className="relative flex min-h-svh flex-col overflow-hidden"
+      className="relative flex min-h-svh flex-col"
     >
+      <HeroSpaceClient />
+
       <p className="microlabel absolute left-6 top-6">
         JH — Portfolio / 2026
       </p>
@@ -52,7 +55,11 @@ export function Hero() {
         <span aria-hidden="true" className="mb-1 ml-[0.08em] block font-body text-xl italic text-muted sm:text-2xl" data-hero-im>
           I&rsquo;m
         </span>
-        <span aria-hidden="true" className="block font-display text-[clamp(5.5rem,21vw,19rem)] font-bold uppercase leading-[0.78] tracking-[-0.02em]">
+        <span
+          aria-hidden="true"
+          className="block overflow-hidden font-display text-[clamp(5.5rem,21vw,19rem)] font-bold uppercase leading-[0.78] tracking-[-0.02em]"
+          data-hero-letters
+        >
           {LETTERS.map((ch, i) => (
             <span key={i} className="inline-block will-change-transform" data-hero-letter>
               {ch}
