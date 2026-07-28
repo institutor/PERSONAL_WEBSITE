@@ -1,26 +1,96 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ---------------------------------------------------------------------------
+   Theme tokens. Two hand-drawn worlds:
+   light = "pen on cream"  — graphite ink + ballpoint-blue accent on warm paper
+   dark  = "chalk on midnight" — warm chalk + lantern-gold accent on night paper
+   Runtime vars swap via html[data-theme]; @theme inline maps them to utilities.
+--------------------------------------------------------------------------- */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-accent: var(--accent);
+  --color-highlight: var(--highlight);
+  --font-hand: var(--font-shantell), "Comic Sans MS", cursive;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+  --font-note: var(--font-caveat), cursive;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root,
+html[data-theme="light"] {
+  --paper: #f3edde;
+  --paper-2: #faf5e9;
+  --ink: #2a2d3a;
+  --ink-muted: #5c5f6e;
+  --ink-faint: rgba(42, 45, 58, 0.35);
+  --accent: #2f55b8; /* ballpoint blue */
+  --highlight: #f2c94c; /* highlighter yellow */
+  color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  --paper: #131722;
+  --paper-2: #1a1f2d;
+  --ink: #e9e4d6;
+  --ink-muted: #a3a496;
+  --ink-faint: rgba(233, 228, 214, 0.32);
+  --accent: #e0b04f; /* lantern gold */
+  --highlight: #e0b04f;
+  color-scheme: dark;
+}
+
+/* ------------------------------------------------------------------------ */
+
+html {
+  background: var(--paper);
+  color: var(--ink);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--highlight);
+  color: #2a2d3a;
+}
+
+/* Headings carry the hand-drawn personality: Shantell Sans with the informal
+   + bounce variation axes — the axes Google Fonts strips, hence self-hosted. */
+.font-hand {
+  font-variation-settings:
+    "INFM" 55,
+    "BNCE" 8;
+  letter-spacing: 0.01em;
+}
+
+.font-note {
+  letter-spacing: 0.01em;
+}
+
+/* Focus visibly, in accent ink, slightly rough offset */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Reduced motion: kill everything animated, globally, before JS even loads */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
