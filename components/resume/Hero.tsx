@@ -1,72 +1,68 @@
 import { HeroSpaceClient } from "@/components/hero/HeroSpaceClient";
+import { Sawtooth } from "@/components/fx/Sawtooth";
 import { identity } from "@/lib/resume-data";
 
-const LETTERS = ["J", "I", "E", "W", "E", "N"] as const;
+const IM = ["I", "'", "m"] as const;
+const NAME = ["J", "I", "E", "W", "E", "N"] as const;
 
 /**
- * The title screen. JIEWEN sits at the bottom-left screen edge — barely not
- * clipped — as individual letter spans (the intro floats them up one by one;
- * the WebGL layer later knocks the space scene out inside them).
+ * Title screen per the reference layout: "I'm" massive top-left, "JIEWEN"
+ * massive bottom-right (bleeding off the edge), split by the animated
+ * sawtooth divider. Both words pixel-dissipate on scroll (WebGL).
  */
 export function Hero() {
   return (
     <section
       id="hero"
       data-section="hero"
-      className="relative flex min-h-svh flex-col"
+      className="band-ink relative flex min-h-svh flex-col justify-center overflow-hidden py-16"
     >
       <HeroSpaceClient />
 
-      <p className="microlabel absolute left-6 top-6 hidden md:block">
-        JH — Portfolio / 2026
-      </p>
-
-      <nav
-        aria-label="Primary links"
-        className="absolute right-4 top-6 flex gap-4 font-mono text-xs tracking-wider sm:right-6 sm:gap-6"
-      >
-        <a className="text-muted transition-colors hover:text-ion" href={identity.links.github} target="_blank" rel="noopener noreferrer">
-          GITHUB
-        </a>
-        <a className="text-muted transition-colors hover:text-ion" href={identity.links.linkedin} target="_blank" rel="noopener noreferrer">
-          LINKEDIN
-        </a>
-        <a className="text-muted transition-colors hover:text-ion" href={`mailto:${identity.links.email}`}>
-          EMAIL
-        </a>
-        <a className="text-muted transition-colors hover:text-ion" href={identity.links.resumePdf}>
-          RESUME.PDF
-        </a>
-      </nav>
-
-      <div className="absolute bottom-10 right-6 hidden max-w-xs text-right sm:block">
-        <p className="text-sm text-muted">{identity.tagline}</p>
-        <p className="microlabel mt-3">
-          {identity.location} · QuestBridge Match Scholar
-        </p>
-      </div>
-
-      {/* The name — hugging the bottom-left edge by design */}
-      <h1
-        aria-label="I'm Jiewen — Jiewen Huang"
-        className="absolute -bottom-[0.035em] left-0 select-none"
-        data-hero-name
-      >
-        <span aria-hidden="true" className="mb-1 ml-[0.08em] block font-body text-xl italic text-muted sm:text-2xl" data-hero-im>
-          I&rsquo;m
+      {/* I'm — top-left, kissing the edge */}
+      <h1 className="relative z-10" aria-label="I'm Jiewen — Jiewen Huang">
+        <span aria-hidden="true" className="block" data-hero-word="im">
+          <span className="display -ml-[0.045em] block overflow-hidden whitespace-nowrap normal-case text-[clamp(7rem,24vw,22rem)]">
+            {IM.map((ch, i) => (
+              <span key={i} className="inline-block will-change-transform" data-hero-letter>
+                {ch}
+              </span>
+            ))}
+          </span>
         </span>
-        <span
-          aria-hidden="true"
-          className="block overflow-hidden font-display text-[clamp(5.5rem,21vw,19rem)] font-bold uppercase leading-[0.78] tracking-[-0.02em]"
-          data-hero-letters
-        >
-          {LETTERS.map((ch, i) => (
-            <span key={i} className="inline-block will-change-transform" data-hero-letter>
-              {ch}
-            </span>
-          ))}
+
+        {/* the divider — animated, professional */}
+        <span className="my-4 block sm:my-6" data-hero-divider>
+          <Sawtooth color="volt" height={26} />
+        </span>
+
+        {/* JIEWEN — bottom-right, bigger, bleeding off the right edge */}
+        <span aria-hidden="true" className="block text-right" data-hero-word="name">
+          <span className="display -mr-[0.05em] block overflow-hidden whitespace-nowrap text-[clamp(6rem,26.5vw,26rem)]">
+            {NAME.map((ch, i) => (
+              <span key={i} className="inline-block will-change-transform" data-hero-letter>
+                {ch}
+              </span>
+            ))}
+          </span>
         </span>
       </h1>
+
+      {/* corner matter */}
+      <div className="pointer-events-none absolute right-4 top-12 z-10 text-right sm:right-6" aria-hidden="true">
+        <p className="paren opacity-0" data-hero-fade>
+          ( software engineer )
+        </p>
+        <div className="bodycol mt-4 hidden text-right opacity-0 sm:block" data-hero-fade>
+          <strong>The short version</strong>
+          Ships things that matter: a K-8 reading platform live for 190 students, an agent-native
+          100k-line backend at a YC startup. Next: Columbia CS &amp; Math, class of &rsquo;30.
+        </div>
+      </div>
+
+      <p className="lbl pointer-events-none absolute bottom-12 left-4 z-10 opacity-0 sm:left-6" data-hero-fade>
+        BROOKLYN, NY — QUESTBRIDGE NATIONAL COLLEGE MATCH
+      </p>
     </section>
   );
 }

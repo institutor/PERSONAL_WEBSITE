@@ -1,40 +1,53 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
-   "Mission control" void system — dark only, by design.
-   Signature motif: the universe lives inside the type (knockout text).
+   Editorial band system (motion-study.md) — bone + black bands, one accent.
+   Colorway: bone #E5DED2 · ink #101014 · voltage ultramarine #1E32E8.
 --------------------------------------------------------------------------- */
 
 @theme inline {
-  --color-void: var(--void);
-  --color-panel: var(--panel);
-  --color-star: var(--star);
-  --color-muted: var(--muted);
-  --color-faint: var(--faint);
-  --color-ion: var(--ion);
-  --font-display: var(--font-grotesk), system-ui, sans-serif;
+  --color-bone: var(--bone);
+  --color-ink: var(--ink);
+  --color-volt: var(--volt);
+  --color-bone-dim: var(--bone-dim);
+  --color-ink-dim: var(--ink-dim);
   --font-body: var(--font-inter), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
 :root {
-  --void: #050608;
-  --panel: #0b0e15;
-  --star: #f2f4f8;
-  --muted: #8a93a6;
-  --faint: rgba(242, 244, 248, 0.14);
-  --ion: #7dd8e8;
+  --bone: #e5ded2;
+  --ink: #101014;
+  --volt: #1e32e8;
+  --bone-dim: rgba(229, 222, 210, 0.6);
+  --ink-dim: rgba(16, 16, 20, 0.62);
   color-scheme: dark;
 }
 
 html {
-  background: var(--void);
-  color: var(--star);
+  background: var(--ink);
+  color: var(--bone);
 }
 
-/* Scroll stays locked while the loader + cinematic run; JS flips to 'done'.
-   <noscript> users never get 'play' JS handoff — but the inline script that
-   sets 'play' also requires JS, so no-JS visitors scroll freely. */
+body {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--volt);
+  color: var(--bone);
+}
+
+:focus-visible {
+  outline: 2px solid var(--volt);
+  outline-offset: 3px;
+}
+
+/* Scroll locked during loader + intro; JS flips data-intro to 'done'. */
 html[data-intro="play"] {
   overflow: hidden;
 }
@@ -43,119 +56,146 @@ html[data-intro="skip"] [data-loader] {
   display: none;
 }
 
-body {
-  font-family: var(--font-body);
-  font-size: 1rem;
-  line-height: 1.7;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+/* ---------------------------------------------------------------------------
+   Bands — full-viewport sections in strictly alternating paper tones.
+--------------------------------------------------------------------------- */
+
+.band-bone {
+  background: var(--bone);
+  color: var(--ink);
 }
 
-::selection {
-  background: var(--ion);
-  color: #050608;
-}
-
-:focus-visible {
-  outline: 1.5px solid var(--ion);
-  outline-offset: 3px;
+.band-ink {
+  background: var(--ink);
+  color: var(--bone);
 }
 
 /* ---------------------------------------------------------------------------
-   Knockout type — the site's signature. Space imagery clipped inside glyphs.
-   Used by section headings; the hero does the same thing in WebGL.
+   Type system: one grotesk at extreme scale contrast.
 --------------------------------------------------------------------------- */
 
-.knockout {
-  background-image: url("/textures/nebula.webp");
-  background-size: 160% auto;
-  background-position: var(--kx, 50%) var(--ky, 50%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+/* Display — tight, heavy, cropped line box (words may bleed off-screen).
+   No text-transform: source text carries its own case ("I'm" stays mixed). */
+.display {
+  font-weight: 640;
+  letter-spacing: -0.035em;
+  line-height: 0.82;
 }
 
-/* Fallback when the texture hasn't loaded / very old engines: solid star. */
-@supports not (background-clip: text) {
-  .knockout {
-    color: var(--star);
-    background: none;
-  }
+/* Statements — sentence case, 3-5 words per line */
+.statement {
+  font-weight: 520;
+  letter-spacing: -0.02em;
+  line-height: 1.04;
 }
 
-/* Mono micro-labels (telemetry style) */
-.microlabel {
-  font-family: var(--font-mono);
+/* Micro labels — 10px caps, wide tracked */
+.lbl {
   font-size: 0.6875rem;
-  letter-spacing: 0.22em;
+  font-weight: 560;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--muted);
 }
 
-/* Hairline panel */
-.panel {
-  background: var(--panel);
-  border: 1px solid var(--faint);
+/* Parenthetical label — "( the path )" */
+.paren {
+  font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+  font-weight: 480;
+  letter-spacing: -0.01em;
 }
 
-/* Buttons */
-.btn-void {
-  font-family: var(--font-mono);
-  font-size: 0.8125rem;
+/* Narrow body column with bold lead line */
+.bodycol {
+  max-width: 17rem;
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+.bodycol strong {
+  display: block;
+  font-weight: 640;
+}
+
+/* Giant corner numerals */
+.numeral {
+  font-weight: 640;
+  letter-spacing: -0.04em;
+  line-height: 0.8;
+  font-size: clamp(4rem, 9vw, 8.5rem);
+}
+
+/* Outlined pill (external links) */
+.pill {
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 0.15rem 0.65rem;
+  font-size: 0.6563rem;
+  font-weight: 560;
   letter-spacing: 0.08em;
-  border: 1px solid var(--faint);
-  padding: 0.625rem 1.125rem;
-  transition:
-    border-color 0.25s ease,
-    background-color 0.25s ease,
-    transform 0.25s ease;
+  text-transform: uppercase;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.btn-void:hover {
-  border-color: var(--ion);
-  background: color-mix(in srgb, var(--ion) 8%, transparent);
-  transform: translateY(-1px);
+.band-ink .pill:hover,
+.chrome .pill:hover {
+  background: var(--bone);
+  color: var(--ink);
 }
 
-/* Card/list scroll fade-up via native scroll-timeline where supported. */
-@supports (animation-timeline: view()) {
-  html[data-motion="on"] [data-vt] {
-    animation: vt-up linear both;
-    animation-timeline: view();
-    animation-range: entry 5% entry 40%;
-  }
+/* ---------------------------------------------------------------------------
+   Persistent chrome — fixed frame; blend-difference auto-inverts over bands.
+--------------------------------------------------------------------------- */
+
+.chrome {
+  mix-blend-mode: difference;
+  color: #fff;
 }
 
-@keyframes vt-up {
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-  }
+/* Chevron CTA — RESUME ▶▶▶▶▶ */
+.chevrons {
+  display: inline-block;
 }
 
-/* Top scroll progress hairline */
-.progress-ink {
-  transform: scaleX(0);
-  transform-origin: 0 50%;
+.chevrons span {
+  display: inline-block;
+  transform: translateX(0);
+  transition: transform 0.25s ease;
 }
 
-@supports (animation-timeline: scroll()) {
-  .progress-ink {
-    animation: ink-grow linear both;
-    animation-timeline: scroll(root);
-  }
+a:hover .chevrons span:nth-child(1) { transform: translateX(2px); }
+a:hover .chevrons span:nth-child(2) { transform: translateX(4px); }
+a:hover .chevrons span:nth-child(3) { transform: translateX(6px); }
+a:hover .chevrons span:nth-child(4) { transform: translateX(8px); }
+a:hover .chevrons span:nth-child(5) { transform: translateX(10px); }
+
+/* ---------------------------------------------------------------------------
+   Masked rise reveals — display rows rise from behind the band/divider edge.
+   JS (ScrollFx) animates the inner [data-rise]; wrapper clips.
+--------------------------------------------------------------------------- */
+
+.rise-mask {
+  overflow: hidden;
 }
 
-@keyframes ink-grow {
-  from {
-    transform: scaleX(0);
-  }
+/* Hidden pre-JS only when motion is on; fallback unhide if JS never arrives */
+html[data-motion="on"] [data-rise] {
+  transform: translateY(105%);
+}
+
+html[data-motion="on"] [data-rise-fallback] [data-rise] {
+  animation: rise-unhide 0.01s 3s forwards;
+}
+
+@keyframes rise-unhide {
   to {
-    transform: scaleX(1);
+    transform: translateY(0);
   }
 }
 
-/* Reduced motion: kill everything animated, globally, before JS even loads */
+/* ---------------------------------------------------------------------------
+   Reduced motion
+--------------------------------------------------------------------------- */
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -166,7 +206,13 @@ body {
     scroll-behavior: auto !important;
   }
 
-  .progress-ink {
-    display: none;
+  html[data-motion="on"] [data-rise] {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-rise] {
+    transform: none !important;
   }
 }

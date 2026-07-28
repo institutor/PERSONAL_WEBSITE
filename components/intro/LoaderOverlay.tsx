@@ -3,12 +3,11 @@ import { LoaderFx } from "./LoaderFx";
 
 /**
  * The loading screen: "by Jiewen" in thin monoline script, drawn stroke by
- * stroke in sync with REAL load progress; an ion checkmark strikes through
- * when everything is ready.
+ * stroke in sync with REAL load progress; a voltage checkmark strikes
+ * through when everything is ready.
  *
  * Server component. Strokes use pathLength=1 normalization so their hidden
- * state is baked into SSR markup — the finished signature can never flash
- * before hydration. LoaderFx (client) drives the animation.
+ * state is baked into SSR markup — nothing flashes before hydration.
  */
 export function LoaderOverlay() {
   const art = LETTERING.signature;
@@ -20,12 +19,12 @@ export function LoaderOverlay() {
       aria-valuemax={100}
       aria-valuenow={0}
       aria-label="Loading portfolio"
-      className="fixed inset-0 z-[80] flex items-center justify-center bg-void"
+      className="fixed inset-0 z-[80] flex items-center justify-center bg-ink text-bone"
     >
       <div className="relative">
         <svg
           viewBox={`0 0 ${art.w} ${art.h}`}
-          className="w-64 text-star sm:w-80"
+          className="w-64 sm:w-80"
           aria-hidden="true"
           focusable="false"
         >
@@ -47,10 +46,10 @@ export function LoaderOverlay() {
           )}
         </svg>
 
-        {/* the checkmark runs THROUGH the signature (original spec) */}
+        {/* the checkmark runs THROUGH the signature */}
         <svg
           viewBox="0 0 120 70"
-          className="absolute left-1/2 top-1/2 w-40 -translate-x-1/2 -translate-y-[55%] text-ion/90 sm:w-52"
+          className="absolute left-1/2 top-1/2 w-40 -translate-x-1/2 -translate-y-[55%] text-volt sm:w-52"
           aria-hidden="true"
           focusable="false"
         >
@@ -68,10 +67,10 @@ export function LoaderOverlay() {
         </svg>
       </div>
 
-      <p className="microlabel absolute bottom-8 left-6" data-loader-label>
+      <p className="lbl absolute bottom-8 left-6 opacity-70" data-loader-label>
         Initializing
       </p>
-      <p className="absolute bottom-8 right-6 font-mono text-xs tracking-[0.3em] text-muted">
+      <p className="absolute bottom-8 right-6 font-mono text-xs tracking-[0.3em] opacity-70">
         <span data-loader-pct style={{ fontVariantNumeric: "tabular-nums" }}>
           000
         </span>
@@ -80,7 +79,7 @@ export function LoaderOverlay() {
       <button
         type="button"
         data-loader-skip
-        className="microlabel absolute right-6 top-6 cursor-pointer transition-colors hover:text-ion"
+        className="lbl absolute right-6 top-6 cursor-pointer transition-colors hover:text-volt"
       >
         Skip →
       </button>
