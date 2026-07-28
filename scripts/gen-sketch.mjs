@@ -35,6 +35,13 @@ const roundTo = (d, places) =>
 const round = (d) => roundTo(d, 2);
 const round1 = (d) => roundTo(d, 1);
 
+/**
+ * Split a compound path ("M...M...") into one d-string per subpath.
+ * rough.js merges its multi-pass strokes into one d, but GSAP's DrawSVG
+ * cannot measure compound paths — each pass must be its own <path>.
+ */
+const splitSubpaths = (d) => d.split(/(?=M)/).map((s) => s.trim()).filter(Boolean);
+
 const FRAME_COUNT = 3;
 
 /**
@@ -151,7 +158,9 @@ function drawFrames(name, [w, h, build, extra = {}]) {
     };
     const drawables = build(g);
     const paths = drawables.flatMap((dr) =>
-      gen.toPaths(dr).map((p) => ({ d: round(p.d), sw: p.strokeWidth }))
+      gen.toPaths(dr).flatMap((p) =>
+        splitSubpaths(round(p.d)).map((d) => ({ d, sw: p.strokeWidth }))
+      )
     );
     frames.push(paths);
   }
@@ -369,7 +378,7 @@ function roughLettering(name, text, fontName, opts = {}) {
       const ds = letter.polys.flatMap((poly) => {
         const moved = poly.map(([x, y]) => [x + pad, y - minY + pad]);
         const dr = gen.linearPath(moved, o);
-        return gen.toPaths(dr).map((p) => round1(p.d));
+        return gen.toPaths(dr).flatMap((p) => splitSubpaths(round1(p.d)));
       });
       out.letters[li].frames.push(ds);
     });

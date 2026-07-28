@@ -1,10 +1,13 @@
+import { ProgressInk } from "@/components/chrome/ProgressInk";
+import { ScrollFx } from "@/components/fx/ScrollFx";
+import { ThemeToggle } from "@/components/fx/ThemeToggle";
 import { Resume } from "@/components/resume/Resume";
 import { Sketch } from "@/components/resume/ornaments/Sketch";
-import { ThemeToggle } from "@/components/fx/ThemeToggle";
 
 export default function Home() {
   return (
     <>
+      <ProgressInk />
       <ThemeToggle>
         <span className="icon-sun block w-7">
           <Sketch name="sun" />
@@ -14,6 +17,7 @@ export default function Home() {
         </span>
       </ThemeToggle>
       <Resume />
+      <ScrollFx />
     </>
   );
 }

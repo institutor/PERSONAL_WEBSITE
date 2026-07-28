@@ -20,7 +20,7 @@ export function Sketch({ name, className, boil = true, draw, strokeWidth }: Sket
   return (
     <svg
       viewBox={`0 0 ${art.w} ${art.h}`}
-      className={className ? `block ${className}` : "block"}
+      className={`block${draw ? " draw-pending" : ""}${className ? ` ${className}` : ""}`}
       aria-hidden="true"
       focusable="false"
       data-sketch={name}

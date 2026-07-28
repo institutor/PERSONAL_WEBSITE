@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Caveat } from "next/font/google";
 import localFont from "next/font/local";
+import { SmoothScroll } from "@/components/fx/SmoothScroll";
 import "./globals.css";
 
 const inter = Inter({
@@ -28,10 +29,11 @@ export const metadata: Metadata = {
 };
 
 /**
- * Runs before first paint: resolves theme (stored preference, else system).
+ * Runs before first paint: resolves theme (stored preference, else system)
+ * and whether motion is allowed (drives draw-on gating in CSS).
  * Phase 4 extends this with the intro play/skip decision.
  */
-const noFlashScript = `(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}})();`;
+const noFlashScript = `(function(){var d=document.documentElement;try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}d.dataset.theme=t}catch(e){d.dataset.theme='dark'}try{d.dataset.motion=window.matchMedia('(prefers-reduced-motion: reduce)').matches?'off':'on'}catch(e){d.dataset.motion='on'}})();`;
 
 export default function RootLayout({
   children,
@@ -49,7 +51,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: noFlashScript }} />
       </head>
       <body className="min-h-full flex flex-col bg-paper text-ink">
-        {children}
+        <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>
   );

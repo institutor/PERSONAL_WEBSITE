@@ -19,7 +19,7 @@ interface LetteringProps {
  */
 export function Lettering({ name, label, className, fit = "width", boil = true, draw }: LetteringProps) {
   const art = LETTERING[name];
-  const svgClass = fit === "width" ? "block w-full h-auto overflow-visible" : "block h-full w-auto overflow-visible";
+  const svgClass = `${fit === "width" ? "block w-full h-auto overflow-visible" : "block h-full w-auto overflow-visible"}${draw ? " draw-pending" : ""}`;
   return (
     <span className={className ? `inline-block ${className}` : "inline-block"}>
       {label && <span className="sr-only">{label}</span>}
