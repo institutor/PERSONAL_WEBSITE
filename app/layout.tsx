@@ -22,6 +22,17 @@ export const metadata: Metadata = {
   title: "Jiewen Huang — I'm Jiewen",
   description:
     "Jiewen Huang — CS & Math @ Columbia '30. Builds things that ship: NaomiAI ELA, agent-native backends, and this site.",
+  openGraph: {
+    title: "I'm Jiewen",
+    description: "CS & Math @ Columbia '30 · builds things that ship.",
+    images: ["/og.jpg"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "I'm Jiewen",
+    description: "CS & Math @ Columbia '30 · builds things that ship.",
+    images: ["/og.jpg"],
+  },
 };
 
 /**

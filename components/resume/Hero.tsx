@@ -17,13 +17,13 @@ export function Hero() {
     >
       <HeroSpaceClient />
 
-      <p className="microlabel absolute left-6 top-6">
+      <p className="microlabel absolute left-6 top-6 hidden md:block">
         JH — Portfolio / 2026
       </p>
 
       <nav
         aria-label="Primary links"
-        className="absolute right-6 top-6 flex gap-6 font-mono text-xs tracking-wider"
+        className="absolute right-4 top-6 flex gap-4 font-mono text-xs tracking-wider sm:right-6 sm:gap-6"
       >
         <a className="text-muted transition-colors hover:text-ion" href={identity.links.github} target="_blank" rel="noopener noreferrer">
           GITHUB

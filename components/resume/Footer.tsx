@@ -25,10 +25,15 @@ export function Footer() {
             RESUME.PDF
           </a>
         </nav>
-        <p className="font-mono text-[11px] tracking-wider text-muted">
-          DESIGNED &amp; ENGINEERED IN THE VOID — NEXT.JS · THREE.JS · GSAP · ©{" "}
-          {new Date().getFullYear()} JIEWEN HUANG
-        </p>
+        <div className="text-right">
+          <p className="font-mono text-[11px] tracking-wider text-muted">
+            DESIGNED &amp; ENGINEERED IN THE VOID — NEXT.JS · THREE.JS · GSAP · ©{" "}
+            {new Date().getFullYear()} JIEWEN HUANG
+          </p>
+          <p className="mt-1 font-mono text-[10px] tracking-wider text-muted/70">
+            SPACE IMAGERY: &ldquo;COSMIC CLIFFS&rdquo;, CARINA NEBULA — NASA / ESA / CSA / STScI (WEBB)
+          </p>
+        </div>
       </div>
     </footer>
   );
