@@ -102,11 +102,13 @@ export default function HeroSpace() {
           scrub: 0.3,
           onUpdate: (self) => {
             u.uScroll.value = self.progress;
-            // hand the words off between DOM (crisp) and GL (mosaic)
-            const wantHidden = self.progress > 0.012;
+            // Hand the words off DOM -> GL only after the mosaic is at full
+            // alpha (shader reaches 1 at 0.022), and bring them back at a
+            // lower threshold — hysteresis so jitter can't strobe the swap.
+            const wantHidden = self.progress > (domHidden ? 0.018 : 0.026);
             if (wantHidden !== domHidden) {
               domHidden = wantHidden;
-              gsap.set(words, { autoAlpha: wantHidden ? 0 : 1 });
+              gsap.to(words, { autoAlpha: wantHidden ? 0 : 1, duration: 0.12, overwrite: true });
             }
           },
         });
@@ -117,6 +119,9 @@ export default function HeroSpace() {
         gsap.set(fades, { autoAlpha: 1 });
         if (divider) gsap.set(divider, { scaleX: 1 });
         docEl.dataset.intro = "done";
+        // re-snapshot the text mask now that letters sit at their true
+        // positions — the pre-intro layout() captured them displaced
+        scene?.layout();
         ScrollTrigger.refresh();
       };
 
@@ -129,6 +134,7 @@ export default function HeroSpace() {
           defaults: { ease: "power4.out" },
           onComplete: () => {
             docEl.dataset.intro = "done";
+            scene?.layout(); // letters just landed — redraw the text mask
             ScrollTrigger.refresh();
           },
         });

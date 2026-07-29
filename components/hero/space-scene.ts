@@ -81,8 +81,10 @@ const BASE_FRAG = /* glsl */ `
     vec2 muv = rel / uMaskRect.zw;
     if (muv.x < 0.0 || muv.x > 1.0 || muv.y < 0.0 || muv.y > 1.0) discard;
 
-    // handoff: crisp DOM text -> mosaic, as scroll begins
-    float on = smoothstep(0.004, 0.03, uScroll);
+    // handoff: mosaic reaches FULL alpha while the crisp DOM text is still
+    // visible underneath (same flat color — the union just looks like the
+    // text growing blocky edges); the DOM layer is released only after 0.026
+    float on = smoothstep(0.0, 0.022, uScroll);
     if (on <= 0.0) discard;
 
     vec2 cellId = floor(rel / uCell);
