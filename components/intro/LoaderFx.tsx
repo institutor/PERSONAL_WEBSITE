@@ -1,15 +1,14 @@
 "use client";
 
 import { gsap, useGSAP } from "@/lib/gsap";
+import { mapHandwritingProgress } from "@/lib/handwriting-timeline";
 import { useIntroStore } from "@/lib/intro-store";
 import { orchestrator } from "@/lib/load-orchestrator";
 
 /**
- * Drives the handwritten Inkfield loader: the orchestrator's smoothed
- * display value becomes pen distance along the calibrated stroke masks —
- * constant pen speed, letter by letter, swoosh-check last. The final 4%
- * fades in the mop-up layer so the artwork lands complete, then the
- * prototype's scale-and-fade exit hands off to the intro machine.
+ * Drives the original textured artwork through one continuous handwriting
+ * timeline. The narrow pen tip leads a full-width coverage pass, with real
+ * pen-lift gaps between the calibrated strokes.
  */
 export function LoaderFx() {
   useGSAP(() => {
@@ -25,18 +24,21 @@ export function LoaderFx() {
       return;
     }
 
-    const pens = Array.from(root.querySelectorAll<SVGPathElement>("[data-pen]"));
-    const mop = root.querySelector<SVGRectElement>("[data-pen-mop]");
+    const tips = Array.from(
+      root.querySelectorAll<SVGPathElement>("[data-pen-tip]"),
+    );
+    const fills = Array.from(
+      root.querySelectorAll<SVGPathElement>("[data-pen-fill]"),
+    );
     const pctEl = root.querySelector<HTMLElement>("[data-loader-pct]");
 
-    // Constant pen speed: weight each stroke by its true length.
-    const lens = pens.map((p) => p.getTotalLength());
-    const total = lens.reduce((a, b) => a + b, 0) || 1;
-    const starts: number[] = [];
-    lens.reduce((acc, l, i) => {
-      starts[i] = acc;
-      return acc + l;
-    }, 0);
+    const segments = tips.map((path) => ({
+      draw: Math.max(
+        path.getTotalLength() / Number(path.dataset.penSpeed ?? 1),
+        42,
+      ),
+      lift: Number(path.dataset.penLift ?? 0),
+    }));
 
     let lastPct = -1;
     let finished = false;
@@ -44,24 +46,29 @@ export function LoaderFx() {
     requestAnimationFrame(() => {
       document.fonts.ready.then(() => orchestrator.set("fonts", 1));
     });
-    // the artwork itself gates the 'textures' task
+    // The revealed artwork itself gates the textures task.
     const artImg = new Image();
     artImg.onload = () => orchestrator.set("textures", 1);
     artImg.onerror = () => orchestrator.set("textures", 1);
     artImg.src = "/loader/by-jiewen-loader.webp";
 
     const paint = (d: number) => {
-      const penDist = d * total;
-      for (let i = 0; i < pens.length; i++) {
-        const local = Math.min(1, Math.max(0, (penDist - starts[i]) / lens[i]));
-        pens[i].style.strokeDashoffset = String(1 - local);
+      const localProgress = mapHandwritingProgress(d, segments);
+      for (let i = 0; i < tips.length; i++) {
+        const local = localProgress[i];
+        tips[i].style.strokeDashoffset = String(1 - local);
+
+        const coverage = Math.min(
+          1,
+          Math.max(0, (local - 0.055) / 0.945),
+        );
+        const fill = fills[i];
+        if (fill) fill.style.strokeDashoffset = String(1 - coverage);
       }
-      if (mop) mop.setAttribute("opacity", String(d > 0.92 ? (d - 0.92) / 0.08 : 0));
     };
 
     const finishSeq = () => {
       gsap.ticker.remove(tick);
-      paint(1);
       if (pctEl) pctEl.textContent = "100";
       root.setAttribute("aria-valuenow", "100");
       const skipping = orchestrator.skipped;
