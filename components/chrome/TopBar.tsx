@@ -4,7 +4,7 @@ const NAV = [
   ["TRAJECTORY", "#trajectory"],
   ["EXPERIENCE", "#experience"],
   ["LEADERSHIP", "#leadership"],
-  ["SIGNAL", "#signal"],
+  ["AWARDS", "#awards"],
   ["STACK", "#stack"],
   ["CONTACT", "#contact"],
 ] as const;

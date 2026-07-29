@@ -199,12 +199,12 @@ function Leadership() {
 
 /* ---------------------------------------------------------------- 04 ---- */
 
-function Signal() {
+function Awards() {
   return (
-    <Band id="signal">
-      <BackTicker word="SIGNAL" posClass="top-[6%]" />
-      {/* the square becomes the missing A */}
-      <GapTitle text="SIGNAL" gapIndex={4} index="04 — proof" window="mid" className="relative z-10" />
+    <Band id="awards">
+      <BackTicker word="AWARDS" posClass="top-[6%]" />
+      {/* the square becomes the missing second A */}
+      <GapTitle text="AWARDS" gapIndex={2} index="04 — proof" window="mid" className="relative z-10" />
 
       <ul className="relative z-10 mt-20">
         {awards.map((a, i) => (
@@ -346,8 +346,7 @@ function Contact() {
       </div>
 
       <p className="lbl mt-24 text-center opacity-50">
-        DESIGNED &amp; ENGINEERED BY JIEWEN HUANG — NEXT.JS · THREE.JS · GSAP · ©{" "}
-        {new Date().getFullYear()}
+        DESIGNED &amp; ENGINEERED BY JIEWEN HUANG · © {new Date().getFullYear()}
       </p>
       <p className="sr-only">{colophon}</p>
     </Band>
@@ -364,7 +363,7 @@ export function Resume() {
       <Trajectory />
       <ExperienceHorizontal />
       <Leadership />
-      <Signal />
+      <Awards />
       <Stack />
       <Contact />
     </main>
