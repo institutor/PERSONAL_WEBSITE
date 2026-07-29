@@ -26,6 +26,7 @@ export function LoaderFx() {
     }
 
     const pens = Array.from(root.querySelectorAll<SVGPathElement>("[data-pen]"));
+    const halos = Array.from(root.querySelectorAll<SVGPathElement>("[data-pen-halo]"));
     const mop = root.querySelector<SVGRectElement>("[data-pen-mop]");
     const pctEl = root.querySelector<HTMLElement>("[data-loader-pct]");
 
@@ -54,7 +55,9 @@ export function LoaderFx() {
       const penDist = d * total;
       for (let i = 0; i < pens.length; i++) {
         const local = Math.min(1, Math.max(0, (penDist - starts[i]) / lens[i]));
-        pens[i].style.strokeDashoffset = String(1 - local);
+        const offset = String(1 - local);
+        pens[i].style.strokeDashoffset = offset;
+        if (halos[i]) halos[i].style.strokeDashoffset = offset;
       }
       if (mop) mop.setAttribute("opacity", String(d > 0.92 ? (d - 0.92) / 0.08 : 0));
     };

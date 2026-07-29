@@ -47,37 +47,40 @@ export function LoaderOverlay() {
         focusable="false"
       >
         <defs>
-          {/* Soft pen edge WITHOUT dimming: blur softens the stroke boundary,
-              then a steep transfer pushes the mask back to full white — the
-              luminance mask stays 100% opaque everywhere but a ~2px edge.
-              (Plain blur alone made mid-write art translucent, which then
-              "popped" to full opacity when the mop-up landed.) */}
-          <filter id="penblur" x="-5%" y="-12%" width="110%" height="124%">
-            <feGaussianBlur stdDeviation="4" />
-            <feComponentTransfer>
-              <feFuncR type="linear" slope="4" intercept="-1" />
-              <feFuncG type="linear" slope="4" intercept="-1" />
-              <feFuncB type="linear" slope="4" intercept="-1" />
-              <feFuncA type="linear" slope="4" intercept="-1" />
-            </feComponentTransfer>
-          </filter>
+          {/* NO filter here — filters on animating masks get re-rasterized at
+              degraded quality mid-animation (the "blurry until done" bug).
+              The soft pen edge is pure geometry instead: each stroke is a
+              half-opacity halo pair under a full-opacity core. */}
           <mask id="penmask" maskUnits="userSpaceOnUse" x="0" y="0" width="1904" height="826">
-            <g filter="url(#penblur)">
-              {PEN.map((p, i) => (
-                <path
-                  key={i}
-                  d={p.d}
-                  pathLength={1}
-                  fill="none"
-                  stroke="#fff"
-                  strokeWidth={p.w}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  style={{ strokeDasharray: "1 1.06", strokeDashoffset: 1 }}
-                  data-pen
-                />
-              ))}
-            </g>
+            {PEN.map((p, i) => (
+              <path
+                key={`h${i}`}
+                d={p.d}
+                pathLength={1}
+                fill="none"
+                stroke="#fff"
+                strokeOpacity={0.45}
+                strokeWidth={p.w + 22}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ strokeDasharray: "1 1.06", strokeDashoffset: 1 }}
+                data-pen-halo
+              />
+            ))}
+            {PEN.map((p, i) => (
+              <path
+                key={i}
+                d={p.d}
+                pathLength={1}
+                fill="none"
+                stroke="#fff"
+                strokeWidth={p.w}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ strokeDasharray: "1 1.06", strokeDashoffset: 1 }}
+                data-pen
+              />
+            ))}
             <rect width="1904" height="826" fill="#fff" opacity={0} data-pen-mop />
           </mask>
         </defs>
