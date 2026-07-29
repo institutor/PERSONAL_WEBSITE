@@ -26,7 +26,6 @@ export function LoaderFx() {
     }
 
     const pens = Array.from(root.querySelectorAll<SVGPathElement>("[data-pen]"));
-    const wides = Array.from(root.querySelectorAll<SVGPathElement>("[data-pen-wide]"));
     const mop = root.querySelector<SVGRectElement>("[data-pen-mop]");
     const pctEl = root.querySelector<HTMLElement>("[data-loader-pct]");
 
@@ -56,9 +55,6 @@ export function LoaderFx() {
       for (let i = 0; i < pens.length; i++) {
         const local = Math.min(1, Math.max(0, (penDist - starts[i]) / lens[i]));
         pens[i].style.strokeDashoffset = String(1 - local);
-        // the wide coverage stroke trails the tip, converging at the end
-        const wide = Math.min(1, Math.max(0, local * 1.1 - 0.1));
-        if (wides[i]) wides[i].style.strokeDashoffset = String(1 - wide);
       }
       if (mop) mop.setAttribute("opacity", String(d > 0.92 ? (d - 0.92) / 0.08 : 0));
     };
