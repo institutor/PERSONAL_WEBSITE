@@ -329,6 +329,27 @@ function Contact() {
         </a>
       </div>
 
+      {/* the only named profile links on the page — the fixed bar keeps
+          compact marks, so these stay quiet and let RESUME carry the weight */}
+      <div className="mt-10 flex justify-center gap-10" data-reveal>
+        <a
+          className="lbl underline decoration-1 underline-offset-[6px] opacity-70 transition-opacity hover:opacity-100"
+          href={identity.links.github}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          GITHUB ↗
+        </a>
+        <a
+          className="lbl underline decoration-1 underline-offset-[6px] opacity-70 transition-opacity hover:opacity-100"
+          href={identity.links.linkedin}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          LINKEDIN ↗
+        </a>
+      </div>
+
       <div className="mt-20 text-center" data-reveal data-resume-glide>
         <a
           href={identity.links.resumePdf}
