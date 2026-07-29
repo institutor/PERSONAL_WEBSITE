@@ -329,7 +329,7 @@ function Contact() {
         </a>
       </div>
 
-      <div className="mt-20 text-center" data-reveal>
+      <div className="mt-20 text-center" data-reveal data-resume-glide>
         <a
           href={identity.links.resumePdf}
           className="display inline-flex items-baseline gap-4 text-[clamp(3rem,9vw,7.5rem)] transition-opacity hover:opacity-85"

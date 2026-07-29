@@ -95,6 +95,24 @@ export function ScrollFx() {
         );
       }
 
+      /* ---- finale RESUME: rests slightly left of center; reaching the
+             very end of the page sends it gliding to dead center — a
+             delayed tween, deliberately NOT scrubbed to the scrollbar ---- */
+      const glide = document.querySelector<HTMLElement>("[data-resume-glide]");
+      if (glide) {
+        const off = () => -Math.min(120, window.innerWidth * 0.07);
+        gsap.set(glide, { x: off() });
+        ScrollTrigger.create({
+          trigger: glide.closest("[data-band]") ?? glide,
+          start: "bottom bottom+=6",
+          invalidateOnRefresh: true,
+          onEnter: () =>
+            gsap.to(glide, { x: 0, duration: 1.1, ease: "power3.inOut", delay: 0.25, overwrite: "auto" }),
+          onLeaveBack: () =>
+            gsap.to(glide, { x: off, duration: 0.9, ease: "power3.inOut", delay: 0.1, overwrite: "auto" }),
+        });
+      }
+
       /* ---- gap-titles: invisible → letters slide up from their own spots
              at varying speeds, assembling as you scroll (scrubbed) ---- */
       for (const t of gsap.utils.toArray<HTMLElement>("[data-title]")) {
