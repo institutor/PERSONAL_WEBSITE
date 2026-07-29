@@ -1,17 +1,14 @@
-import { LETTERING } from "@/lib/generated/lettering-paths";
+import Image from "next/image";
 import { LoaderFx } from "./LoaderFx";
 
 /**
- * The loading screen (v3 mechanics, inverted colorway): bone paper with
- * "by Jiewen" drawn in INK, stroke by stroke, in sync with REAL load
- * progress; a dimmed-ink checkmark strikes through when ready — then the
- * paper fades to reveal the ink site (paper → void).
- *
- * Server component. Strokes use pathLength=1 normalization so their hidden
- * state is baked into SSR markup — nothing flashes before hydration.
+ * Volumetric Inkfield preloader (from the original prototype, recolored):
+ * ink background with two soft bone glows — the only gradient on the whole
+ * site, loading only — and the ORIGINAL handmade "by Jiewen" artwork
+ * (check-swoosh included) revealed left→right in sync with REAL progress.
+ * Exit: slight scale-and-fade, per the prototype.
  */
 export function LoaderOverlay() {
-  const art = LETTERING.signature;
   return (
     <div
       data-loader
@@ -20,56 +17,27 @@ export function LoaderOverlay() {
       aria-valuemax={100}
       aria-valuenow={0}
       aria-label="Loading portfolio"
-      className="fixed inset-0 z-[80] flex items-center justify-center bg-bone text-ink"
+      className="fixed inset-0 z-[80] flex items-center justify-center text-bone"
+      style={{
+        background:
+          "radial-gradient(circle at 30% 25%, rgba(232,227,216,0.13), transparent 32%), radial-gradient(circle at 72% 66%, rgba(232,227,216,0.07), transparent 36%), var(--ink)",
+      }}
     >
-      <div className="relative">
-        <svg
-          viewBox={`0 0 ${art.w} ${art.h}`}
-          className="w-64 sm:w-80"
-          aria-hidden="true"
-          focusable="false"
-        >
-          {art.letters.map((letter, li) =>
-            letter.frames[0].map((d, pi) => (
-              <path
-                key={`${li}-${pi}`}
-                d={d}
-                pathLength={1}
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={art.sw * 0.8}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                style={{ strokeDasharray: "1 1.06", strokeDashoffset: 1 }}
-                data-sig-path
-              />
-            ))
-          )}
-        </svg>
+      <Image
+        src="/loader/by-jiewen-loader.webp"
+        alt=""
+        aria-hidden="true"
+        width={1904}
+        height={826}
+        priority
+        unoptimized
+        data-loader-art
+        className="w-[min(72%,620px)] select-none"
+        style={{ clipPath: "inset(0 100% 0 0)" }}
+      />
 
-        {/* the checkmark runs THROUGH the signature */}
-        <svg
-          viewBox="0 0 120 70"
-          className="absolute left-1/2 top-1/2 w-40 -translate-x-1/2 -translate-y-[55%] text-ink/60 sm:w-52"
-          aria-hidden="true"
-          focusable="false"
-        >
-          <path
-            d="M12 38 L44 62 L108 10"
-            pathLength={1}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={5}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            style={{ strokeDasharray: "1 1.06", strokeDashoffset: 1 }}
-            data-check-path
-          />
-        </svg>
-      </div>
-
-      <p className="lbl absolute bottom-8 left-6 opacity-70" data-loader-label>
-        Initializing
+      <p className="lbl absolute bottom-8 left-6 opacity-60" data-loader-label>
+        Drawing the page / preparing the work
       </p>
       <p className="absolute bottom-8 right-6 font-mono text-xs tracking-[0.3em] opacity-70">
         <span data-loader-pct style={{ fontVariantNumeric: "tabular-nums" }}>

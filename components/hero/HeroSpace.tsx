@@ -41,8 +41,7 @@ export default function HeroSpace() {
       return;
     }
 
-    orchestrator.set("chunk", 1);
-    orchestrator.set("textures", 1); // no textures in this design
+    orchestrator.set("chunk", 1); // 'textures' now belongs to the loader artwork
 
     let killed = false;
     let active = true;

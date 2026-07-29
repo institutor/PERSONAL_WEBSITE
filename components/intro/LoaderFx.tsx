@@ -5,9 +5,10 @@ import { useIntroStore } from "@/lib/intro-store";
 import { orchestrator } from "@/lib/load-orchestrator";
 
 /**
- * Drives the loader: writes orchestrator display progress onto the signature
- * strokes (pathLength-normalized, sequential), updates the % readout, then
- * plays checkmark → fade → hands off to the intro phase machine.
+ * Drives the Volumetric Inkfield loader: the handmade artwork's left→right
+ * clip reveal is written from the orchestrator's smoothed display value
+ * (the built-in check-swoosh lands exactly at 100%), then the prototype's
+ * scale-and-fade exit hands off to the intro phase machine.
  */
 export function LoaderFx() {
   useGSAP(() => {
@@ -23,23 +24,34 @@ export function LoaderFx() {
       return;
     }
 
-    const paths = gsap.utils.toArray<SVGPathElement>("[data-sig-path]");
+    const art = root.querySelector<HTMLImageElement>("[data-loader-art]");
     const pctEl = root.querySelector<HTMLElement>("[data-loader-pct]");
-    const n = paths.length;
     let lastPct = -1;
     let finished = false;
 
-    // The loader owns the font task (rAF-wrapped so preloads actually started).
+    // The loader owns fonts + its own artwork ('textures' task).
     requestAnimationFrame(() => {
       document.fonts.ready.then(() => orchestrator.set("fonts", 1));
     });
+    if (art) {
+      const artDone = () => orchestrator.set("textures", 1);
+      if (art.complete) {
+        art.decode().then(artDone, artDone);
+      } else {
+        art.addEventListener("load", artDone, { once: true });
+        art.addEventListener("error", artDone, { once: true });
+      }
+    } else {
+      orchestrator.set("textures", 1);
+    }
 
     const finishSeq = () => {
       gsap.ticker.remove(tick);
-      for (const p of paths) p.style.strokeDashoffset = "0";
+      if (art) art.style.clipPath = "inset(0 0% 0 0)";
       if (pctEl) pctEl.textContent = "100";
       root.setAttribute("aria-valuenow", "100");
       const skipping = orchestrator.skipped;
+      // the prototype's exit: slight scale up + fade
       gsap
         .timeline({
           onComplete: () => {
@@ -47,20 +59,19 @@ export function LoaderFx() {
             useIntroStore.getState().setPhase(skipping ? "skipped" : "reveal");
           },
         })
-        .to("[data-check-path]", {
-          strokeDashoffset: 0,
-          duration: skipping ? 0.15 : 0.45,
+        .to(root, {
+          scale: 1.035,
+          autoAlpha: 0,
+          duration: skipping ? 0.2 : 0.6,
           ease: "power2.inOut",
-        })
-        .to(root, { autoAlpha: 0, duration: skipping ? 0.2 : 0.55, ease: "power2.inOut" }, skipping ? "+=0.05" : "+=0.3");
+          delay: skipping ? 0 : 0.35,
+          transformOrigin: "50% 50%",
+        });
     };
 
     const tick = (_time: number, deltaMS: number) => {
       const d = orchestrator.display(deltaMS / 1000);
-      for (let i = 0; i < n; i++) {
-        const local = Math.min(1, Math.max(0, d * n - i));
-        paths[i].style.strokeDashoffset = String(1 - local);
-      }
+      if (art) art.style.clipPath = `inset(0 ${((1 - d) * 100).toFixed(2)}% 0 0)`;
       const p100 = Math.min(100, Math.round(d * 100));
       if (p100 !== lastPct && pctEl) {
         pctEl.textContent = String(p100).padStart(3, "0");
