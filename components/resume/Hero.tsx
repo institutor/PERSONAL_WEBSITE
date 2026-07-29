@@ -31,9 +31,14 @@ export function Hero() {
           </span>
         </span>
 
-        {/* the divider — animated, professional */}
-        <span className="my-4 block sm:my-6" data-hero-divider>
+        {/* the divider — animated, professional. The square actor is born here. */}
+        <span className="relative my-4 block sm:my-6" data-hero-divider>
           <Sawtooth color="volt" height={26} />
+          <span
+            data-sq-slot
+            className="pointer-events-none absolute -top-10 right-[7%] h-6 w-6"
+            aria-hidden="true"
+          />
         </span>
 
         {/* JIEWEN — bottom-right, bigger, bleeding off the right edge */}

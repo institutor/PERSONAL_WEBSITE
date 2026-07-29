@@ -3,18 +3,52 @@
 import { ScrollTrigger, gsap, useGSAP } from "@/lib/gsap";
 
 /**
- * The scroll instrument (motion-study #11-15):
- *  - masked rises: display rows surface from behind band/divider edges
- *  - differential horizontal travel on broken-word rows (scrubbed)
- *  - depth parallax on numerals + pinned shapes
- *  - sawtooth marquees run continuously; scroll velocity spins them faster
- * Everything is created synchronously inside useGSAP → StrictMode-safe.
+ * The scroll instrument, v2 — built around the reference's actual motion:
+ *
+ *  - [data-scrub-rise] — large text rises WITH the scroll (scrubbed, not
+ *    triggered), each element in its own timing window: "early" moves the
+ *    moment it's visible, "mid"/"late" only start partway up the viewport.
+ *  - [data-sweep] — huge lines crossing the screen in opposite directions.
+ *  - [data-travel] — broken-word rows drifting against each other.
+ *  - [data-hsection]/[data-htrack] — the pinned horizontal chapter: vertical
+ *    scroll becomes sideways travel, then releases back to vertical.
+ *  - [data-knock]/[data-knock-letter] — the BUILD "I" slides up out of the
+ *    word (the square actor slots into the gap).
+ *  - [data-driftx] — ledger rows sliding in from the right at staggered
+ *    windows; [data-depth] parallax; sawtooth marquees with velocity.
  */
+const WINDOWS: Record<string, [string, string]> = {
+  early: ["top bottom", "top 35%"],
+  mid: ["top 80%", "top 25%"],
+  late: ["top 55%", "top 8%"],
+};
+
 export function ScrollFx() {
   useGSAP(() => {
     const mm = gsap.matchMedia();
 
     mm.add("(prefers-reduced-motion: no-preference)", () => {
+      /* ---- pinned horizontal chapter (first: it owns layout) ---- */
+      const hs = document.querySelector<HTMLElement>("[data-hsection]");
+      const track = hs?.querySelector<HTMLElement>("[data-htrack]");
+      if (hs && track) {
+        gsap.to(track, {
+          x: () => -(track.scrollWidth - window.innerWidth),
+          ease: "none",
+          scrollTrigger: {
+            trigger: hs,
+            start: "top top",
+            end: () => "+=" + (track.scrollWidth - window.innerWidth),
+            scrub: 0.4,
+            pin: true,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+            refreshPriority: 10,
+          },
+        });
+      }
+      const inTrack = (el: Element) => !!el.closest("[data-htrack]");
+
       /* ---- sawtooth marquees + velocity coupling ---- */
       const sawTweens: gsap.core.Tween[] = [];
       for (const el of gsap.utils.toArray<HTMLElement>("[data-saw]")) {
@@ -22,6 +56,7 @@ export function ScrollFx() {
         sawTweens.push(gsap.to(el, { x: dir, duration: 2.8, ease: "none", repeat: -1 }));
       }
       const speed = { target: 1 };
+      let decay: (() => void) | null = null;
       if (sawTweens.length) {
         ScrollTrigger.create({
           start: 0,
@@ -30,22 +65,54 @@ export function ScrollFx() {
             speed.target = Math.min(4, 1 + Math.abs(self.getVelocity()) / 900);
           },
         });
-        const decay = () => {
+        decay = () => {
           speed.target = Math.max(1, speed.target * 0.96);
           const current = sawTweens[0].timeScale();
           const next = current + (speed.target - current) * 0.12;
           for (const t of sawTweens) t.timeScale(next);
         };
         gsap.ticker.add(decay);
-        // ticker cleanup rides on the matchMedia context
-        return () => gsap.ticker.remove(decay);
       }
-    });
 
-    mm.add("(prefers-reduced-motion: no-preference)", () => {
-      /* ---- masked rises (hero letters handled by HeroSpace) ---- */
+      /* ---- scrubbed rises with staggered timing windows ---- */
+      for (const el of gsap.utils.toArray<HTMLElement>("[data-scrub-rise]")) {
+        if (inTrack(el)) continue;
+        const [start, end] = WINDOWS[el.dataset.window ?? "early"];
+        gsap.fromTo(
+          el,
+          { yPercent: 65, autoAlpha: 0.001 },
+          {
+            yPercent: 0,
+            autoAlpha: 1,
+            ease: "none",
+            scrollTrigger: { trigger: el, start, end, scrub: 0.35 },
+          }
+        );
+      }
+
+      /* ---- opposing full-screen sweeps ---- */
+      for (const el of gsap.utils.toArray<HTMLElement>("[data-sweep]")) {
+        const amp = parseFloat(el.dataset.sweep ?? "0");
+        if (!amp) continue;
+        gsap.fromTo(
+          el,
+          { xPercent: amp },
+          {
+            xPercent: -amp,
+            ease: "none",
+            scrollTrigger: {
+              trigger: el.closest("[data-band]") ?? el,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 0.35,
+            },
+          }
+        );
+      }
+
+      /* ---- broken-word masked rises + differential travel ---- */
       for (const el of gsap.utils.toArray<HTMLElement>("[data-rise]")) {
-        if (el.closest('[data-section="hero"]')) continue;
+        if (el.closest('[data-section="hero"]') || inTrack(el)) continue;
         gsap.set(el, { yPercent: 108 });
         ScrollTrigger.create({
           trigger: el.parentElement,
@@ -54,11 +121,9 @@ export function ScrollFx() {
           onEnter: () => gsap.to(el, { yPercent: 0, duration: 0.95, ease: "power4.out" }),
         });
       }
-
-      /* ---- differential horizontal travel ---- */
       for (const el of gsap.utils.toArray<HTMLElement>("[data-travel]")) {
         const t = parseFloat(el.dataset.travel ?? "0");
-        if (!t) continue;
+        if (!t || inTrack(el)) continue;
         gsap.fromTo(
           el,
           { xPercent: t },
@@ -75,10 +140,25 @@ export function ScrollFx() {
         );
       }
 
-      /* ---- depth parallax (numerals, shapes) ---- */
+      /* ---- ledger rows drifting in from the right, staggered ---- */
+      gsap.utils.toArray<HTMLElement>("[data-driftx]").forEach((el, i) => {
+        const [start, end] = WINDOWS[el.dataset.window ?? (i % 3 === 0 ? "early" : i % 3 === 1 ? "mid" : "late")];
+        gsap.fromTo(
+          el,
+          { x: () => window.innerWidth * 0.3, autoAlpha: 0.001 },
+          {
+            x: 0,
+            autoAlpha: 1,
+            ease: "none",
+            scrollTrigger: { trigger: el, start, end, scrub: 0.35 },
+          }
+        );
+      });
+
+      /* ---- depth parallax ---- */
       for (const el of gsap.utils.toArray<HTMLElement>("[data-depth]")) {
         const d = parseFloat(el.dataset.depth ?? "0");
-        if (!d) continue;
+        if (!d || inTrack(el)) continue;
         gsap.fromTo(
           el,
           { y: d * 110 },
@@ -95,17 +175,39 @@ export function ScrollFx() {
         );
       }
 
-      /* ---- quiet fade-ups for content blocks ---- */
-      const reveals = gsap.utils.toArray<HTMLElement>("[data-reveal]");
-      gsap.set(reveals, { autoAlpha: 0, y: 16 });
-      ScrollTrigger.batch(reveals, {
-        start: "top 88%",
-        once: true,
-        onEnter: (els) =>
-          gsap.to(els, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power3.out", stagger: 0.06 }),
-      });
+      /* ---- the knockout: BUILD's "I" slides up past the others ---- */
+      const knock = document.querySelector<HTMLElement>("[data-knock]");
+      const knockLetter = document.querySelector<HTMLElement>("[data-knock-letter]");
+      if (knock && knockLetter) {
+        gsap.fromTo(
+          knockLetter,
+          { yPercent: 0, autoAlpha: 1 },
+          {
+            yPercent: -165,
+            autoAlpha: 0,
+            ease: "power1.in",
+            scrollTrigger: { trigger: knock, start: "top 78%", end: "top 42%", scrub: 0.35 },
+          }
+        );
+      }
+
+      /* ---- quiet fades for small matter ---- */
+      const reveals = gsap.utils.toArray<HTMLElement>("[data-reveal]").filter((el) => !inTrack(el));
+      if (reveals.length) {
+        gsap.set(reveals, { autoAlpha: 0, y: 16 });
+        ScrollTrigger.batch(reveals, {
+          start: "top 88%",
+          once: true,
+          onEnter: (els) =>
+            gsap.to(els, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power3.out", stagger: 0.06 }),
+        });
+      }
 
       document.fonts.ready.then(() => ScrollTrigger.refresh());
+
+      return () => {
+        if (decay) gsap.ticker.remove(decay);
+      };
     });
   });
 

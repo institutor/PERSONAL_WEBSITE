@@ -124,6 +124,12 @@ html[data-intro="skip"] [data-loader] {
   font-size: clamp(4rem, 9vw, 8.5rem);
 }
 
+/* Hollow display type — for the opposing sweep lines */
+.outline-text {
+  -webkit-text-stroke: 1.5px var(--bone);
+  color: transparent;
+}
+
 /* Outlined pill (external links) */
 .pill {
   border: 1px solid currentColor;

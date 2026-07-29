@@ -2,7 +2,8 @@ import { Shapes } from "@/components/fx/Shapes";
 
 interface BandProps {
   id: string;
-  tone: "bone" | "ink";
+  /** Minimalist v3: every band is black. */
+  tone?: "bone" | "ink";
   /** Giant corner numeral, e.g. "02". */
   index?: string;
   /** Parenthetical micro-label, e.g. "( shipped )". */
@@ -14,13 +15,13 @@ interface BandProps {
   children: React.ReactNode;
 }
 
-/** Full-viewport-feeling section band (motion-study #1, #4, #5, #6). */
-export function Band({ id, tone, index, paren, topRow, shapes, className, children }: BandProps) {
+/** Section band (motion-study #1, #4, #5, #6) — all-ink in the v3 direction. */
+export function Band({ id, tone = "ink", index, paren, topRow, shapes, className, children }: BandProps) {
   return (
     <section
       id={id}
       data-band
-      className={`band-${tone} relative px-4 py-24 sm:px-6 sm:py-28 ${className ?? ""}`}
+      className={`band-${tone} relative overflow-hidden px-4 py-24 sm:px-6 sm:py-28 ${className ?? ""}`}
     >
       {shapes && <Shapes variant={shapes} />}
 

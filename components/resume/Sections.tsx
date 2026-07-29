@@ -6,118 +6,66 @@ import {
   identity,
   journey,
   leadership,
-  liveStack,
   programs,
   skills,
+  liveStack,
   teaching,
 } from "@/lib/resume-data";
 import { Band } from "./Band";
 import { BrokenWord } from "./BrokenWord";
 import { Hero } from "./Hero";
 
-/* ------------------------------------------------------------------ 01 -- */
+/* -------------------------------------------------------------- sweeps -- */
+
+function Sweeps() {
+  return (
+    <section data-band className="band-ink relative overflow-hidden py-36 sm:py-44">
+      <p
+        data-sweep="34"
+        className="display relative z-10 whitespace-nowrap text-[clamp(4rem,13vw,12rem)]"
+        aria-hidden="true"
+      >
+        BUILDS THINGS THAT SHIP
+      </p>
+      <div className="my-8">
+        <Sawtooth color="volt" height={14} reverse />
+      </div>
+      <p
+        data-sweep="-38"
+        className="display outline-text relative z-10 whitespace-nowrap text-right text-[clamp(4rem,13vw,12rem)]"
+        aria-hidden="true"
+      >
+        BROOKLYN → MORNINGSIDE HEIGHTS
+      </p>
+      <p className="sr-only">Builds things that ship. Brooklyn to Morningside Heights.</p>
+
+      {/* square actor waypoint: drifts through the gap between the lines */}
+      <span data-sq-slot className="pointer-events-none absolute left-[12%] top-[46%] h-10 w-10" aria-hidden="true" />
+    </section>
+  );
+}
+
+/* ---------------------------------------------------------------- 01 ---- */
 
 function Trajectory() {
+  const windows = ["early", "mid", "late"] as const;
   return (
-    <Band
-      id="trajectory"
-      tone="bone"
-      index="01"
-      paren="( the path )"
-      topRow={["STUYVESANT '26", "QUESTBRIDGE MATCH", "COLUMBIA '30"]}
-      shapes="a"
-    >
-      <p className="statement max-w-3xl text-[clamp(2rem,4.6vw,4rem)]" data-reveal>
-        Stuyvesant to Columbia, the long way up.
-      </p>
-
-      <div className="mt-20 grid gap-12 sm:grid-cols-3">
-        {journey.map((stop, i) => (
-          <div key={stop.title} data-reveal>
-            <p className="lbl opacity-70">
-              0{i + 1} — {stop.note}
-            </p>
-            <p className="statement mt-3 text-2xl">{stop.title}</p>
-            <p className="bodycol mt-2 opacity-80">{stop.detail}</p>
-          </div>
-        ))}
-      </div>
-    </Band>
-  );
-}
-
-/* ------------------------------------------------------------------ 02 -- */
-
-function Experience() {
-  const featured = experience[0];
-  const rest = experience.slice(1);
-  return (
-    <Band
-      id="experience"
-      tone="ink"
-      index="02"
-      paren="( shipped )"
-      topRow={["ENGINEER", "2025 — PRESENT", "NEW YORK / SF"]}
-      shapes="b"
-    >
-      <BrokenWord
-        label="Experience"
-        rows={[
-          { text: "EXPE", bleed: "left", travel: 5 },
-          { text: "RIENCE", bleed: "right", travel: -5 },
-        ]}
+    <Band id="trajectory" index="01" paren="( the path )" shapes="a" className="min-h-svh">
+      {/* the actor grows huge behind these lines, then shrinks away */}
+      <span
+        data-sq-slot
+        className="pointer-events-none absolute right-[8%] top-[22%] h-[38vh] w-[38vh] opacity-0"
+        aria-hidden="true"
       />
 
-      {/* featured: the voltage panel with a diamond notch (motion-study #19) */}
-      <div className="relative mt-24 bg-volt px-6 py-10 text-bone sm:px-10 sm:py-12" data-reveal>
-        <div
-          aria-hidden="true"
-          className="absolute -top-3 left-1/2 h-6 w-6 -translate-x-1/2 rotate-45 bg-ink"
-        />
-        <div className="lbl flex flex-wrap justify-between gap-2 opacity-90">
-          <span>{featured.company}</span>
-          <span>{featured.role}</span>
-          <span>{featured.period}</span>
-        </div>
-        <p className="statement mt-8 max-w-3xl text-[clamp(1.6rem,3.4vw,3rem)]">
-          NaomiAI ELA — a K-8 reading-intervention platform, live for 190 students in the South
-          Bronx.
-        </p>
-        <div className="mt-8 flex flex-wrap gap-10">
-          {featured.bullets.slice(1).map((b, i) => (
-            <p key={i} className="bodycol opacity-90">
-              {b}
+      <div className="relative z-10 space-y-14 pt-8">
+        {journey.map((stop, i) => (
+          <div key={stop.title} data-scrub-rise data-window={windows[i]}>
+            <p className="lbl mb-2 opacity-60">
+              0{i + 1} — {stop.note}
             </p>
-          ))}
-        </div>
-        <dl className="mt-10 flex flex-wrap gap-x-14 gap-y-6 border-t border-bone/25 pt-6">
-          {featured.stats?.map((s) => (
-            <div key={s.label}>
-              <dt className="sr-only">{s.label}</dt>
-              <dd className="font-mono text-3xl" style={{ fontVariantNumeric: "tabular-nums" }}>
-                {s.value}
-              </dd>
-              <dd className="lbl mt-1 opacity-80">{s.label}</dd>
-            </div>
-          ))}
-        </dl>
-      </div>
-
-      <div className="mt-16 flex flex-col justify-between gap-12 sm:flex-row">
-        {rest.map((job, i) => (
-          <div key={job.company} className={i === 1 ? "sm:text-right" : undefined} data-reveal>
-            <p className="lbl opacity-70">
-              {job.period} — {job.location}
-            </p>
-            <p className="statement mt-2 text-2xl">{job.company}</p>
-            <p className="lbl mt-1 text-volt brightness-150">{job.role}</p>
-            <div className={`mt-4 space-y-3 ${i === 1 ? "sm:ml-auto" : ""}`}>
-              {job.bullets.map((b, bi) => (
-                <p key={bi} className={`bodycol opacity-80 ${i === 1 ? "sm:ml-auto" : ""}`}>
-                  {b}
-                </p>
-              ))}
-            </div>
+            <p className="display text-[clamp(2.8rem,7.5vw,7rem)]">{stop.title}</p>
+            <p className="bodycol mt-3 opacity-75">{stop.detail}</p>
           </div>
         ))}
       </div>
@@ -125,38 +73,121 @@ function Experience() {
   );
 }
 
-/* ------------------------------------------------------------------ 03 -- */
+/* ------------------------------------------------- 02 · horizontal ------ */
+
+function ExperienceHorizontal() {
+  const [naomi, fed10, o2] = experience;
+  return (
+    <section id="experience" data-band data-hsection className="band-ink relative overflow-hidden">
+      <div data-htrack className="flex h-svh w-max items-stretch">
+        {/* panel 0 — chapter head */}
+        <div className="relative flex w-[72vw] shrink-0 flex-col justify-center px-6 sm:px-10">
+          <p className="numeral absolute right-8 top-24" aria-hidden="true">
+            02
+          </p>
+          <p className="paren mb-6">( shipped )</p>
+          <p className="display text-[clamp(4rem,11vw,10rem)]">EXPE</p>
+          <div className="my-3 w-[70%]">
+            <Sawtooth color="volt" height={14} />
+          </div>
+          <p className="display -mr-2 text-right text-[clamp(4rem,11vw,10rem)]">RIENCE</p>
+          <p className="lbl mt-10 opacity-60">SCROLL — THE PAGE TURNS SIDEWAYS HERE →</p>
+          <span data-sq-slot className="pointer-events-none absolute bottom-[18%] right-[10%] h-8 w-8" aria-hidden="true" />
+        </div>
+
+        {/* panel 1 — NaomiAI (voltage) */}
+        <div className="relative m-6 flex w-[86vw] shrink-0 flex-col justify-center bg-volt px-8 text-bone sm:px-12">
+          <div className="lbl flex flex-wrap justify-between gap-2 opacity-90">
+            <span>{naomi.company}</span>
+            <span>{naomi.role}</span>
+            <span>{naomi.period}</span>
+          </div>
+          <p className="statement mt-8 max-w-3xl text-[clamp(1.8rem,3.6vw,3.4rem)]">
+            NaomiAI ELA — a K-8 reading-intervention platform, live for 190 students in the South
+            Bronx.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-10">
+            {naomi.bullets.slice(1).map((b, i) => (
+              <p key={i} className="bodycol opacity-90">
+                {b}
+              </p>
+            ))}
+          </div>
+          <dl className="mt-10 flex flex-wrap gap-x-14 gap-y-6 border-t border-bone/25 pt-6">
+            {naomi.stats?.map((s) => (
+              <div key={s.label}>
+                <dt className="sr-only">{s.label}</dt>
+                <dd className="font-mono text-3xl" style={{ fontVariantNumeric: "tabular-nums" }}>
+                  {s.value}
+                </dd>
+                <dd className="lbl mt-1 opacity-80">{s.label}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+
+        {/* panel 2 — Fed10 */}
+        <div className="relative flex w-[62vw] shrink-0 flex-col justify-center px-8 sm:px-12">
+          <p className="lbl opacity-60">
+            {fed10.period} — {fed10.location}
+          </p>
+          <p className="display mt-3 text-[clamp(2.4rem,5vw,4.5rem)]">{fed10.company}</p>
+          <p className="lbl mt-2 text-volt brightness-150">{fed10.role}</p>
+          <div className="mt-6 space-y-4">
+            {fed10.bullets.map((b, i) => (
+              <p key={i} className="bodycol opacity-80">
+                {b}
+              </p>
+            ))}
+          </div>
+        </div>
+
+        {/* panel 3 — O2NYC + tail */}
+        <div className="relative flex w-[62vw] shrink-0 flex-col justify-center border-l border-bone/15 px-8 sm:px-12">
+          <p className="lbl opacity-60">
+            {o2.period} — {o2.location}
+          </p>
+          <p className="display mt-3 text-[clamp(2.4rem,5vw,4.5rem)]">{o2.company}</p>
+          <p className="lbl mt-2 text-volt brightness-150">{o2.role}</p>
+          <div className="mt-6 space-y-4">
+            {o2.bullets.map((b, i) => (
+              <p key={i} className="bodycol opacity-80">
+                {b}
+              </p>
+            ))}
+          </div>
+          <p className="lbl mt-12 opacity-60">← BACK TO VERTICAL</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------------------------------------------------------------- 03 ---- */
 
 function Leadership() {
+  const windows = ["early", "mid", "late"] as const;
   return (
-    <Band
-      id="leadership"
-      tone="bone"
-      index="03"
-      paren="( teams )"
-      topRow={["STUYCAST", "STUDENT CAUCUS", "SCIENCE OLYMPIAD"]}
-      shapes="c"
-    >
-      <p className="statement max-w-3xl text-[clamp(2rem,4.6vw,4rem)]" data-reveal>
+    <Band id="leadership" index="03" paren="( teams )" shapes="c">
+      <p className="statement max-w-3xl text-[clamp(1.8rem,4vw,3.4rem)]" data-scrub-rise data-window="early">
         Someone has to sweat the details.
       </p>
-
-      <div className="mt-20 grid gap-12 md:grid-cols-3">
-        {leadership.map((entry) => (
-          <div key={entry.org} data-reveal>
+      <div className="mt-16 grid gap-12 md:grid-cols-3">
+        {leadership.map((entry, i) => (
+          <div key={entry.org} data-scrub-rise data-window={windows[i]}>
             <p className="statement text-2xl">{entry.org}</p>
-            <p className="lbl mt-1 text-volt">{entry.role}</p>
-            <p className="lbl mt-1 opacity-60">{entry.period}</p>
+            <p className="lbl mt-1 text-volt brightness-150">{entry.role}</p>
+            <p className="lbl mt-1 opacity-50">{entry.period}</p>
             <div className="mt-4 space-y-3">
-              {entry.bullets.map((b, i) => (
-                <p key={i} className="bodycol opacity-80">
+              {entry.bullets.map((b, bi) => (
+                <p key={bi} className="bodycol opacity-75">
                   {b}
                 </p>
               ))}
             </div>
-            {entry.note && <p className="bodycol mt-4 font-medium text-volt">— {entry.note}</p>}
+            {entry.note && <p className="bodycol mt-4 font-medium text-volt brightness-150">— {entry.note}</p>}
             {entry.org === "Science Olympiad" && (
-              <p className="lbl mt-4 opacity-70">MEDALS ×9 — YALE · COLUMBIA · BROWN</p>
+              <p className="lbl mt-4 opacity-60">MEDALS ×9 — YALE · COLUMBIA · BROWN</p>
             )}
           </div>
         ))}
@@ -165,36 +196,33 @@ function Leadership() {
   );
 }
 
-/* ------------------------------------------------------------------ 04 -- */
+/* ---------------------------------------------------------------- 04 ---- */
 
 function Signal() {
   return (
-    <Band
-      id="signal"
-      tone="ink"
-      index="04"
-      paren="( proof )"
-      topRow={["AWARDS", "PROGRAMS", "2023 — 2026"]}
-      shapes="a"
-    >
+    <Band id="signal" index="04" paren="( proof )" shapes="b">
+      <span
+        data-sq-slot
+        className="pointer-events-none absolute left-[6%] top-[30%] h-24 w-24"
+        aria-hidden="true"
+      />
       <BrokenWord
         label="Signal"
         rows={[
-          { text: "SIG", bleed: "left", travel: 4 },
-          { text: "NAL", bleed: "right", travel: -4 },
+          { text: "SIG", bleed: "left", travel: 26 },
+          { text: "NAL", bleed: "right", travel: -26 },
         ]}
       />
 
-      <ul className="mt-24">
-        {awards.map((a) => (
+      <ul className="relative z-10 mt-24">
+        {awards.map((a, i) => (
           <li
             key={a.title}
             className="flex items-baseline gap-6 border-t border-bone/15 py-4"
-            data-reveal
+            data-driftx
+            data-window={(["early", "mid", "late"] as const)[i % 3]}
           >
-            <span className="display w-24 shrink-0 text-2xl text-volt brightness-150">
-              {a.big ?? "—"}
-            </span>
+            <span className="display w-24 shrink-0 text-2xl text-volt brightness-150">{a.big ?? "—"}</span>
             <span className="statement min-w-0 flex-1 text-lg">
               {a.big ? a.detail : a.title}
               {!a.big && <span className="bodycol ml-3 inline opacity-60">{a.detail}</span>}
@@ -218,27 +246,20 @@ function Signal() {
   );
 }
 
-/* ------------------------------------------------------------------ 05 -- */
+/* ---------------------------------------------------------------- 05 ---- */
 
 function Stack() {
   return (
-    <Band
-      id="stack"
-      tone="bone"
-      index="05"
-      paren="( instruments )"
-      topRow={["LANGUAGES", "FRAMEWORKS", "PLATFORMS"]}
-      shapes="b"
-    >
-      <div className="space-y-10">
+    <Band id="stack" index="05" paren="( instruments )" shapes="a">
+      <div className="space-y-8">
         {Object.entries(skills).map(([group, items]) => (
           <div key={group} className="grid gap-4 sm:grid-cols-[200px_1fr]" data-reveal>
-            <p className="lbl pt-1.5 opacity-70">{group}</p>
+            <p className="lbl pt-1.5 opacity-60">{group}</p>
             <ul className="flex flex-wrap gap-2">
               {items.map((item) => {
                 const live = liveStack.includes(item);
                 return (
-                  <li key={item} className={`pill ${live ? "border-volt text-volt" : ""}`}>
+                  <li key={item} className={`pill ${live ? "border-volt text-volt brightness-150" : "opacity-80"}`}>
                     {live && <span aria-hidden="true">■ </span>}
                     {item}
                   </li>
@@ -249,13 +270,14 @@ function Stack() {
         ))}
       </div>
 
-      <p className="lbl mt-12 text-volt" data-reveal>
-        ■ = RENDERING THIS PAGE RIGHT NOW
+      <p className="lbl mt-10 text-volt brightness-150" data-reveal>
+        <span data-sq-slot className="mr-2 inline-block h-4 w-4 align-middle" aria-hidden="true" />= RENDERING
+        THIS PAGE RIGHT NOW
       </p>
 
-      <div className="mt-20 space-y-4">
+      <div className="mt-16 space-y-4">
         {teaching.map((t) => (
-          <p key={t.org} className="bodycol !max-w-xl opacity-80" data-reveal>
+          <p key={t.org} className="bodycol !max-w-xl opacity-75" data-reveal>
             <strong>
               {t.org} — {t.role}
             </strong>
@@ -267,38 +289,55 @@ function Stack() {
   );
 }
 
-/* ------------------------------------------------------------------ 06 -- */
+/* ---------------------------------------------------------------- 06 ---- */
 
 function Contact() {
   return (
-    <Band
-      id="contact"
-      tone="ink"
-      index="06"
-      paren="( say hi )"
-      topRow={["OPEN TO", "INTERNSHIPS", "SUMMER 2027"]}
-      shapes="c"
-      className="pb-36"
-    >
-      <BrokenWord
-        label="Let's build"
-        rows={[
-          { text: "LET'S", bleed: "left", travel: 5 },
-          { text: "BUILD", bleed: "right", travel: -5, glyphAt: 2 },
-        ]}
-      />
+    <Band id="contact" index="06" paren="( say hi )" shapes="c" className="pb-40">
+      <p className="display text-[clamp(2.4rem,6vw,5.5rem)]" data-scrub-rise data-window="early" aria-hidden="true">
+        LET&rsquo;S
+      </p>
 
-      <div className="mt-24 text-center">
+      {/* the knockout: the I slides up past the others; the square takes its place */}
+      <div className="relative" data-knock role="img" aria-label="Build">
+        <p className="display -ml-[0.04em] whitespace-nowrap text-[clamp(7rem,22vw,20rem)]" aria-hidden="true">
+          {"BUILD".split("").map((ch, i) =>
+            i === 2 ? (
+              <span key={i} className="relative inline-block w-[0.62em] text-center">
+                <span data-knock-letter className="inline-block will-change-transform">
+                  {ch}
+                </span>
+                {/* letter-sized landing pad for the square actor */}
+                <span
+                  data-sq-slot
+                  className="pointer-events-none absolute left-1/2 top-1/2 h-[0.58em] w-[0.58em] -translate-x-1/2 -translate-y-[54%]"
+                  aria-hidden="true"
+                />
+              </span>
+            ) : (
+              <span key={i} className="inline-block">
+                {ch}
+              </span>
+            )
+          )}
+        </p>
+      </div>
+
+      <div className="mt-16">
+        <Sawtooth color="volt" height={16} />
+      </div>
+
+      <div className="mt-20 text-center">
         <a
           href={`mailto:${identity.links.email}`}
-          className="statement break-all text-[clamp(1.4rem,4.2vw,3.6rem)] underline decoration-volt decoration-4 underline-offset-8 transition-opacity hover:opacity-80"
+          className="statement break-all text-[clamp(1.4rem,4vw,3.4rem)] underline decoration-volt decoration-4 underline-offset-8 transition-opacity hover:opacity-80"
           data-reveal
         >
           {identity.links.email}
         </a>
       </div>
 
-      <div className="mt-24 text-center" data-reveal>
+      <div className="mt-20 text-center" data-reveal>
         <a
           href={identity.links.resumePdf}
           className="display inline-flex items-baseline gap-4 text-[clamp(3rem,9vw,7.5rem)] transition-opacity hover:opacity-85"
@@ -314,11 +353,7 @@ function Contact() {
         </a>
       </div>
 
-      <div className="mt-20">
-        <Sawtooth color="volt" height={14} reverse />
-      </div>
-
-      <p className="lbl mt-10 text-center opacity-60">
+      <p className="lbl mt-24 text-center opacity-50">
         DESIGNED &amp; ENGINEERED BY JIEWEN HUANG — NEXT.JS · THREE.JS · GSAP · ©{" "}
         {new Date().getFullYear()}
       </p>
@@ -333,8 +368,9 @@ export function Resume() {
   return (
     <main id="resume-root">
       <Hero />
+      <Sweeps />
       <Trajectory />
-      <Experience />
+      <ExperienceHorizontal />
       <Leadership />
       <Signal />
       <Stack />
