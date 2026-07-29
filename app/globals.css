@@ -192,21 +192,22 @@ html[data-motion="on"] [data-rise] {
 }
 
 /* Gate disarms (:not(.tl-live)) the moment ScrollFx takes ownership —
-   a filled CSS animation would otherwise override gsap's inline opacity. */
+   a filled CSS animation would otherwise override gsap's inline transform.
+   Letters hide BELOW their own clipped line box — never via opacity. */
 html[data-motion="on"] [data-tl]:not(.tl-live) {
-  opacity: 0;
+  transform: translateY(115%);
   animation: tl-unhide 0.01s 3s forwards;
 }
 
 @keyframes tl-unhide {
   to {
-    opacity: 1;
+    transform: translateY(0);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   [data-tl] {
-    opacity: 1 !important;
+    transform: none !important;
     animation: none !important;
   }
 }

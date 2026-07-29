@@ -99,13 +99,12 @@ export function ScrollFx() {
         const letters = t.querySelectorAll<HTMLElement>("[data-tl]");
         letters.forEach((el, i) => {
           el.classList.add("tl-live"); // disarm the pre-hydration CSS gate
-          const dist = 70 + ((i * 53) % 65); // deterministic per-letter speed
+          const dist = 108 + ((i * 53) % 70); // deterministic per-letter speed
           gsap.fromTo(
             el,
-            { yPercent: dist, autoAlpha: 0 },
+            { yPercent: dist }, // fully opaque — clipped by the title's own box
             {
               yPercent: 0,
-              autoAlpha: 1,
               ease: "none",
               scrollTrigger: {
                 trigger: t.closest("[data-band]") ?? t,

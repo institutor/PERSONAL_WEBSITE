@@ -1,12 +1,13 @@
 /**
  * v6.1 title system:
  *
- *  - GapTitle: initially INVISIBLE. As you scroll, each letter slides up
- *    from its own starting offset (no mask — displaced from its natural
- *    position, not from the screen edge) at a slightly different speed,
- *    assembling into the word ([data-title]/[data-tl] scrub in ScrollFx).
- *    One letter is absent: a cap-height, baseline-aligned [data-sq-slot]
- *    that the page's single traveling square arrives to fill.
+ *  - GapTitle: letters are FULLY OPAQUE always — they emerge upward through
+ *    the bottom edge of the title's own line box (the paragraph clips its
+ *    overflow, so each letter "appears from the bottom of where it's
+ *    supposed to be"), each at a slightly different speed, scrubbed to
+ *    scroll ([data-title]/[data-tl] in ScrollFx). One letter is absent:
+ *    a cap-height, baseline-aligned [data-sq-slot] the traveling square
+ *    arrives to fill.
  *
  *  - BackTicker: colossal hollow line traveling across the band background.
  */
@@ -37,7 +38,7 @@ export function GapTitle({
           ( {index} )
         </p>
       )}
-      <p aria-hidden="true" className={`display whitespace-nowrap ${sizeClass}`}>
+      <p aria-hidden="true" className={`display overflow-hidden whitespace-nowrap ${sizeClass}`}>
         {text.split("").map((ch, i) =>
           i === gapIndex ? (
             /* the absent letter: cap-height square slot on the baseline */
