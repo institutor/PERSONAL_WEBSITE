@@ -34,10 +34,11 @@ export function SquareActor() {
 
     const measure = () => {
       const vh = window.innerHeight;
+      // shorter dwell → longer, lazier transits between letters
       marks = slotEls
         .map((el) => {
           const top = el.getBoundingClientRect().top + window.scrollY;
-          return { el, arrive: top - vh * 0.78, depart: top - vh * 0.18 };
+          return { el, arrive: top - vh * 0.68, depart: top - vh * 0.34 };
         })
         .sort((a, b) => a.arrive - b.arrive);
       // ranges must never overlap or the piecewise walk breaks
@@ -55,14 +56,15 @@ export function SquareActor() {
     const smooth = (t: number) => t * t * (3 - 2 * t);
     const state = { x: 0, y: 0, s: 1, r: 0, init: false };
 
-    const update = () => {
+    const update = (time: number) => {
       if (marks.length < 2) return;
       const y = window.scrollY;
 
       // piecewise: DWELL inside a mark's [arrive..depart], transit between
       let i = 0;
       while (i < marks.length - 1 && y > marks[i].depart) i++;
-      const a = marks[Math.max(0, y > marks[i].arrive ? i : i - 1)];
+      const ai = Math.max(0, y > marks[i].arrive ? i : i - 1);
+      const a = marks[ai];
       const b = marks[Math.min(marks.length - 1, y > marks[i].arrive ? i : i)];
       let t: number;
       if (y <= a.depart) {
@@ -74,9 +76,25 @@ export function SquareActor() {
 
       const ra = a.el.getBoundingClientRect();
       const rb = b.el.getBoundingClientRect();
-      const cx = gsap.utils.interpolate(ra.left + ra.width / 2, rb.left + rb.width / 2, t);
-      const cy = gsap.utils.interpolate(ra.top + ra.height / 2, rb.top + rb.height / 2, t);
+      let cx = gsap.utils.interpolate(ra.left + ra.width / 2, rb.left + rb.width / 2, t);
+      let cy = gsap.utils.interpolate(ra.top + ra.height / 2, rb.top + rb.height / 2, t);
       const size = gsap.utils.interpolate(ra.width, rb.width, t);
+
+      // free-floating transit: drift along a curved path, not a straight line
+      if (t > 0 && t < 1) {
+        const dx = rb.left - ra.left;
+        const dy = rb.top - ra.top;
+        const dist = Math.hypot(dx, dy) || 1;
+        const amp = Math.min(120, dist * 0.22) * (ai % 2 === 0 ? 1 : -1);
+        const arc = Math.sin(t * Math.PI);
+        cx += (-dy / dist) * amp * arc;
+        cy += (dx / dist) * amp * arc;
+      }
+
+      // gentle idle bob so it always feels afloat
+      const bob = Math.sin(time * 1.4 + ai * 1.7);
+      cy += bob * 5;
+      cx += Math.cos(time * 0.9 + ai) * 3;
 
       const tx = cx - BASE / 2;
       const ty = cy - BASE / 2;
@@ -88,15 +106,15 @@ export function SquareActor() {
         state.s = ts;
         state.init = true;
       }
-      const k = 0.14; // damping — the "alive" feel
+      const k = 0.075; // soft damping — lazy, fluid follow
       const prevX = state.x;
       state.x += (tx - state.x) * k;
       state.y += (ty - state.y) * k;
       state.s += (ts - state.s) * k;
       // spin with horizontal travel, settle back to square
       const vel = state.x - prevX;
-      state.r += vel * 0.22;
-      state.r *= 0.92;
+      state.r += vel * 0.18;
+      state.r *= 0.94;
 
       gsap.set(sq, { x: state.x, y: state.y, scale: state.s, rotation: state.r });
     };

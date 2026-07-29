@@ -56,7 +56,7 @@ export function LoaderFx() {
         const local = Math.min(1, Math.max(0, (penDist - starts[i]) / lens[i]));
         pens[i].style.strokeDashoffset = String(1 - local);
       }
-      if (mop) mop.setAttribute("opacity", String(d > 0.96 ? (d - 0.96) / 0.04 : 0));
+      if (mop) mop.setAttribute("opacity", String(d > 0.92 ? (d - 0.92) / 0.08 : 0));
     };
 
     const finishSeq = () => {

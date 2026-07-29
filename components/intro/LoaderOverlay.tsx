@@ -13,7 +13,9 @@ import { LoaderFx } from "./LoaderFx";
  * nothing flashes before hydration.
  */
 const PEN: Array<{ w: number; d: string }> = [
-  { w: 86, d: "M 252 218 C 270 330, 288 490, 304 585 C 300 505, 296 450, 308 432 C 354 410, 402 455, 376 540 C 356 598, 310 604, 306 560" },
+  // the b's approach flourish — the artwork's leftmost chalk
+  { w: 64, d: "M 190 310 C 200 370, 222 435, 258 472" },
+  { w: 96, d: "M 246 210 C 266 330, 288 490, 304 585 C 300 505, 296 450, 308 432 C 354 410, 402 455, 376 540 C 356 598, 310 604, 306 560" },
   { w: 80, d: "M 440 420 C 438 476, 458 510, 497 498 C 532 486, 548 436, 554 412 C 558 496, 550 606, 500 686 C 448 756, 372 748, 380 672" },
   { w: 62, d: "M 632 232 C 682 208, 744 220, 790 302" },
   { w: 76, d: "M 734 292 C 744 380, 732 470, 696 532 C 664 578, 618 562, 628 510" },
@@ -45,21 +47,27 @@ export function LoaderOverlay() {
         focusable="false"
       >
         <defs>
+          {/* soft pen edge: blurred mask strokes read as chalk drag, not crops */}
+          <filter id="penblur" x="-5%" y="-12%" width="110%" height="124%">
+            <feGaussianBlur stdDeviation="5" />
+          </filter>
           <mask id="penmask" maskUnits="userSpaceOnUse" x="0" y="0" width="1904" height="826">
-            {PEN.map((p, i) => (
-              <path
-                key={i}
-                d={p.d}
-                pathLength={1}
-                fill="none"
-                stroke="#fff"
-                strokeWidth={p.w}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                style={{ strokeDasharray: "1 1.06", strokeDashoffset: 1 }}
-                data-pen
-              />
-            ))}
+            <g filter="url(#penblur)">
+              {PEN.map((p, i) => (
+                <path
+                  key={i}
+                  d={p.d}
+                  pathLength={1}
+                  fill="none"
+                  stroke="#fff"
+                  strokeWidth={p.w}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{ strokeDasharray: "1 1.06", strokeDashoffset: 1 }}
+                  data-pen
+                />
+              ))}
+            </g>
             <rect width="1904" height="826" fill="#fff" opacity={0} data-pen-mop />
           </mask>
         </defs>
