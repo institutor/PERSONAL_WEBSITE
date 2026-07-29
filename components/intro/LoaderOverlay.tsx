@@ -54,10 +54,27 @@ export function LoaderOverlay() {
         focusable="false"
       >
         <defs>
-          {/* NO filter, NO partial-opacity layers — both caused visible
-              differences between mid-write and final. Full-opacity strokes
-              only; coverage is total, so nothing changes at the end. */}
+          {/* Two-pass pen, both FULL opacity (no filters, no alpha layers):
+              a narrow tip leads — the visible handwriting — and the wide
+              coverage stroke trails ~10% behind along the same path, so
+              fringes fill just after the tip passes instead of popping as
+              giant start-caps. Both converge at each stroke's end, keeping
+              the finished frame identical to the last written frame. */}
           <mask id="penmask" maskUnits="userSpaceOnUse" x="0" y="0" width="1904" height="826">
+            {PEN.map((p, i) => (
+              <path
+                key={`w${i}`}
+                d={p.d}
+                pathLength={1}
+                fill="none"
+                stroke="#fff"
+                strokeWidth={p.w}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ strokeDasharray: "1 1.06", strokeDashoffset: 1 }}
+                data-pen-wide
+              />
+            ))}
             {PEN.map((p, i) => (
               <path
                 key={i}
@@ -65,7 +82,7 @@ export function LoaderOverlay() {
                 pathLength={1}
                 fill="none"
                 stroke="#fff"
-                strokeWidth={p.w}
+                strokeWidth={Math.max(48, Math.round(p.w * 0.55))}
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 style={{ strokeDasharray: "1 1.06", strokeDashoffset: 1 }}
