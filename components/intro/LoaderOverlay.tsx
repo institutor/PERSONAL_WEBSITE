@@ -12,17 +12,24 @@ import { LoaderFx } from "./LoaderFx";
  * SSR-hidden: every mask stroke ships with dashoffset 1 → mask is black →
  * nothing flashes before hydration.
  */
+/**
+ * Generous full-opacity widths: the union of these strokes must cover
+ * EVERY chalk pixel by the time the pen finishes, so the safety mop-up
+ * has zero visible delta — what you see mid-write is the final state.
+ */
 const PEN: Array<{ w: number; d: string }> = [
-  // the b's approach flourish — the artwork's leftmost chalk
-  { w: 64, d: "M 190 310 C 200 370, 222 435, 258 472" },
-  { w: 96, d: "M 246 210 C 266 330, 288 490, 304 585 C 300 505, 296 450, 308 432 C 354 410, 402 455, 376 540 C 356 598, 310 604, 306 560" },
-  { w: 80, d: "M 440 420 C 438 476, 458 510, 497 498 C 532 486, 548 436, 554 412 C 558 496, 550 606, 500 686 C 448 756, 372 748, 380 672" },
-  { w: 62, d: "M 632 232 C 682 208, 744 220, 790 302" },
-  { w: 76, d: "M 734 292 C 744 380, 732 470, 696 532 C 664 578, 618 562, 628 510" },
-  { w: 46, d: "M 820 272 L 836 290" },
-  { w: 74, d: "M 812 340 C 806 413, 814 468, 844 466 C 872 460, 884 398, 888 370 C 902 340, 920 340, 930 366 C 920 408, 916 456, 942 468 C 972 476, 998 440, 1006 398 C 1012 436, 1020 470, 1044 470 C 1068 468, 1080 402, 1086 374 C 1092 420, 1100 468, 1124 468 C 1150 464, 1162 398, 1168 370 C 1190 336, 1208 336, 1216 362 C 1206 402, 1202 456, 1226 468 C 1254 478, 1282 440, 1290 402 C 1298 366, 1312 352, 1326 368 C 1322 402, 1320 448, 1334 466 C 1342 428, 1358 376, 1386 370 C 1412 368, 1408 430, 1418 456 C 1428 476, 1446 452, 1456 424" },
-  { w: 70, d: "M 716 508 C 910 492, 1140 442, 1320 404 C 1388 390, 1424 404, 1442 436 C 1454 466, 1466 492, 1480 462 C 1566 348, 1706 228, 1834 140" },
-  { w: 48, d: "M 736 556 C 900 542, 1030 528, 1160 505" },
+  // faint dust at the far left — the true first pixels of the artwork
+  { w: 100, d: "M 96 466 C 116 494, 142 514, 174 528" },
+  // the b's approach flourish
+  { w: 106, d: "M 188 306 C 198 372, 224 442, 262 500" },
+  { w: 128, d: "M 246 210 C 266 330, 288 490, 304 585 C 300 505, 296 450, 308 432 C 354 410, 402 455, 376 540 C 356 598, 310 604, 306 560" },
+  { w: 112, d: "M 426 398 C 430 470, 452 512, 497 500 C 534 488, 552 440, 558 402 C 562 350, 564 305, 566 264 C 566 372, 560 482, 556 522 C 556 602, 546 642, 500 690 C 448 756, 372 748, 380 672" },
+  { w: 112, d: "M 632 232 C 682 208, 744 220, 790 302" },
+  { w: 106, d: "M 734 292 C 744 380, 732 470, 696 532 C 664 578, 618 562, 628 510" },
+  { w: 76, d: "M 820 272 L 836 290" },
+  { w: 106, d: "M 812 340 C 806 413, 814 468, 844 466 C 872 460, 884 398, 888 370 C 902 340, 920 340, 930 366 C 920 408, 916 456, 942 468 C 972 476, 998 440, 1006 398 C 1012 436, 1020 470, 1044 470 C 1068 468, 1080 402, 1086 374 C 1092 420, 1100 468, 1124 468 C 1150 464, 1162 398, 1168 370 C 1190 336, 1208 336, 1216 362 C 1206 402, 1202 456, 1226 468 C 1254 478, 1282 440, 1290 402 C 1298 366, 1312 352, 1326 368 C 1322 402, 1320 448, 1334 466 C 1342 428, 1358 376, 1386 370 C 1412 368, 1408 430, 1418 456 C 1430 470, 1452 428, 1464 384" },
+  { w: 106, d: "M 716 508 C 910 492, 1140 442, 1320 404 C 1388 390, 1424 404, 1442 436 C 1454 466, 1466 492, 1480 462 C 1566 348, 1706 228, 1834 140" },
+  { w: 88, d: "M 736 556 C 900 542, 1110 520, 1330 482" },
 ];
 
 export function LoaderOverlay() {
@@ -47,26 +54,10 @@ export function LoaderOverlay() {
         focusable="false"
       >
         <defs>
-          {/* NO filter here — filters on animating masks get re-rasterized at
-              degraded quality mid-animation (the "blurry until done" bug).
-              The soft pen edge is pure geometry instead: each stroke is a
-              half-opacity halo pair under a full-opacity core. */}
+          {/* NO filter, NO partial-opacity layers — both caused visible
+              differences between mid-write and final. Full-opacity strokes
+              only; coverage is total, so nothing changes at the end. */}
           <mask id="penmask" maskUnits="userSpaceOnUse" x="0" y="0" width="1904" height="826">
-            {PEN.map((p, i) => (
-              <path
-                key={`h${i}`}
-                d={p.d}
-                pathLength={1}
-                fill="none"
-                stroke="#fff"
-                strokeOpacity={0.45}
-                strokeWidth={p.w + 22}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                style={{ strokeDasharray: "1 1.06", strokeDashoffset: 1 }}
-                data-pen-halo
-              />
-            ))}
             {PEN.map((p, i) => (
               <path
                 key={i}
