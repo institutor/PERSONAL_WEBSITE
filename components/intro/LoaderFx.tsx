@@ -1,15 +1,22 @@
 "use client";
 
+import { useState } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { useIntroStore } from "@/lib/intro-store";
 import { orchestrator } from "@/lib/load-orchestrator";
+import { SignatureLoader } from "./v1/SignatureLoader";
 
 /**
- * Drives the loader: writes orchestrator display progress onto the signature
- * strokes (pathLength-normalized, sequential), updates the % readout, then
- * plays checkmark → fade → hands off to the intro phase machine.
+ * Wires the v1 preload animation to the real loading pipeline:
+ *  - orchestrator task states feed the animation's ready flags
+ *  - the % readout tracks the orchestrator's smoothed display value
+ *  - completion (animation done OR skip) fades the overlay and hands off
+ *    to the intro phase machine
  */
 export function LoaderFx() {
+  const [flags, setFlags] = useState({ fonts: false, chunk: false, compile: false });
+  const [mounted, setMounted] = useState(false);
+
   useGSAP(() => {
     const root = document.querySelector<HTMLElement>("[data-loader]");
     if (!root) return;
@@ -23,54 +30,58 @@ export function LoaderFx() {
       return;
     }
 
-    const paths = gsap.utils.toArray<SVGPathElement>("[data-sig-path]");
+    setMounted(true);
+
     const pctEl = root.querySelector<HTMLElement>("[data-loader-pct]");
-    const n = paths.length;
     let lastPct = -1;
     let finished = false;
 
-    // The loader owns the font task (rAF-wrapped so preloads actually started).
     requestAnimationFrame(() => {
       document.fonts.ready.then(() => orchestrator.set("fonts", 1));
     });
 
-    const finishSeq = () => {
+    const finishSeq = (viaSkip: boolean) => {
+      if (finished) return;
+      finished = true;
       gsap.ticker.remove(tick);
-      for (const p of paths) p.style.strokeDashoffset = "0";
       if (pctEl) pctEl.textContent = "100";
       root.setAttribute("aria-valuenow", "100");
-      const skipping = orchestrator.skipped;
       gsap
         .timeline({
           onComplete: () => {
             gsap.set(root, { display: "none" });
-            useIntroStore.getState().setPhase(skipping ? "skipped" : "reveal");
+            useIntroStore.getState().setPhase(viaSkip ? "skipped" : "reveal");
           },
         })
-        .to("[data-check-path]", {
-          strokeDashoffset: 0,
-          duration: skipping ? 0.15 : 0.45,
+        .to(root, {
+          autoAlpha: 0,
+          duration: viaSkip ? 0.2 : 0.55,
           ease: "power2.inOut",
-        })
-        .to(root, { autoAlpha: 0, duration: skipping ? 0.2 : 0.55, ease: "power2.inOut" }, skipping ? "+=0.05" : "+=0.3");
+          delay: viaSkip ? 0 : 0.25,
+        });
     };
+    (root as HTMLElement & { __finish?: (s: boolean) => void }).__finish = finishSeq;
 
     const tick = (_time: number, deltaMS: number) => {
       const d = orchestrator.display(deltaMS / 1000);
-      for (let i = 0; i < n; i++) {
-        const local = Math.min(1, Math.max(0, d * n - i));
-        paths[i].style.strokeDashoffset = String(1 - local);
-      }
       const p100 = Math.min(100, Math.round(d * 100));
       if (p100 !== lastPct && pctEl) {
         pctEl.textContent = String(p100).padStart(3, "0");
         lastPct = p100;
         if (p100 % 5 === 0) root.setAttribute("aria-valuenow", String(p100));
       }
-      if (!finished && d >= 1) {
-        finished = true;
-        finishSeq();
-      }
+      // poll task states into the animation's ready flags
+      setFlags((prev) => {
+        const next = {
+          fonts: orchestrator.isDone("fonts"),
+          chunk: orchestrator.isDone("chunk"),
+          compile: orchestrator.isDone("compile"),
+        };
+        return prev.fonts === next.fonts && prev.chunk === next.chunk && prev.compile === next.compile
+          ? prev
+          : next;
+      });
+      if (orchestrator.skipped) finishSeq(true);
     };
     gsap.ticker.add(tick);
 
@@ -91,5 +102,19 @@ export function LoaderFx() {
     };
   });
 
-  return null;
+  if (!mounted) return null;
+
+  return (
+    <SignatureLoader
+      fontsReady={flags.fonts}
+      imageReady={flags.chunk}
+      rendererReady={flags.compile}
+      onComplete={() => {
+        const root = document.querySelector<HTMLElement>("[data-loader]") as
+          | (HTMLElement & { __finish?: (s: boolean) => void })
+          | null;
+        root?.__finish?.(false);
+      }}
+    />
+  );
 }

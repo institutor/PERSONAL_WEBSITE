@@ -39,6 +39,10 @@ class LoadOrchestrator {
     this.progress[task] = Math.max(this.progress[task], Math.min(1, value));
   }
 
+  isDone(task: LoadTask): boolean {
+    return this.progress[task] >= 1;
+  }
+
   /** Mark every task complete (fallback paths with no WebGL, skip, etc.). */
   completeAll(): void {
     for (const k of Object.keys(this.progress) as LoadTask[]) {
