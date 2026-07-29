@@ -49,7 +49,7 @@ function Trajectory() {
     <Band id="trajectory" className="min-h-svh">
       <BackTicker word="TRAJECTORY" posClass="top-[4%]" />
       {/* the square becomes the missing O */}
-      <GapTitle text="TRAJECTORY" gapIndex={7} index="01 — the path" className="relative z-10" />
+      <GapTitle text="TRAJECTORY" gapIndex={7} index="01 — the path" window="early" className="relative z-10" />
 
       {/* mid-section: the square swells huge behind the stations, then shrinks */}
       <span
@@ -85,7 +85,7 @@ function ExperienceHorizontal() {
         {/* panel 0 — chapter head; the square becomes the missing N and
             rides sideways inside the word while the page scrolls sideways */}
         <div className="relative flex h-full w-[70vw] shrink-0 flex-col justify-center px-6 sm:px-10">
-          <GapTitle text="EXPERIENCE" gapIndex={7} index="02 — shipped" sizeClass="text-[clamp(3rem,9.5vw,9rem)]" />
+          <GapTitle text="EXPERIENCE" gapIndex={7} index="02 — shipped" window="early" sizeClass="text-[clamp(3rem,9.5vw,9rem)]" />
           <p className="statement mt-8 max-w-xl text-[clamp(1.4rem,2.6vw,2.4rem)] opacity-90">
             Two years, three teams, one habit: things reach production.
           </p>
@@ -171,7 +171,7 @@ function Leadership() {
     <Band id="leadership">
       <BackTicker word="LEADERSHIP" posClass="top-[10%]" />
       {/* the square becomes the missing I */}
-      <GapTitle text="LEADERSHIP" gapIndex={8} index="03 — teams" className="relative z-10" />
+      <GapTitle text="LEADERSHIP" gapIndex={8} index="03 — teams" window="mid" className="relative z-10" />
 
       <div className="relative z-10 mt-16 grid gap-12 md:grid-cols-3" data-zoom-in>
         {leadership.map((entry, i) => (
@@ -204,7 +204,7 @@ function Signal() {
     <Band id="signal">
       <BackTicker word="SIGNAL" posClass="top-[6%]" />
       {/* the square becomes the missing A */}
-      <GapTitle text="SIGNAL" gapIndex={4} index="04 — proof" className="relative z-10" />
+      <GapTitle text="SIGNAL" gapIndex={4} index="04 — proof" window="mid" className="relative z-10" />
 
       <ul className="relative z-10 mt-20">
         {awards.map((a, i) => (
@@ -245,7 +245,7 @@ function Stack() {
     <Band id="stack">
       <BackTicker word="STACK" posClass="top-[12%]" />
       {/* the square becomes the missing A */}
-      <GapTitle text="STACK" gapIndex={2} index="05 — instruments" className="relative z-10" />
+      <GapTitle text="STACK" gapIndex={2} index="05 — instruments" window="late" className="relative z-10" />
 
       <div className="relative z-10 mt-14 space-y-8" data-zoom-in>
         {Object.entries(skills).map(([group, items]) => (
@@ -297,13 +297,13 @@ function Contact() {
           <p className="display -ml-[0.04em] whitespace-nowrap text-[clamp(6rem,19vw,17rem)]" aria-hidden="true">
             {"BUILD".split("").map((ch, i) =>
               i === 2 ? (
-                <span key={i} className="relative inline-block w-[0.62em] text-center">
+                <span key={i} className="relative inline-block w-[0.74em] text-center">
                   <span data-knock-letter className="inline-block will-change-transform">
                     {ch}
                   </span>
                   <span
                     data-sq-slot
-                    className="pointer-events-none absolute left-1/2 top-1/2 h-[0.58em] w-[0.58em] -translate-x-1/2 -translate-y-[54%]"
+                    className="pointer-events-none absolute bottom-[0.05em] left-1/2 h-[0.72em] w-[0.72em] -translate-x-1/2"
                     aria-hidden="true"
                   />
                 </span>

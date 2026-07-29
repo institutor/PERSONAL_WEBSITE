@@ -1,13 +1,14 @@
 /**
- * v6 title system (per the reference's motion):
+ * v6.1 title system:
  *
- *  - GapTitle: the section title — big, rises bottom-up from behind the band
- *    edge (masked, [data-rise]), with ONE letter absent. The absence is a
- *    letter-sized [data-sq-slot]: the page's single traveling square arrives
- *    and becomes that letter while you're in the section, then moves on.
+ *  - GapTitle: initially INVISIBLE. As you scroll, each letter slides up
+ *    from its own starting offset (no mask — displaced from its natural
+ *    position, not from the screen edge) at a slightly different speed,
+ *    assembling into the word ([data-title]/[data-tl] scrub in ScrollFx).
+ *    One letter is absent: a cap-height, baseline-aligned [data-sq-slot]
+ *    that the page's single traveling square arrives to fill.
  *
- *  - BackTicker: the colossal type now lives in the BACKGROUND — a hollow,
- *    faint, viewport-tall line traveling across the band ([data-mega]).
+ *  - BackTicker: colossal hollow line traveling across the band background.
  */
 
 interface GapTitleProps {
@@ -15,6 +16,8 @@ interface GapTitleProps {
   /** 0-based index of the letter the square replaces. */
   gapIndex: number;
   index?: string;
+  /** Scrub timing window: early | mid | late (varying speeds per title). */
+  window?: "early" | "mid" | "late";
   className?: string;
   sizeClass?: string;
 }
@@ -23,42 +26,42 @@ export function GapTitle({
   text,
   gapIndex,
   index,
+  window: win = "early",
   className,
   sizeClass = "text-[clamp(3.8rem,13vw,12rem)]",
 }: GapTitleProps) {
   return (
-    <div className={className} role="img" aria-label={text}>
+    <div className={className} role="img" aria-label={text} data-title data-window={win}>
       {index && (
         <p className="lbl mb-3 opacity-60" aria-hidden="true">
           ( {index} )
         </p>
       )}
-      <div className="rise-mask" data-rise-fallback="">
-        <p aria-hidden="true" className={`display whitespace-nowrap ${sizeClass}`} data-rise="">
-          {text.split("").map((ch, i) =>
-            i === gapIndex ? (
-              <span key={i} className="relative inline-block w-[0.62em]">
-                <span
-                  data-sq-slot
-                  className="pointer-events-none absolute left-1/2 top-1/2 h-[0.58em] w-[0.58em] -translate-x-1/2 -translate-y-[54%]"
-                  aria-hidden="true"
-                />
-              </span>
-            ) : (
-              <span key={i} className="inline-block">
-                {ch}
-              </span>
-            )
-          )}
-        </p>
-      </div>
+      <p aria-hidden="true" className={`display whitespace-nowrap ${sizeClass}`}>
+        {text.split("").map((ch, i) =>
+          i === gapIndex ? (
+            /* the absent letter: cap-height square slot on the baseline */
+            <span key={i} className="relative inline-block w-[0.74em]">
+              &#8203;
+              <span
+                data-sq-slot
+                className="pointer-events-none absolute bottom-[0.05em] left-1/2 h-[0.72em] w-[0.72em] -translate-x-1/2"
+                aria-hidden="true"
+              />
+            </span>
+          ) : (
+            <span key={i} data-tl className="inline-block will-change-transform">
+              {ch}
+            </span>
+          )
+        )}
+      </p>
     </div>
   );
 }
 
 interface BackTickerProps {
   word: string;
-  /** Vertical placement inside the band, e.g. "top-[8%]". */
   posClass?: string;
 }
 

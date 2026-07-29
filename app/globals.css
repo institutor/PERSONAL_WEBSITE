@@ -191,6 +191,26 @@ html[data-motion="on"] [data-rise] {
   transform: translateY(105%);
 }
 
+/* Gate disarms (:not(.tl-live)) the moment ScrollFx takes ownership —
+   a filled CSS animation would otherwise override gsap's inline opacity. */
+html[data-motion="on"] [data-tl]:not(.tl-live) {
+  opacity: 0;
+  animation: tl-unhide 0.01s 3s forwards;
+}
+
+@keyframes tl-unhide {
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-tl] {
+    opacity: 1 !important;
+    animation: none !important;
+  }
+}
+
 html[data-motion="on"] [data-rise-fallback] [data-rise] {
   animation: rise-unhide 0.01s 3s forwards;
 }

@@ -92,6 +92,32 @@ export function ScrollFx() {
         );
       }
 
+      /* ---- gap-titles: invisible → letters slide up from their own spots
+             at varying speeds, assembling as you scroll (scrubbed) ---- */
+      for (const t of gsap.utils.toArray<HTMLElement>("[data-title]")) {
+        const [start, end] = WINDOWS[t.dataset.window ?? "early"];
+        const letters = t.querySelectorAll<HTMLElement>("[data-tl]");
+        letters.forEach((el, i) => {
+          el.classList.add("tl-live"); // disarm the pre-hydration CSS gate
+          const dist = 70 + ((i * 53) % 65); // deterministic per-letter speed
+          gsap.fromTo(
+            el,
+            { yPercent: dist, autoAlpha: 0 },
+            {
+              yPercent: 0,
+              autoAlpha: 1,
+              ease: "none",
+              scrollTrigger: {
+                trigger: t.closest("[data-band]") ?? t,
+                start,
+                end,
+                scrub: 0.35,
+              },
+            }
+          );
+        });
+      }
+
       /* ---- scrubbed rises with staggered timing windows ---- */
       for (const el of gsap.utils.toArray<HTMLElement>("[data-scrub-rise]")) {
         if (inTrack(el)) continue;
