@@ -49,7 +49,7 @@ export function LoaderOverlay() {
         {/* the checkmark runs THROUGH the signature */}
         <svg
           viewBox="0 0 120 70"
-          className="absolute left-1/2 top-1/2 w-40 -translate-x-1/2 -translate-y-[55%] text-volt sm:w-52"
+          className="absolute left-1/2 top-1/2 w-40 -translate-x-1/2 -translate-y-[55%] text-bone sm:w-52"
           aria-hidden="true"
           focusable="false"
         >
@@ -79,7 +79,7 @@ export function LoaderOverlay() {
       <button
         type="button"
         data-loader-skip
-        className="lbl absolute right-6 top-6 cursor-pointer transition-colors hover:text-volt"
+        className="lbl absolute right-6 top-6 cursor-pointer opacity-70 transition-opacity hover:opacity-100"
       >
         Skip →
       </button>

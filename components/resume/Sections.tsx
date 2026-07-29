@@ -1,4 +1,3 @@
-import { Sawtooth } from "@/components/fx/Sawtooth";
 import {
   awards,
   colophon,
@@ -22,17 +21,15 @@ function Sweeps() {
     <section data-band className="band-ink relative overflow-hidden py-36 sm:py-44">
       <p
         data-sweep="34"
-        className="display relative z-10 whitespace-nowrap text-[clamp(4rem,13vw,12rem)]"
+        className="display relative z-10 whitespace-nowrap text-[clamp(4.5rem,15vw,14rem)]"
         aria-hidden="true"
       >
         BUILDS THINGS THAT SHIP
       </p>
-      <div className="my-8">
-        <Sawtooth color="volt" height={14} reverse />
-      </div>
+      <div className="my-10 h-[3px] w-full bg-bone" aria-hidden="true" />
       <p
         data-sweep="-38"
-        className="display outline-text relative z-10 whitespace-nowrap text-right text-[clamp(4rem,13vw,12rem)]"
+        className="display outline-text relative z-10 whitespace-nowrap text-right text-[clamp(4.5rem,15vw,14rem)]"
         aria-hidden="true"
       >
         BROOKLYN → MORNINGSIDE HEIGHTS
@@ -49,12 +46,12 @@ function Sweeps() {
 function Trajectory() {
   const windows = ["early", "mid", "late"] as const;
   return (
-    <Band id="trajectory" shapes="a" className="min-h-svh">
+    <Band id="trajectory" className="min-h-svh">
       <MegaTitle text="TRAJECTORY" index="01" />
 
       <span
         data-sq-slot
-        className="pointer-events-none absolute right-[8%] top-[30%] h-[38vh] w-[38vh]"
+        className="pointer-events-none absolute right-[8%] top-[34%] h-[38vh] w-[38vh]"
         aria-hidden="true"
       />
 
@@ -84,7 +81,7 @@ function ExperienceHorizontal() {
         className="pointer-events-none absolute inset-x-0 top-[6%] z-0 overflow-hidden"
         aria-hidden="true"
       >
-        <p data-mega className="display outline-text whitespace-nowrap text-[clamp(8rem,26vh,16rem)] opacity-40 will-change-transform">
+        <p data-mega className="display outline-text whitespace-nowrap text-[clamp(8rem,26vh,16rem)] opacity-30 will-change-transform">
           EXPERIENCE — EXPERIENCE — EXPERIENCE
         </p>
       </div>
@@ -100,9 +97,9 @@ function ExperienceHorizontal() {
           <span data-sq-slot className="pointer-events-none absolute bottom-[20%] right-[12%] h-8 w-8" aria-hidden="true" />
         </div>
 
-        {/* panel 1 — NaomiAI (voltage) */}
-        <div className="relative m-6 flex w-[84vw] shrink-0 flex-col justify-center self-stretch bg-volt px-8 text-bone sm:px-12">
-          <div className="lbl flex flex-wrap justify-between gap-2 opacity-90">
+        {/* panel 1 — NaomiAI: the filled panel */}
+        <div className="relative m-6 flex w-[84vw] shrink-0 flex-col justify-center self-stretch bg-bone px-8 text-ink sm:px-12">
+          <div className="lbl flex flex-wrap justify-between gap-2 opacity-80">
             <span>{naomi.company}</span>
             <span>{naomi.role}</span>
             <span>{naomi.period}</span>
@@ -113,31 +110,31 @@ function ExperienceHorizontal() {
           </p>
           <div className="mt-8 flex flex-wrap gap-10">
             {naomi.bullets.slice(1).map((b, i) => (
-              <p key={i} className="bodycol opacity-90">
+              <p key={i} className="bodycol opacity-80">
                 {b}
               </p>
             ))}
           </div>
-          <dl className="mt-10 flex flex-wrap gap-x-14 gap-y-6 border-t border-bone/25 pt-6">
+          <dl className="mt-10 flex flex-wrap gap-x-14 gap-y-6 border-t border-ink/25 pt-6">
             {naomi.stats?.map((s) => (
               <div key={s.label}>
                 <dt className="sr-only">{s.label}</dt>
                 <dd className="font-mono text-3xl" style={{ fontVariantNumeric: "tabular-nums" }}>
                   {s.value}
                 </dd>
-                <dd className="lbl mt-1 opacity-80">{s.label}</dd>
+                <dd className="lbl mt-1 opacity-70">{s.label}</dd>
               </div>
             ))}
           </dl>
         </div>
 
-        {/* panel 2 — Fed10 (bone: hard contrast flip) */}
-        <div className="relative m-6 flex w-[58vw] shrink-0 flex-col justify-center self-stretch bg-bone px-8 text-ink sm:px-12">
+        {/* panel 2 — Fed10: the framed panel */}
+        <div className="relative m-6 flex w-[58vw] shrink-0 flex-col justify-center self-stretch border-[3px] border-bone px-8 sm:px-12">
           <p className="lbl opacity-60">
             {fed10.period} — {fed10.location}
           </p>
           <p className="display mt-3 text-[clamp(2.4rem,5vw,4.5rem)]">{fed10.company}</p>
-          <p className="lbl mt-2 text-volt">{fed10.role}</p>
+          <p className="lbl mt-2 opacity-80">{fed10.role}</p>
           <div className="mt-6 space-y-4">
             {fed10.bullets.map((b, i) => (
               <p key={i} className="bodycol opacity-80">
@@ -145,21 +142,18 @@ function ExperienceHorizontal() {
               </p>
             ))}
           </div>
-          <div className="absolute inset-x-0 top-0">
-            <Sawtooth color="volt" height={12} />
-          </div>
         </div>
 
-        {/* panel 3 — O2NYC (framed) + tail */}
-        <div className="relative m-6 flex w-[58vw] shrink-0 flex-col justify-center self-stretch border-2 border-volt px-8 sm:px-12">
-          <p className="numeral pointer-events-none absolute right-6 top-6 opacity-25" aria-hidden="true">
+        {/* panel 3 — O2NYC: filled again + tail */}
+        <div className="relative m-6 flex w-[58vw] shrink-0 flex-col justify-center self-stretch bg-bone px-8 text-ink sm:px-12">
+          <p className="numeral pointer-events-none absolute right-6 top-6 opacity-20" aria-hidden="true">
             O₂
           </p>
           <p className="lbl opacity-60">
             {o2.period} — {o2.location}
           </p>
           <p className="display mt-3 text-[clamp(2.4rem,5vw,4.5rem)]">{o2.company}</p>
-          <p className="lbl mt-2 text-volt brightness-150">{o2.role}</p>
+          <p className="lbl mt-2 opacity-80">{o2.role}</p>
           <div className="mt-6 space-y-4">
             {o2.bullets.map((b, i) => (
               <p key={i} className="bodycol opacity-80">
@@ -179,13 +173,13 @@ function ExperienceHorizontal() {
 function Leadership() {
   const windows = ["early", "mid", "late"] as const;
   return (
-    <Band id="leadership" shapes="c">
+    <Band id="leadership">
       <MegaTitle text="LEADERSHIP" index="03" lead="outline" />
       <div className="mt-16 grid gap-12 md:grid-cols-3" data-zoom-in>
         {leadership.map((entry, i) => (
           <div key={entry.org} data-scrub-rise data-window={windows[i]}>
             <p className="statement text-2xl">{entry.org}</p>
-            <p className="lbl mt-1 text-volt brightness-150">{entry.role}</p>
+            <p className="lbl mt-1 opacity-80">{entry.role}</p>
             <p className="lbl mt-1 opacity-50">{entry.period}</p>
             <div className="mt-4 space-y-3">
               {entry.bullets.map((b, bi) => (
@@ -194,7 +188,7 @@ function Leadership() {
                 </p>
               ))}
             </div>
-            {entry.note && <p className="bodycol mt-4 font-medium text-volt brightness-150">— {entry.note}</p>}
+            {entry.note && <p className="bodycol mt-4 font-semibold">— {entry.note}</p>}
             {entry.org === "Science Olympiad" && (
               <p className="lbl mt-4 opacity-60">MEDALS ×9 — YALE · COLUMBIA · BROWN</p>
             )}
@@ -209,10 +203,10 @@ function Leadership() {
 
 function Signal() {
   return (
-    <Band id="signal" shapes="b">
+    <Band id="signal">
       <span
         data-sq-slot
-        className="pointer-events-none absolute left-[6%] top-[34%] h-24 w-24"
+        className="pointer-events-none absolute left-[6%] top-[38%] h-24 w-24"
         aria-hidden="true"
       />
       <MegaTitle text="SIGNAL" index="04" />
@@ -225,7 +219,7 @@ function Signal() {
             data-driftx
             data-window={(["early", "mid", "late"] as const)[i % 3]}
           >
-            <span className="display w-24 shrink-0 text-2xl text-volt brightness-150">{a.big ?? "—"}</span>
+            <span className="display w-24 shrink-0 text-2xl">{a.big ?? "—"}</span>
             <span className="statement min-w-0 flex-1 text-lg">
               {a.big ? a.detail : a.title}
               {!a.big && <span className="bodycol ml-3 inline opacity-60">{a.detail}</span>}
@@ -253,7 +247,7 @@ function Signal() {
 
 function Stack() {
   return (
-    <Band id="stack" shapes="a">
+    <Band id="stack">
       <MegaTitle text="STACK" index="05" lead="outline" />
       <div className="mt-14 space-y-8" data-zoom-in>
         {Object.entries(skills).map(([group, items]) => (
@@ -263,7 +257,7 @@ function Stack() {
               {items.map((item) => {
                 const live = liveStack.includes(item);
                 return (
-                  <li key={item} className={`pill ${live ? "border-volt text-volt brightness-150" : "opacity-80"}`}>
+                  <li key={item} className={`pill ${live ? "font-semibold" : "opacity-70"}`}>
                     {live && <span aria-hidden="true">■ </span>}
                     {item}
                   </li>
@@ -273,7 +267,7 @@ function Stack() {
           </div>
         ))}
 
-        <p className="lbl pt-2 text-volt brightness-150">
+        <p className="lbl pt-2">
           <span data-sq-slot className="mr-2 inline-block h-4 w-4 align-middle" aria-hidden="true" />= RENDERING
           THIS PAGE RIGHT NOW
         </p>
@@ -297,7 +291,7 @@ function Stack() {
 
 function Contact() {
   return (
-    <Band id="contact" index="06" paren="( say hi )" shapes="c" className="pb-40">
+    <Band id="contact" index="06" paren="( say hi )" className="pb-40">
       <div data-zoom-in="1.14">
         <p className="display text-[clamp(2.4rem,6vw,5.5rem)]" aria-hidden="true">
           LET&rsquo;S
@@ -328,14 +322,12 @@ function Contact() {
         </div>
       </div>
 
-      <div className="mt-16">
-        <Sawtooth color="volt" height={16} />
-      </div>
+      <div className="mt-16 h-[3px] w-full bg-bone" aria-hidden="true" />
 
       <div className="mt-20 text-center">
         <a
           href={`mailto:${identity.links.email}`}
-          className="statement break-all text-[clamp(1.4rem,4vw,3.4rem)] underline decoration-volt decoration-4 underline-offset-8 transition-opacity hover:opacity-80"
+          className="statement break-all text-[clamp(1.4rem,4vw,3.4rem)] underline decoration-2 underline-offset-8 transition-opacity hover:opacity-80"
           data-reveal
         >
           {identity.links.email}
@@ -348,7 +340,7 @@ function Contact() {
           className="display inline-flex items-baseline gap-4 text-[clamp(3rem,9vw,7.5rem)] transition-opacity hover:opacity-85"
         >
           RESUME
-          <span className="chevrons text-volt" aria-hidden="true">
+          <span className="chevrons" aria-hidden="true">
             <span>▶</span>
             <span>▶</span>
             <span>▶</span>

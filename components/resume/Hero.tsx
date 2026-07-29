@@ -1,5 +1,4 @@
 import { HeroSpaceClient } from "@/components/hero/HeroSpaceClient";
-import { Sawtooth } from "@/components/fx/Sawtooth";
 import { identity } from "@/lib/resume-data";
 
 const IM = ["I", "'", "m"] as const;
@@ -31,12 +30,12 @@ export function Hero() {
           </span>
         </span>
 
-        {/* the divider — animated, professional. The square actor is born here. */}
-        <span className="relative my-4 block sm:my-6" data-hero-divider>
-          <Sawtooth color="volt" height={26} />
+        {/* the divider — one clean rule. The square actor is born on it. */}
+        <span className="relative my-6 block sm:my-8" data-hero-divider>
+          <span className="block h-[3px] w-full bg-bone" />
           <span
             data-sq-slot
-            className="pointer-events-none absolute -top-10 right-[7%] h-6 w-6"
+            className="pointer-events-none absolute -top-8 right-[7%] h-6 w-6"
             aria-hidden="true"
           />
         </span>

@@ -92,31 +92,6 @@ export function ScrollFx() {
         );
       }
 
-      /* ---- sawtooth marquees + velocity coupling ---- */
-      const sawTweens: gsap.core.Tween[] = [];
-      for (const el of gsap.utils.toArray<HTMLElement>("[data-saw]")) {
-        const dir = el.dataset.saw === "r" ? 44 : -44;
-        sawTweens.push(gsap.to(el, { x: dir, duration: 2.8, ease: "none", repeat: -1 }));
-      }
-      const speed = { target: 1 };
-      let decay: (() => void) | null = null;
-      if (sawTweens.length) {
-        ScrollTrigger.create({
-          start: 0,
-          end: "max",
-          onUpdate: (self) => {
-            speed.target = Math.min(4, 1 + Math.abs(self.getVelocity()) / 900);
-          },
-        });
-        decay = () => {
-          speed.target = Math.max(1, speed.target * 0.96);
-          const current = sawTweens[0].timeScale();
-          const next = current + (speed.target - current) * 0.12;
-          for (const t of sawTweens) t.timeScale(next);
-        };
-        gsap.ticker.add(decay);
-      }
-
       /* ---- scrubbed rises with staggered timing windows ---- */
       for (const el of gsap.utils.toArray<HTMLElement>("[data-scrub-rise]")) {
         if (inTrack(el)) continue;
@@ -247,10 +222,6 @@ export function ScrollFx() {
       }
 
       document.fonts.ready.then(() => ScrollTrigger.refresh());
-
-      return () => {
-        if (decay) gsap.ticker.remove(decay);
-      };
     });
   });
 

@@ -16,11 +16,13 @@
 }
 
 :root {
-  --bone: #e5ded2;
-  --ink: #101014;
-  --volt: #1e32e8;
-  --bone-dim: rgba(229, 222, 210, 0.6);
-  --ink-dim: rgba(16, 16, 20, 0.62);
+  /* v5: COMPLETELY minimalist — exactly two colors. --volt is aliased to
+     bone so any straggling accent class resolves inside the palette. */
+  --bone: #e8e3d8;
+  --ink: #0a0a0c;
+  --volt: var(--bone);
+  --bone-dim: rgba(232, 227, 216, 0.6);
+  --ink-dim: rgba(10, 10, 12, 0.62);
   color-scheme: dark;
 }
 
@@ -70,15 +72,6 @@ html[data-intro="skip"] [data-loader] {
   color: var(--bone);
 }
 
-/* Faint dot grid so black is never dead-flat (contrast note, v4). */
-.band-ink::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba(229, 222, 210, 0.05) 1px, transparent 1.1px);
-  background-size: 26px 26px;
-  pointer-events: none;
-}
 
 /* ---------------------------------------------------------------------------
    Type system: one grotesk at extreme scale contrast.

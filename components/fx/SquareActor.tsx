@@ -98,7 +98,7 @@ export function SquareActor() {
     <div
       data-square-actor
       aria-hidden="true"
-      className="pointer-events-none fixed left-0 top-0 z-[8] h-6 w-6 bg-volt will-change-transform"
+      className="pointer-events-none fixed left-0 top-0 z-[8] h-6 w-6 bg-bone will-change-transform"
     />
   );
 }

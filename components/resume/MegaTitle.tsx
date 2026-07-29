@@ -7,10 +7,9 @@ interface MegaTitleProps {
 }
 
 /**
- * Section title, v4: one massive single line — wider than the viewport —
- * that travels straight across the screen as the band scrolls
- * ([data-mega] scrub in ScrollFx). A hollow echo of the word trails it,
- * so the line never runs dry mid-travel.
+ * Section title, v5: one MASSIVE single line — far wider than the viewport —
+ * traveling straight across the screen as the band scrolls ([data-mega]
+ * scrub). A hollow echo trails the filled word; a bone square separates.
  */
 export function MegaTitle({ text, index, lead = "solid", className }: MegaTitleProps) {
   const first = lead === "solid" ? "" : "outline-text";
@@ -24,7 +23,7 @@ export function MegaTitle({ text, index, lead = "solid", className }: MegaTitleP
       <p
         data-mega
         aria-hidden="true"
-        className="display whitespace-nowrap text-[clamp(6rem,19vw,17rem)] will-change-transform"
+        className="display whitespace-nowrap text-[clamp(7rem,27vw,25rem)] will-change-transform"
       >
         {index && (
           <sup className="lbl relative -top-[2.2em] mr-8 inline-block align-baseline opacity-60">
@@ -32,7 +31,7 @@ export function MegaTitle({ text, index, lead = "solid", className }: MegaTitleP
           </sup>
         )}
         <span className={first}>{text}</span>
-        <span aria-hidden="true" className="mx-[0.3em] inline-block h-[0.5em] w-[0.5em] -translate-y-[0.05em] bg-volt align-baseline" />
+        <span aria-hidden="true" className="mx-[0.3em] inline-block h-[0.5em] w-[0.5em] -translate-y-[0.05em] bg-bone align-baseline" />
         <span className={second}>{text}</span>
       </p>
     </div>
