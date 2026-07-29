@@ -12,8 +12,8 @@ import {
   teaching,
 } from "@/lib/resume-data";
 import { Band } from "./Band";
-import { BrokenWord } from "./BrokenWord";
 import { Hero } from "./Hero";
+import { MegaTitle } from "./MegaTitle";
 
 /* -------------------------------------------------------------- sweeps -- */
 
@@ -39,7 +39,6 @@ function Sweeps() {
       </p>
       <p className="sr-only">Builds things that ship. Brooklyn to Morningside Heights.</p>
 
-      {/* square actor waypoint: drifts through the gap between the lines */}
       <span data-sq-slot className="pointer-events-none absolute left-[12%] top-[46%] h-10 w-10" aria-hidden="true" />
     </section>
   );
@@ -50,15 +49,16 @@ function Sweeps() {
 function Trajectory() {
   const windows = ["early", "mid", "late"] as const;
   return (
-    <Band id="trajectory" index="01" paren="( the path )" shapes="a" className="min-h-svh">
-      {/* the actor grows huge behind these lines, then shrinks away */}
+    <Band id="trajectory" shapes="a" className="min-h-svh">
+      <MegaTitle text="TRAJECTORY" index="01" />
+
       <span
         data-sq-slot
-        className="pointer-events-none absolute right-[8%] top-[22%] h-[38vh] w-[38vh] opacity-0"
+        className="pointer-events-none absolute right-[8%] top-[30%] h-[38vh] w-[38vh]"
         aria-hidden="true"
       />
 
-      <div className="relative z-10 space-y-14 pt-8">
+      <div className="relative z-10 space-y-14 pt-16">
         {journey.map((stop, i) => (
           <div key={stop.title} data-scrub-rise data-window={windows[i]}>
             <p className="lbl mb-2 opacity-60">
@@ -79,24 +79,29 @@ function ExperienceHorizontal() {
   const [naomi, fed10, o2] = experience;
   return (
     <section id="experience" data-band data-hsection className="band-ink relative overflow-hidden">
-      <div data-htrack className="flex h-svh w-max items-stretch">
+      {/* massive hollow backdrop traveling behind the panels, full pin long */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-[6%] z-0 overflow-hidden"
+        aria-hidden="true"
+      >
+        <p data-mega className="display outline-text whitespace-nowrap text-[clamp(8rem,26vh,16rem)] opacity-40 will-change-transform">
+          EXPERIENCE — EXPERIENCE — EXPERIENCE
+        </p>
+      </div>
+
+      <div data-htrack className="relative z-10 flex h-svh w-max items-center">
         {/* panel 0 — chapter head */}
-        <div className="relative flex w-[72vw] shrink-0 flex-col justify-center px-6 sm:px-10">
-          <p className="numeral absolute right-8 top-24" aria-hidden="true">
-            02
+        <div className="relative flex h-full w-[64vw] shrink-0 flex-col justify-center px-6 sm:px-10">
+          <p className="paren mb-6">( 02 — shipped )</p>
+          <p className="statement max-w-xl text-[clamp(2rem,4.4vw,4rem)]">
+            Two years, three teams, one habit: things reach production.
           </p>
-          <p className="paren mb-6">( shipped )</p>
-          <p className="display text-[clamp(4rem,11vw,10rem)]">EXPE</p>
-          <div className="my-3 w-[70%]">
-            <Sawtooth color="volt" height={14} />
-          </div>
-          <p className="display -mr-2 text-right text-[clamp(4rem,11vw,10rem)]">RIENCE</p>
           <p className="lbl mt-10 opacity-60">SCROLL — THE PAGE TURNS SIDEWAYS HERE →</p>
-          <span data-sq-slot className="pointer-events-none absolute bottom-[18%] right-[10%] h-8 w-8" aria-hidden="true" />
+          <span data-sq-slot className="pointer-events-none absolute bottom-[20%] right-[12%] h-8 w-8" aria-hidden="true" />
         </div>
 
         {/* panel 1 — NaomiAI (voltage) */}
-        <div className="relative m-6 flex w-[86vw] shrink-0 flex-col justify-center bg-volt px-8 text-bone sm:px-12">
+        <div className="relative m-6 flex w-[84vw] shrink-0 flex-col justify-center self-stretch bg-volt px-8 text-bone sm:px-12">
           <div className="lbl flex flex-wrap justify-between gap-2 opacity-90">
             <span>{naomi.company}</span>
             <span>{naomi.role}</span>
@@ -126,13 +131,13 @@ function ExperienceHorizontal() {
           </dl>
         </div>
 
-        {/* panel 2 — Fed10 */}
-        <div className="relative flex w-[62vw] shrink-0 flex-col justify-center px-8 sm:px-12">
+        {/* panel 2 — Fed10 (bone: hard contrast flip) */}
+        <div className="relative m-6 flex w-[58vw] shrink-0 flex-col justify-center self-stretch bg-bone px-8 text-ink sm:px-12">
           <p className="lbl opacity-60">
             {fed10.period} — {fed10.location}
           </p>
           <p className="display mt-3 text-[clamp(2.4rem,5vw,4.5rem)]">{fed10.company}</p>
-          <p className="lbl mt-2 text-volt brightness-150">{fed10.role}</p>
+          <p className="lbl mt-2 text-volt">{fed10.role}</p>
           <div className="mt-6 space-y-4">
             {fed10.bullets.map((b, i) => (
               <p key={i} className="bodycol opacity-80">
@@ -140,10 +145,16 @@ function ExperienceHorizontal() {
               </p>
             ))}
           </div>
+          <div className="absolute inset-x-0 top-0">
+            <Sawtooth color="volt" height={12} />
+          </div>
         </div>
 
-        {/* panel 3 — O2NYC + tail */}
-        <div className="relative flex w-[62vw] shrink-0 flex-col justify-center border-l border-bone/15 px-8 sm:px-12">
+        {/* panel 3 — O2NYC (framed) + tail */}
+        <div className="relative m-6 flex w-[58vw] shrink-0 flex-col justify-center self-stretch border-2 border-volt px-8 sm:px-12">
+          <p className="numeral pointer-events-none absolute right-6 top-6 opacity-25" aria-hidden="true">
+            O₂
+          </p>
           <p className="lbl opacity-60">
             {o2.period} — {o2.location}
           </p>
@@ -168,11 +179,9 @@ function ExperienceHorizontal() {
 function Leadership() {
   const windows = ["early", "mid", "late"] as const;
   return (
-    <Band id="leadership" index="03" paren="( teams )" shapes="c">
-      <p className="statement max-w-3xl text-[clamp(1.8rem,4vw,3.4rem)]" data-scrub-rise data-window="early">
-        Someone has to sweat the details.
-      </p>
-      <div className="mt-16 grid gap-12 md:grid-cols-3">
+    <Band id="leadership" shapes="c">
+      <MegaTitle text="LEADERSHIP" index="03" lead="outline" />
+      <div className="mt-16 grid gap-12 md:grid-cols-3" data-zoom-in>
         {leadership.map((entry, i) => (
           <div key={entry.org} data-scrub-rise data-window={windows[i]}>
             <p className="statement text-2xl">{entry.org}</p>
@@ -200,21 +209,15 @@ function Leadership() {
 
 function Signal() {
   return (
-    <Band id="signal" index="04" paren="( proof )" shapes="b">
+    <Band id="signal" shapes="b">
       <span
         data-sq-slot
-        className="pointer-events-none absolute left-[6%] top-[30%] h-24 w-24"
+        className="pointer-events-none absolute left-[6%] top-[34%] h-24 w-24"
         aria-hidden="true"
       />
-      <BrokenWord
-        label="Signal"
-        rows={[
-          { text: "SIG", bleed: "left", travel: 26 },
-          { text: "NAL", bleed: "right", travel: -26 },
-        ]}
-      />
+      <MegaTitle text="SIGNAL" index="04" />
 
-      <ul className="relative z-10 mt-24">
+      <ul className="relative z-10 mt-20">
         {awards.map((a, i) => (
           <li
             key={a.title}
@@ -232,9 +235,9 @@ function Signal() {
         ))}
       </ul>
 
-      <div className="mt-16 flex flex-col justify-between gap-10 sm:flex-row">
+      <div className="mt-16 flex flex-col justify-between gap-10 sm:flex-row" data-zoom-in>
         {programs.map((p, i) => (
-          <p key={p.name} className={`bodycol ${i === 1 ? "sm:text-right" : ""}`} data-reveal>
+          <p key={p.name} className={`bodycol ${i === 1 ? "sm:text-right" : ""}`}>
             <strong>
               {p.name} — {p.period}
             </strong>
@@ -250,10 +253,11 @@ function Signal() {
 
 function Stack() {
   return (
-    <Band id="stack" index="05" paren="( instruments )" shapes="a">
-      <div className="space-y-8">
+    <Band id="stack" shapes="a">
+      <MegaTitle text="STACK" index="05" lead="outline" />
+      <div className="mt-14 space-y-8" data-zoom-in>
         {Object.entries(skills).map(([group, items]) => (
-          <div key={group} className="grid gap-4 sm:grid-cols-[200px_1fr]" data-reveal>
+          <div key={group} className="grid gap-4 sm:grid-cols-[200px_1fr]">
             <p className="lbl pt-1.5 opacity-60">{group}</p>
             <ul className="flex flex-wrap gap-2">
               {items.map((item) => {
@@ -268,22 +272,22 @@ function Stack() {
             </ul>
           </div>
         ))}
-      </div>
 
-      <p className="lbl mt-10 text-volt brightness-150" data-reveal>
-        <span data-sq-slot className="mr-2 inline-block h-4 w-4 align-middle" aria-hidden="true" />= RENDERING
-        THIS PAGE RIGHT NOW
-      </p>
+        <p className="lbl pt-2 text-volt brightness-150">
+          <span data-sq-slot className="mr-2 inline-block h-4 w-4 align-middle" aria-hidden="true" />= RENDERING
+          THIS PAGE RIGHT NOW
+        </p>
 
-      <div className="mt-16 space-y-4">
-        {teaching.map((t) => (
-          <p key={t.org} className="bodycol !max-w-xl opacity-75" data-reveal>
-            <strong>
-              {t.org} — {t.role}
-            </strong>
-            {t.detail}
-          </p>
-        ))}
+        <div className="space-y-4 pt-8">
+          {teaching.map((t) => (
+            <p key={t.org} className="bodycol !max-w-xl opacity-75">
+              <strong>
+                {t.org} — {t.role}
+              </strong>
+              {t.detail}
+            </p>
+          ))}
+        </div>
       </div>
     </Band>
   );
@@ -294,33 +298,34 @@ function Stack() {
 function Contact() {
   return (
     <Band id="contact" index="06" paren="( say hi )" shapes="c" className="pb-40">
-      <p className="display text-[clamp(2.4rem,6vw,5.5rem)]" data-scrub-rise data-window="early" aria-hidden="true">
-        LET&rsquo;S
-      </p>
+      <div data-zoom-in="1.14">
+        <p className="display text-[clamp(2.4rem,6vw,5.5rem)]" aria-hidden="true">
+          LET&rsquo;S
+        </p>
 
-      {/* the knockout: the I slides up past the others; the square takes its place */}
-      <div className="relative" data-knock role="img" aria-label="Build">
-        <p className="display -ml-[0.04em] whitespace-nowrap text-[clamp(7rem,22vw,20rem)]" aria-hidden="true">
-          {"BUILD".split("").map((ch, i) =>
-            i === 2 ? (
-              <span key={i} className="relative inline-block w-[0.62em] text-center">
-                <span data-knock-letter className="inline-block will-change-transform">
+        {/* the knockout: the I slides up past the others; the square takes its place */}
+        <div className="relative" data-knock role="img" aria-label="Build">
+          <p className="display -ml-[0.04em] whitespace-nowrap text-[clamp(7rem,22vw,20rem)]" aria-hidden="true">
+            {"BUILD".split("").map((ch, i) =>
+              i === 2 ? (
+                <span key={i} className="relative inline-block w-[0.62em] text-center">
+                  <span data-knock-letter className="inline-block will-change-transform">
+                    {ch}
+                  </span>
+                  <span
+                    data-sq-slot
+                    className="pointer-events-none absolute left-1/2 top-1/2 h-[0.58em] w-[0.58em] -translate-x-1/2 -translate-y-[54%]"
+                    aria-hidden="true"
+                  />
+                </span>
+              ) : (
+                <span key={i} className="inline-block">
                   {ch}
                 </span>
-                {/* letter-sized landing pad for the square actor */}
-                <span
-                  data-sq-slot
-                  className="pointer-events-none absolute left-1/2 top-1/2 h-[0.58em] w-[0.58em] -translate-x-1/2 -translate-y-[54%]"
-                  aria-hidden="true"
-                />
-              </span>
-            ) : (
-              <span key={i} className="inline-block">
-                {ch}
-              </span>
-            )
-          )}
-        </p>
+              )
+            )}
+          </p>
+        </div>
       </div>
 
       <div className="mt-16">

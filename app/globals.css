@@ -70,6 +70,16 @@ html[data-intro="skip"] [data-loader] {
   color: var(--bone);
 }
 
+/* Faint dot grid so black is never dead-flat (contrast note, v4). */
+.band-ink::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(229, 222, 210, 0.05) 1px, transparent 1.1px);
+  background-size: 26px 26px;
+  pointer-events: none;
+}
+
 /* ---------------------------------------------------------------------------
    Type system: one grotesk at extreme scale contrast.
 --------------------------------------------------------------------------- */

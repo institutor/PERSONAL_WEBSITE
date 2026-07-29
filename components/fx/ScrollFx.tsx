@@ -28,26 +28,69 @@ export function ScrollFx() {
     const mm = gsap.matchMedia();
 
     mm.add("(prefers-reduced-motion: no-preference)", () => {
-      /* ---- pinned horizontal chapter (first: it owns layout) ---- */
+      /* ---- pinned horizontal chapter (first: it owns layout).
+             Enters ZOOMED OUT (overview of the panels), zooms to full,
+             then vertical scroll becomes sideways travel. ---- */
       const hs = document.querySelector<HTMLElement>("[data-hsection]");
       const track = hs?.querySelector<HTMLElement>("[data-htrack]");
       if (hs && track) {
-        gsap.to(track, {
-          x: () => -(track.scrollWidth - window.innerWidth),
-          ease: "none",
-          scrollTrigger: {
-            trigger: hs,
-            start: "top top",
-            end: () => "+=" + (track.scrollWidth - window.innerWidth),
-            scrub: 0.4,
-            pin: true,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-            refreshPriority: 10,
-          },
-        });
+        const dist = () => track.scrollWidth - window.innerWidth;
+        gsap
+          .timeline({
+            scrollTrigger: {
+              trigger: hs,
+              start: "top top",
+              end: () => "+=" + (dist() + window.innerHeight * 0.45),
+              scrub: 0.4,
+              pin: true,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+              refreshPriority: 10,
+            },
+          })
+          .fromTo(
+            track,
+            { scale: 0.78, transformOrigin: "18% 50%" },
+            { scale: 1, duration: 0.16, ease: "power1.inOut" }
+          )
+          .to(track, { x: () => -dist(), duration: 0.84, ease: "none" });
       }
       const inTrack = (el: Element) => !!el.closest("[data-htrack]");
+
+      /* ---- mega titles: massive lines traveling straight across ---- */
+      for (const el of gsap.utils.toArray<HTMLElement>("[data-mega]")) {
+        const band = el.closest<HTMLElement>("[data-band]") ?? el;
+        gsap.fromTo(
+          el,
+          { x: () => window.innerWidth * 0.1 },
+          {
+            x: () => -(el.scrollWidth - window.innerWidth * 0.92),
+            ease: "none",
+            scrollTrigger: {
+              trigger: band,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 0.4,
+              invalidateOnRefresh: true,
+            },
+          }
+        );
+      }
+
+      /* ---- zoom choreography: bands breathe in as they arrive ---- */
+      for (const el of gsap.utils.toArray<HTMLElement>("[data-zoom-in]")) {
+        const from = parseFloat(el.dataset.zoomIn || "0.88");
+        gsap.fromTo(
+          el,
+          { scale: from, y: from < 1 ? 44 : -24, transformOrigin: "50% 18%" },
+          {
+            scale: 1,
+            y: 0,
+            ease: "none",
+            scrollTrigger: { trigger: el, start: "top bottom", end: "top 30%", scrub: 0.35 },
+          }
+        );
+      }
 
       /* ---- sawtooth marquees + velocity coupling ---- */
       const sawTweens: gsap.core.Tween[] = [];
