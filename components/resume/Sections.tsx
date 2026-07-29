@@ -12,7 +12,7 @@ import {
 } from "@/lib/resume-data";
 import { Band } from "./Band";
 import { Hero } from "./Hero";
-import { MegaTitle } from "./MegaTitle";
+import { BackTicker, GapTitle } from "./Titles";
 
 /* -------------------------------------------------------------- sweeps -- */
 
@@ -47,21 +47,24 @@ function Trajectory() {
   const windows = ["early", "mid", "late"] as const;
   return (
     <Band id="trajectory" className="min-h-svh">
-      <MegaTitle text="TRAJECTORY" index="01" />
+      <BackTicker word="TRAJECTORY" posClass="top-[4%]" />
+      {/* the square becomes the missing O */}
+      <GapTitle text="TRAJECTORY" gapIndex={7} index="01 — the path" className="relative z-10" />
 
+      {/* mid-section: the square swells huge behind the stations, then shrinks */}
       <span
         data-sq-slot
-        className="pointer-events-none absolute right-[8%] top-[34%] h-[38vh] w-[38vh]"
+        className="pointer-events-none absolute right-[8%] top-[46%] h-[36vh] w-[36vh]"
         aria-hidden="true"
       />
 
-      <div className="relative z-10 space-y-14 pt-16">
+      <div className="relative z-10 space-y-14 pt-20">
         {journey.map((stop, i) => (
           <div key={stop.title} data-scrub-rise data-window={windows[i]}>
             <p className="lbl mb-2 opacity-60">
               0{i + 1} — {stop.note}
             </p>
-            <p className="display text-[clamp(2.8rem,7.5vw,7rem)]">{stop.title}</p>
+            <p className="display text-[clamp(2.6rem,7vw,6.5rem)]">{stop.title}</p>
             <p className="bodycol mt-3 opacity-75">{stop.detail}</p>
           </div>
         ))}
@@ -76,25 +79,17 @@ function ExperienceHorizontal() {
   const [naomi, fed10, o2] = experience;
   return (
     <section id="experience" data-band data-hsection className="band-ink relative overflow-hidden">
-      {/* massive hollow backdrop traveling behind the panels, full pin long */}
-      <div
-        className="pointer-events-none absolute inset-x-0 top-[6%] z-0 overflow-hidden"
-        aria-hidden="true"
-      >
-        <p data-mega className="display outline-text whitespace-nowrap text-[clamp(8rem,26vh,16rem)] opacity-30 will-change-transform">
-          EXPERIENCE — EXPERIENCE — EXPERIENCE
-        </p>
-      </div>
+      <BackTicker word="EXPERIENCE" posClass="top-[6%]" />
 
       <div data-htrack className="relative z-10 flex h-svh w-max items-center">
-        {/* panel 0 — chapter head */}
-        <div className="relative flex h-full w-[64vw] shrink-0 flex-col justify-center px-6 sm:px-10">
-          <p className="paren mb-6">( 02 — shipped )</p>
-          <p className="statement max-w-xl text-[clamp(2rem,4.4vw,4rem)]">
+        {/* panel 0 — chapter head; the square becomes the missing N and
+            rides sideways inside the word while the page scrolls sideways */}
+        <div className="relative flex h-full w-[70vw] shrink-0 flex-col justify-center px-6 sm:px-10">
+          <GapTitle text="EXPERIENCE" gapIndex={7} index="02 — shipped" sizeClass="text-[clamp(3rem,9.5vw,9rem)]" />
+          <p className="statement mt-8 max-w-xl text-[clamp(1.4rem,2.6vw,2.4rem)] opacity-90">
             Two years, three teams, one habit: things reach production.
           </p>
           <p className="lbl mt-10 opacity-60">SCROLL — THE PAGE TURNS SIDEWAYS HERE →</p>
-          <span data-sq-slot className="pointer-events-none absolute bottom-[20%] right-[12%] h-8 w-8" aria-hidden="true" />
         </div>
 
         {/* panel 1 — NaomiAI: the filled panel */}
@@ -174,8 +169,11 @@ function Leadership() {
   const windows = ["early", "mid", "late"] as const;
   return (
     <Band id="leadership">
-      <MegaTitle text="LEADERSHIP" index="03" lead="outline" />
-      <div className="mt-16 grid gap-12 md:grid-cols-3" data-zoom-in>
+      <BackTicker word="LEADERSHIP" posClass="top-[10%]" />
+      {/* the square becomes the missing I */}
+      <GapTitle text="LEADERSHIP" gapIndex={8} index="03 — teams" className="relative z-10" />
+
+      <div className="relative z-10 mt-16 grid gap-12 md:grid-cols-3" data-zoom-in>
         {leadership.map((entry, i) => (
           <div key={entry.org} data-scrub-rise data-window={windows[i]}>
             <p className="statement text-2xl">{entry.org}</p>
@@ -204,12 +202,9 @@ function Leadership() {
 function Signal() {
   return (
     <Band id="signal">
-      <span
-        data-sq-slot
-        className="pointer-events-none absolute left-[6%] top-[38%] h-24 w-24"
-        aria-hidden="true"
-      />
-      <MegaTitle text="SIGNAL" index="04" />
+      <BackTicker word="SIGNAL" posClass="top-[6%]" />
+      {/* the square becomes the missing A */}
+      <GapTitle text="SIGNAL" gapIndex={4} index="04 — proof" className="relative z-10" />
 
       <ul className="relative z-10 mt-20">
         {awards.map((a, i) => (
@@ -229,7 +224,7 @@ function Signal() {
         ))}
       </ul>
 
-      <div className="mt-16 flex flex-col justify-between gap-10 sm:flex-row" data-zoom-in>
+      <div className="relative z-10 mt-16 flex flex-col justify-between gap-10 sm:flex-row" data-zoom-in>
         {programs.map((p, i) => (
           <p key={p.name} className={`bodycol ${i === 1 ? "sm:text-right" : ""}`}>
             <strong>
@@ -248,8 +243,11 @@ function Signal() {
 function Stack() {
   return (
     <Band id="stack">
-      <MegaTitle text="STACK" index="05" lead="outline" />
-      <div className="mt-14 space-y-8" data-zoom-in>
+      <BackTicker word="STACK" posClass="top-[12%]" />
+      {/* the square becomes the missing A */}
+      <GapTitle text="STACK" gapIndex={2} index="05 — instruments" className="relative z-10" />
+
+      <div className="relative z-10 mt-14 space-y-8" data-zoom-in>
         {Object.entries(skills).map(([group, items]) => (
           <div key={group} className="grid gap-4 sm:grid-cols-[200px_1fr]">
             <p className="lbl pt-1.5 opacity-60">{group}</p>
@@ -258,7 +256,6 @@ function Stack() {
                 const live = liveStack.includes(item);
                 return (
                   <li key={item} className={`pill ${live ? "font-semibold" : "opacity-70"}`}>
-                    {live && <span aria-hidden="true">■ </span>}
                     {item}
                   </li>
                 );
@@ -267,10 +264,7 @@ function Stack() {
           </div>
         ))}
 
-        <p className="lbl pt-2">
-          <span data-sq-slot className="mr-2 inline-block h-4 w-4 align-middle" aria-hidden="true" />= RENDERING
-          THIS PAGE RIGHT NOW
-        </p>
+        <p className="paren pt-2 opacity-80">( the bold ones are rendering this page right now )</p>
 
         <div className="space-y-4 pt-8">
           {teaching.map((t) => (
@@ -292,14 +286,15 @@ function Stack() {
 function Contact() {
   return (
     <Band id="contact" index="06" paren="( say hi )" className="pb-40">
-      <div data-zoom-in="1.14">
+      <BackTicker word="CONTACT" posClass="top-[2%]" />
+      <div className="relative z-10" data-zoom-in="1.14">
         <p className="display text-[clamp(2.4rem,6vw,5.5rem)]" aria-hidden="true">
           LET&rsquo;S
         </p>
 
-        {/* the knockout: the I slides up past the others; the square takes its place */}
+        {/* the finale: the I is knocked out; the traveling square replaces it */}
         <div className="relative" data-knock role="img" aria-label="Build">
-          <p className="display -ml-[0.04em] whitespace-nowrap text-[clamp(7rem,22vw,20rem)]" aria-hidden="true">
+          <p className="display -ml-[0.04em] whitespace-nowrap text-[clamp(6rem,19vw,17rem)]" aria-hidden="true">
             {"BUILD".split("").map((ch, i) =>
               i === 2 ? (
                 <span key={i} className="relative inline-block w-[0.62em] text-center">

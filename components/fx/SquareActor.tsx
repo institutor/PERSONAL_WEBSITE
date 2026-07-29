@@ -25,17 +25,26 @@ export function SquareActor() {
 
     interface Mark {
       el: HTMLElement;
-      act: number; // scrollY at which this slot becomes the "current" anchor
+      /** Scroll range [arrive..depart] during which the actor DWELLS here
+          (slot sits roughly in the 18%–78% viewport reading zone). */
+      arrive: number;
+      depart: number;
     }
     let marks: Mark[] = [];
 
     const measure = () => {
+      const vh = window.innerHeight;
       marks = slotEls
         .map((el) => {
-          const r = el.getBoundingClientRect();
-          return { el, act: r.top + window.scrollY - window.innerHeight * 0.62 };
+          const top = el.getBoundingClientRect().top + window.scrollY;
+          return { el, arrive: top - vh * 0.78, depart: top - vh * 0.18 };
         })
-        .sort((a, b) => a.act - b.act);
+        .sort((a, b) => a.arrive - b.arrive);
+      // ranges must never overlap or the piecewise walk breaks
+      for (let i = 1; i < marks.length; i++) {
+        marks[i].arrive = Math.max(marks[i].arrive, marks[i - 1].depart + 1);
+        marks[i].depart = Math.max(marks[i].depart, marks[i].arrive + 1);
+      }
     };
     measure();
     ScrollTrigger.addEventListener("refresh", measure);
@@ -50,12 +59,18 @@ export function SquareActor() {
       if (marks.length < 2) return;
       const y = window.scrollY;
 
+      // piecewise: DWELL inside a mark's [arrive..depart], transit between
       let i = 0;
-      while (i < marks.length - 2 && y >= marks[i + 1].act) i++;
-      const a = marks[i];
-      const b = marks[i + 1];
-      const span = Math.max(1, b.act - a.act);
-      const t = smooth(gsap.utils.clamp(0, 1, (y - a.act) / span));
+      while (i < marks.length - 1 && y > marks[i].depart) i++;
+      const a = marks[Math.max(0, y > marks[i].arrive ? i : i - 1)];
+      const b = marks[Math.min(marks.length - 1, y > marks[i].arrive ? i : i)];
+      let t: number;
+      if (y <= a.depart) {
+        t = 0; // dwelling at a
+      } else {
+        const span = Math.max(1, b.arrive - a.depart);
+        t = smooth(gsap.utils.clamp(0, 1, (y - a.depart) / span));
+      }
 
       const ra = a.el.getBoundingClientRect();
       const rb = b.el.getBoundingClientRect();
