@@ -238,9 +238,12 @@ export class DissolveScene {
       const ch = el.textContent ?? "";
       const m = ctx.measureText(ch);
       const inkW = m.actualBoundingBoxRight + m.actualBoundingBoxLeft;
-      const inkH = m.actualBoundingBoxAscent + m.actualBoundingBoxDescent;
+      // Center the FONT box, not the ink box: glyphs keep their natural
+      // baseline relation (apostrophe hangs at the top, m sits on the line).
+      const fa = m.fontBoundingBoxAscent ?? m.actualBoundingBoxAscent;
+      const fd = m.fontBoundingBoxDescent ?? m.actualBoundingBoxDescent;
       const x = (r.left - left) * dpr + pads + ((r.width * dpr - inkW) / 2 + m.actualBoundingBoxLeft);
-      const y = (r.top - top) * dpr + pads + (r.height * dpr - inkH) / 2 + m.actualBoundingBoxAscent;
+      const y = (r.top - top) * dpr + pads + (r.height * dpr - (fa + fd)) / 2 + fa;
       ctx.fillText(ch, x, y);
     }
 

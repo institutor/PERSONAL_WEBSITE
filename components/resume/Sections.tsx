@@ -287,7 +287,7 @@ function Contact() {
   return (
     <Band id="contact" index="06" paren="( say hi )" className="pb-40">
       <BackTicker word="CONTACT" posClass="top-[2%]" />
-      <div className="relative z-10" data-zoom-in="1.14">
+      <div className="relative z-10" data-zoom-in="1.26">
         <p className="display text-[clamp(2.4rem,6vw,5.5rem)]" aria-hidden="true">
           LET&rsquo;S
         </p>

@@ -50,10 +50,10 @@ export function ScrollFx() {
           })
           .fromTo(
             track,
-            { scale: 0.78, transformOrigin: "18% 50%" },
-            { scale: 1, duration: 0.16, ease: "power1.inOut" }
+            { scale: 0.62, transformOrigin: "18% 50%" },
+            { scale: 1, duration: 0.2, ease: "power2.out" }
           )
-          .to(track, { x: () => -dist(), duration: 0.84, ease: "none" });
+          .to(track, { x: () => -dist(), duration: 0.8, ease: "none" });
       }
       const inTrack = (el: Element) => !!el.closest("[data-htrack]");
 
@@ -77,17 +77,20 @@ export function ScrollFx() {
         );
       }
 
-      /* ---- zoom choreography: bands breathe in as they arrive ---- */
+      /* ---- zoom choreography: content SURGES forward to meet you.
+             Deep start, long scrub travel, scale back-loaded (power1.in)
+             so the zoom accelerates as it reaches reading position.
+             Fully opaque throughout — drama from scale only. ---- */
       for (const el of gsap.utils.toArray<HTMLElement>("[data-zoom-in]")) {
-        const from = parseFloat(el.dataset.zoomIn || "0.88");
+        const from = parseFloat(el.dataset.zoomIn || "0.7");
         gsap.fromTo(
           el,
-          { scale: from, y: from < 1 ? 44 : -24, transformOrigin: "50% 18%" },
+          { scale: from, y: from < 1 ? 90 : -48, transformOrigin: "50% 20%" },
           {
             scale: 1,
             y: 0,
-            ease: "none",
-            scrollTrigger: { trigger: el, start: "top bottom", end: "top 30%", scrub: 0.35 },
+            ease: "power1.in",
+            scrollTrigger: { trigger: el, start: "top bottom", end: "top 18%", scrub: 0.35 },
           }
         );
       }
