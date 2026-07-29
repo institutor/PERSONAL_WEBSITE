@@ -5,10 +5,11 @@ import { useIntroStore } from "@/lib/intro-store";
 import { orchestrator } from "@/lib/load-orchestrator";
 
 /**
- * Drives the Volumetric Inkfield loader: the handmade artwork's left→right
- * clip reveal is written from the orchestrator's smoothed display value
- * (the built-in check-swoosh lands exactly at 100%), then the prototype's
- * scale-and-fade exit hands off to the intro phase machine.
+ * Drives the handwritten Inkfield loader: the orchestrator's smoothed
+ * display value becomes pen distance along the calibrated stroke masks —
+ * constant pen speed, letter by letter, swoosh-check last. The final 4%
+ * fades in the mop-up layer so the artwork lands complete, then the
+ * prototype's scale-and-fade exit hands off to the intro machine.
  */
 export function LoaderFx() {
   useGSAP(() => {
@@ -24,30 +25,43 @@ export function LoaderFx() {
       return;
     }
 
-    const art = root.querySelector<HTMLImageElement>("[data-loader-art]");
+    const pens = Array.from(root.querySelectorAll<SVGPathElement>("[data-pen]"));
+    const mop = root.querySelector<SVGRectElement>("[data-pen-mop]");
     const pctEl = root.querySelector<HTMLElement>("[data-loader-pct]");
+
+    // Constant pen speed: weight each stroke by its true length.
+    const lens = pens.map((p) => p.getTotalLength());
+    const total = lens.reduce((a, b) => a + b, 0) || 1;
+    const starts: number[] = [];
+    lens.reduce((acc, l, i) => {
+      starts[i] = acc;
+      return acc + l;
+    }, 0);
+
     let lastPct = -1;
     let finished = false;
 
-    // The loader owns fonts + its own artwork ('textures' task).
     requestAnimationFrame(() => {
       document.fonts.ready.then(() => orchestrator.set("fonts", 1));
     });
-    if (art) {
-      const artDone = () => orchestrator.set("textures", 1);
-      if (art.complete) {
-        art.decode().then(artDone, artDone);
-      } else {
-        art.addEventListener("load", artDone, { once: true });
-        art.addEventListener("error", artDone, { once: true });
+    // the artwork itself gates the 'textures' task
+    const artImg = new Image();
+    artImg.onload = () => orchestrator.set("textures", 1);
+    artImg.onerror = () => orchestrator.set("textures", 1);
+    artImg.src = "/loader/by-jiewen-loader.webp";
+
+    const paint = (d: number) => {
+      const penDist = d * total;
+      for (let i = 0; i < pens.length; i++) {
+        const local = Math.min(1, Math.max(0, (penDist - starts[i]) / lens[i]));
+        pens[i].style.strokeDashoffset = String(1 - local);
       }
-    } else {
-      orchestrator.set("textures", 1);
-    }
+      if (mop) mop.setAttribute("opacity", String(d > 0.96 ? (d - 0.96) / 0.04 : 0));
+    };
 
     const finishSeq = () => {
       gsap.ticker.remove(tick);
-      if (art) art.style.clipPath = "inset(0 0% 0 0)";
+      paint(1);
       if (pctEl) pctEl.textContent = "100";
       root.setAttribute("aria-valuenow", "100");
       const skipping = orchestrator.skipped;
@@ -71,7 +85,7 @@ export function LoaderFx() {
 
     const tick = (_time: number, deltaMS: number) => {
       const d = orchestrator.display(deltaMS / 1000);
-      if (art) art.style.clipPath = `inset(0 ${((1 - d) * 100).toFixed(2)}% 0 0)`;
+      paint(d);
       const p100 = Math.min(100, Math.round(d * 100));
       if (p100 !== lastPct && pctEl) {
         pctEl.textContent = String(p100).padStart(3, "0");
