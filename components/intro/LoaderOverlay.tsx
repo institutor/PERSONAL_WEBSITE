@@ -47,9 +47,19 @@ export function LoaderOverlay() {
         focusable="false"
       >
         <defs>
-          {/* soft pen edge: blurred mask strokes read as chalk drag, not crops */}
+          {/* Soft pen edge WITHOUT dimming: blur softens the stroke boundary,
+              then a steep transfer pushes the mask back to full white — the
+              luminance mask stays 100% opaque everywhere but a ~2px edge.
+              (Plain blur alone made mid-write art translucent, which then
+              "popped" to full opacity when the mop-up landed.) */}
           <filter id="penblur" x="-5%" y="-12%" width="110%" height="124%">
-            <feGaussianBlur stdDeviation="5" />
+            <feGaussianBlur stdDeviation="4" />
+            <feComponentTransfer>
+              <feFuncR type="linear" slope="4" intercept="-1" />
+              <feFuncG type="linear" slope="4" intercept="-1" />
+              <feFuncB type="linear" slope="4" intercept="-1" />
+              <feFuncA type="linear" slope="4" intercept="-1" />
+            </feComponentTransfer>
           </filter>
           <mask id="penmask" maskUnits="userSpaceOnUse" x="0" y="0" width="1904" height="826">
             <g filter="url(#penblur)">
