@@ -18,11 +18,13 @@
 :root {
   /* v5: COMPLETELY minimalist — exactly two colors. --volt is aliased to
      bone so any straggling accent class resolves inside the palette. */
+  /* racing green: reads near-black until surfaces catch the eye — the
+     same severity as pure ink, but warm and expensive */
   --bone: #e8e3d8;
-  --ink: #0a0a0c;
+  --ink: #12211a;
   --volt: var(--bone);
   --bone-dim: rgba(232, 227, 216, 0.6);
-  --ink-dim: rgba(10, 10, 12, 0.62);
+  --ink-dim: rgba(18, 33, 26, 0.62);
   color-scheme: dark;
 }
 
