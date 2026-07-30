@@ -66,7 +66,7 @@ function Trajectory() {
       {/* the itinerary: one departure, one arrival, the match as the route */}
       <div className="relative z-10 pt-24">
         <div data-scrub-rise data-window="early">
-          <p className="lbl mb-2 opacity-60">DEP · {journey.from.note}</p>
+          <p className="lbl mb-2 opacity-60">{journey.from.label}</p>
           <p className="display text-[clamp(2.6rem,7vw,6.5rem)]">{journey.from.title}</p>
           <p className="bodycol mt-3 opacity-75">{journey.from.detail}</p>
         </div>
@@ -81,9 +81,13 @@ function Trajectory() {
         </div>
 
         <div className="text-right" data-scrub-rise data-window="late">
-          <p className="lbl mb-2 opacity-60">ARR · {journey.to.note}</p>
+          <p className="lbl mb-2 opacity-60">{journey.to.label}</p>
           <p className="display text-[clamp(2.6rem,7vw,6.5rem)]">{journey.to.title}</p>
-          <p className="bodycol ml-auto mt-3 opacity-75">{journey.to.detail}</p>
+          <p className="bodycol ml-auto mt-3 opacity-75">
+            {journey.to.detail}
+            {/* the session is still running */}
+            <span className="cursor-blink" aria-hidden="true" />
+          </p>
         </div>
       </div>
     </Band>

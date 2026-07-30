@@ -18,18 +18,18 @@ export const identity = {
   },
 } as const;
 
-/** The itinerary: one departure, one arrival, the match as the route. */
+/** The path as a running session: opened at Stuy, migrating to Columbia. */
 export const journey = {
   from: {
     title: "Stuyvesant High School",
     detail: "Class of 2026 · SAT 1580 · National Merit Finalist",
-    note: "where it started",
+    label: "SESSION OPENED · SEP 2022",
   },
   via: "VIA QUESTBRIDGE · NATIONAL COLLEGE MATCH · FULL RIDE",
   to: {
     title: "Columbia University",
     detail: "B.A. Computer Science & Mathematics, Class of 2030",
-    note: "what's next",
+    label: "SESSION MIGRATES · SEP 2026",
   },
 } as const;
 

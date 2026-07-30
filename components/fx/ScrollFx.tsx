@@ -208,12 +208,12 @@ export function ScrollFx() {
       for (const el of gsap.utils.toArray<HTMLElement>("[data-scrub-rise]")) {
         if (inTrack(el)) continue;
         const [start, end] = WINDOWS[el.dataset.window ?? "early"];
+        // fully opaque throughout — content rises into place, never fades
         gsap.fromTo(
           el,
-          { yPercent: 65, autoAlpha: 0.001 },
+          { yPercent: 65 },
           {
             yPercent: 0,
-            autoAlpha: 1,
             ease: "none",
             scrollTrigger: { trigger: el, start, end, scrub: 0.35 },
           }
