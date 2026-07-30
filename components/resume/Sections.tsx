@@ -333,6 +333,20 @@ function CardDeck() {
           ))}
         </div>
       </article>
+
+      {/* the shutter: staggered ink slats close over the final card at the
+          end of the deck — when they finish, the screen IS the contact
+          page's ground, and the pin releases straight into it */}
+      <div data-shutter aria-hidden="true" className="pointer-events-none absolute inset-0 z-40">
+        {Array.from({ length: 7 }, (_, i) => (
+          <span
+            key={i}
+            data-shutter-bar
+            className="absolute left-0 w-full bg-ink will-change-transform"
+            style={{ top: `${(i * 100) / 7}%`, height: `calc(${100 / 7}% + 1px)` }}
+          />
+        ))}
+      </div>
     </section>
   );
 }
@@ -341,7 +355,7 @@ function CardDeck() {
 
 function Contact() {
   return (
-    <Band id="contact" index="06" paren="( say hi )" className="pb-40">
+    <Band id="contact" index="06" paren="( say hi )" className="flex min-h-svh flex-col justify-center pb-32">
       <BackTicker word="CONTACT" posClass="top-[2%]" />
       <div className="relative z-10" data-zoom-in="1.26">
         <p className="display text-[clamp(2.4rem,6vw,5.5rem)]" aria-hidden="true">

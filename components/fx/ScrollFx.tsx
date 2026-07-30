@@ -40,13 +40,16 @@ export function ScrollFx() {
       const deck = document.querySelector<HTMLElement>("[data-deck]");
       if (!deck) return;
       const cards = gsap.utils.toArray<HTMLElement>("[data-deck-card]", deck);
+      const bars = gsap.utils.toArray<HTMLElement>("[data-shutter-bar]", deck);
       const angles = [3.4, -2.7, 4.1]; // organic variety, alternating lean
+      // pin length: one segment per card, a beat of rest, then the shutter
+      const TOTAL = cards.length + 1.0;
       deck.classList.add("deck-live");
       const deckTl = gsap.timeline({
         scrollTrigger: {
           trigger: deck,
           start: "top top",
-          end: () => "+=" + (cards.length + 0.38) * window.innerHeight,
+          end: () => "+=" + TOTAL * window.innerHeight,
           scrub: 0.4,
           pin: true,
           anticipatePin: 1,
@@ -83,7 +86,20 @@ export function ScrollFx() {
           );
         }
       });
-      deckTl.to({}, { duration: 0.38 }); // settled hold before release
+      // hold on the settled final card, then the SHUTTER: ink slats close
+      // in scattered order until the screen is the contact page's ground —
+      // the pin releases straight into it (ink on ink, seamless)
+      const SHUT_ORDER = [3, 0, 5, 1, 6, 2, 4];
+      bars.forEach((bar, i) => {
+        gsap.set(bar, { scaleY: 0, transformOrigin: i % 2 ? "50% 100%" : "50% 0%" });
+        deckTl.fromTo(
+          bar,
+          { scaleY: 0 },
+          { scaleY: 1, duration: 0.42, ease: "power2.inOut" },
+          cards.length + 0.14 + SHUT_ORDER[i] * 0.055
+        );
+      });
+      deckTl.to({}, { duration: 0.11 }); // fully dark beat before release
 
       return () => {
         deck.classList.remove("deck-live");

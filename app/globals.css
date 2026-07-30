@@ -287,3 +287,13 @@ html[data-motion="on"] [data-rise-fallback] [data-rise] {
   text-transform: uppercase;
   font-weight: 500;
 }
+
+/* Shutter slats exist only while the deck is pinned; in the static /
+   reduced-motion fallback they must never cover the stacked cards. */
+[data-shutter] {
+  display: none;
+}
+
+[data-deck].deck-live [data-shutter] {
+  display: block;
+}
