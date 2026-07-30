@@ -246,9 +246,3 @@ html[data-motion="on"] [data-rise-fallback] [data-rise] {
     transform: none !important;
   }
 }
-
-/* Custom blob cursor active: retire the native pointer everywhere */
-.blob-cursor,
-.blob-cursor * {
-  cursor: none !important;
-}
