@@ -172,7 +172,7 @@ export class DissolveScene {
     });
     this.renderer.setClearColor(0x000000, 0);
 
-    // bone #E5DED2 in 0..1
+    // bone #EDE8DC in 0..1
     this.uniforms = {
       uMask: { value: null },
       uRes: { value: [1, 1] },
@@ -180,7 +180,7 @@ export class DissolveScene {
       uTime: { value: 0 },
       uScroll: { value: 0 },
       uCell: { value: 13 },
-      uColor: { value: [229 / 255, 222 / 255, 210 / 255] },
+      uColor: { value: [237 / 255, 232 / 255, 220 / 255] },
     };
 
     const baseGeo = new PlaneGeometry(2, 2);

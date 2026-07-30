@@ -96,7 +96,7 @@ export function LoaderOverlay() {
       className="fixed inset-0 z-[80] flex items-center justify-center text-bone"
       style={{
         background:
-          "radial-gradient(circle at 30% 25%, rgba(232,227,216,0.13), transparent 32%), radial-gradient(circle at 72% 66%, rgba(232,227,216,0.07), transparent 36%), var(--ink)",
+          "radial-gradient(circle at 30% 25%, rgba(237,232,220,0.13), transparent 32%), radial-gradient(circle at 72% 66%, rgba(237,232,220,0.07), transparent 36%), var(--ink)",
       }}
     >
       <svg

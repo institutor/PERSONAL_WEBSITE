@@ -16,13 +16,14 @@
 }
 
 :root {
-  /* v5: COMPLETELY minimalist — exactly two colors. --volt is aliased to
-     bone so any straggling accent class resolves inside the palette. */
-  --bone: #e8e3d8;
-  --ink: #0a0a0c;
+  /* v7: COMPLETELY minimalist — exactly two colors, now electric.
+     Klein-ultramarine ground, warm bone type. --volt aliased to bone so
+     any straggling accent class resolves inside the palette. */
+  --bone: #ede8dc;
+  --ink: #101fc0;
   --volt: var(--bone);
-  --bone-dim: rgba(232, 227, 216, 0.6);
-  --ink-dim: rgba(10, 10, 12, 0.62);
+  --bone-dim: rgba(237, 232, 220, 0.6);
+  --ink-dim: rgba(16, 31, 192, 0.62);
   color-scheme: dark;
 }
 
@@ -40,8 +41,8 @@ body {
 }
 
 ::selection {
-  background: var(--volt);
-  color: var(--bone);
+  background: var(--bone);
+  color: var(--ink);
 }
 
 :focus-visible {
@@ -155,9 +156,11 @@ html[data-intro="skip"] [data-loader] {
    Persistent chrome — fixed frame; blend-difference auto-inverts over bands.
 --------------------------------------------------------------------------- */
 
+/* Solid bone strips framing the page (the reference's cream bars) —
+   blend-difference can't stay on-palette over a saturated blue ground. */
 .chrome {
-  mix-blend-mode: difference;
-  color: #fff;
+  background: var(--bone);
+  color: var(--ink);
 }
 
 /* Chevron CTA — RESUME ▶▶▶▶▶ */
