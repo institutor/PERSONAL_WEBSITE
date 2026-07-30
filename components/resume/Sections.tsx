@@ -25,7 +25,7 @@ function Sweeps() {
         className="display relative z-10 whitespace-nowrap text-[clamp(4.5rem,15vw,14rem)]"
         aria-hidden="true"
       >
-        MAKES USEFUL THINGS
+        SHIPPING
       </p>
       <div className="my-10 h-[3px] w-full bg-bone" aria-hidden="true" />
       <p
@@ -35,7 +35,7 @@ function Sweeps() {
       >
         BROOKLYN → MORNINGSIDE HEIGHTS
       </p>
-      <p className="sr-only">Makes useful things. Brooklyn to Morningside Heights.</p>
+      <p className="sr-only">Shipping. Brooklyn to Morningside Heights.</p>
     </section>
   );
 }
