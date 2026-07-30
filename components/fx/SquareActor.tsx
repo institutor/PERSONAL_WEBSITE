@@ -40,18 +40,11 @@ export function SquareActor() {
       // consecutive dwells is transit. data-sq-hold stretches a dwell in both
       // directions (1 = default). Slots inside the pinned card deck map to
       // their card's segment of the pin instead of their document position.
-      const deckLive = !!deck?.classList.contains("deck-live");
       marks = slotEls
-        .filter((el) => deckLive || el.dataset.sqKind !== "notch")
         .map((el) => {
-          if (deckLive && el.dataset.sqSeg !== undefined) {
+          if (deck?.classList.contains("deck-live") && el.dataset.sqSeg !== undefined) {
             const seg = Number(el.dataset.sqSeg);
-            // per card: catch the rising card's notch and ride it up, plug
-            // it while the card locks in, then dive into the word's gap
-            if (el.dataset.sqKind === "notch") {
-              return { el, arrive: deckTop + (seg + 0.3) * vh, depart: deckTop + (seg + 0.56) * vh };
-            }
-            return { el, arrive: deckTop + (seg + 0.68) * vh, depart: deckTop + (seg + 0.97) * vh };
+            return { el, arrive: deckTop + (seg + 0.58) * vh, depart: deckTop + (seg + 0.94) * vh };
           }
           const top = el.getBoundingClientRect().top + window.scrollY;
           const hold = Math.max(1, Number(el.dataset.sqHold) || 1);

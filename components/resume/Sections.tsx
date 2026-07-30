@@ -198,16 +198,8 @@ function CardDeck() {
       <article
         id="leadership"
         data-deck-card
-        className="deck-notch relative flex flex-col justify-center bg-bone px-4 py-20 text-ink sm:px-10"
+        className="deck-notch flex flex-col justify-center bg-bone px-4 py-20 text-ink sm:px-10"
       >
-        {/* the square rides this card's notch up, plugs it, then dives into the word */}
-        <span
-          data-sq-slot
-          data-sq-seg={0}
-          data-sq-kind="notch"
-          className="pointer-events-none absolute left-1/2 top-[-1px] h-[54px] w-[54px] -translate-x-1/2"
-          aria-hidden="true"
-        />
         <GapTitle
           text="LEADERSHIP"
           gapIndex={8}
@@ -242,16 +234,8 @@ function CardDeck() {
       <article
         id="awards"
         data-deck-card
-        className="deck-notch relative flex flex-col justify-center bg-ink px-4 py-20 text-bone sm:px-10"
+        className="deck-notch flex flex-col justify-center bg-ink px-4 py-20 text-bone sm:px-10"
       >
-        <span
-          data-sq-slot
-          data-sq-seg={1}
-          data-sq-kind="notch"
-          data-sq-tone="ink"
-          className="pointer-events-none absolute left-1/2 top-[-1px] h-[54px] w-[54px] -translate-x-1/2"
-          aria-hidden="true"
-        />
         <div className="pointer-events-none absolute inset-3 border-[3px] border-bone sm:inset-5" aria-hidden="true" />
         <GapTitle
           text="AWARDS"
@@ -288,15 +272,8 @@ function CardDeck() {
       <article
         id="stack"
         data-deck-card
-        className="deck-notch relative flex flex-col justify-center bg-bone px-4 py-20 text-ink sm:px-10"
+        className="deck-notch flex flex-col justify-center bg-bone px-4 py-20 text-ink sm:px-10"
       >
-        <span
-          data-sq-slot
-          data-sq-seg={2}
-          data-sq-kind="notch"
-          className="pointer-events-none absolute left-1/2 top-[-1px] h-[54px] w-[54px] -translate-x-1/2"
-          aria-hidden="true"
-        />
         <GapTitle
           text="STACK"
           gapIndex={2}

@@ -264,15 +264,14 @@ html[data-motion="on"] [data-rise-fallback] [data-rise] {
   transform: translateY(112%);
 }
 
-/* the traveling square's bite out of every card's top edge — exactly
-   square (52x52), so the actor can slot in and plug it seamlessly */
+/* the traveling square's bite out of every card's top edge */
 .deck-live .deck-notch {
   clip-path: polygon(
     0 0,
-    calc(50% - 26px) 0,
-    calc(50% - 26px) 52px,
-    calc(50% + 26px) 52px,
-    calc(50% + 26px) 0,
+    calc(50% - 30px) 0,
+    calc(50% - 30px) 38px,
+    calc(50% + 30px) 38px,
+    calc(50% + 30px) 0,
     100% 0,
     100% 100%,
     0 100%
