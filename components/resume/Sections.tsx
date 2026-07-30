@@ -83,11 +83,7 @@ function Trajectory() {
         <div className="text-right" data-scrub-rise data-window="late">
           <p className="lbl mb-2 opacity-60">{journey.to.label}</p>
           <p className="display text-[clamp(2.6rem,7vw,6.5rem)]">{journey.to.title}</p>
-          <p className="bodycol ml-auto mt-3 opacity-75">
-            {journey.to.detail}
-            {/* the session is still running */}
-            <span className="cursor-blink" aria-hidden="true" />
-          </p>
+          <p className="bodycol ml-auto mt-3 opacity-75">{journey.to.detail}</p>
         </div>
       </div>
     </Band>

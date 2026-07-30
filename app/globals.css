@@ -287,26 +287,3 @@ html[data-motion="on"] [data-rise-fallback] [data-rise] {
   text-transform: uppercase;
   font-weight: 500;
 }
-
-/* Terminal cursor: the Columbia session is still running */
-.cursor-blink {
-  display: inline-block;
-  width: 0.55em;
-  height: 1em;
-  margin-left: 0.18em;
-  vertical-align: text-bottom;
-  background: currentColor;
-  animation: cursor-blink 1.1s steps(1) infinite;
-}
-
-@keyframes cursor-blink {
-  50% {
-    opacity: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cursor-blink {
-    animation: none;
-  }
-}
