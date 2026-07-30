@@ -32,19 +32,34 @@ export function SquareActor() {
     }
     let marks: Mark[] = [];
 
+    // A pinned section's stable scroll anchor is its pin-spacer, not the
+    // section itself (which sits viewport-fixed while pinned).
+    const spacerTop = (sec: HTMLElement) => {
+      const sp = sec.parentElement?.classList.contains("pin-spacer") ? sec.parentElement : sec;
+      return sp.getBoundingClientRect().top + window.scrollY;
+    };
+
     const measure = () => {
       const vh = window.innerHeight;
       const deck = document.querySelector<HTMLElement>("[data-deck]");
-      const deckTop = deck ? deck.getBoundingClientRect().top + window.scrollY : 0;
+      const deckTop = deck ? spacerTop(deck) : 0;
+      const hs = document.querySelector<HTMLElement>("[data-hsection]");
+      const htrack = hs?.querySelector<HTMLElement>("[data-htrack]");
       // A slot's dwell is [arrive..depart] in scroll units; the space between
       // consecutive dwells is transit. data-sq-hold stretches a dwell in both
-      // directions (1 = default). Slots inside the pinned card deck map to
-      // their card's segment of the pin instead of their document position.
+      // directions (1 = default). Deck slots map to their card's pin segment;
+      // a data-sq-ride slot dwells across the WHOLE horizontal pin, so the
+      // square floats passively in the word while the page moves sideways.
       marks = slotEls
         .map((el) => {
           if (deck?.classList.contains("deck-live") && el.dataset.sqSeg !== undefined) {
             const seg = Number(el.dataset.sqSeg);
             return { el, arrive: deckTop + (seg + 0.58) * vh, depart: deckTop + (seg + 0.94) * vh };
+          }
+          if (el.dataset.sqRide !== undefined && hs && htrack) {
+            const top = spacerTop(hs);
+            const pinLen = Math.max(0, htrack.scrollWidth - window.innerWidth) + vh * 0.45;
+            return { el, arrive: top - vh * 0.5, depart: top + pinLen - vh * 0.2 };
           }
           const top = el.getBoundingClientRect().top + window.scrollY;
           const hold = Math.max(1, Number(el.dataset.sqHold) || 1);

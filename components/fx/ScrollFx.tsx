@@ -43,7 +43,8 @@ export function ScrollFx() {
       const bars = gsap.utils.toArray<HTMLElement>("[data-shutter-bar]", deck);
       const angles = [3.4, -2.7, 4.1]; // organic variety, alternating lean
       // pin length: one segment per card, a beat of rest, then the shutter
-      const TOTAL = cards.length + 1.0;
+      // (which deliberately ISN'T finished when the pin releases)
+      const TOTAL = cards.length + 0.85;
       deck.classList.add("deck-live");
       const deckTl = gsap.timeline({
         scrollTrigger: {
@@ -87,19 +88,23 @@ export function ScrollFx() {
         }
       });
       // hold on the settled final card, then the SHUTTER: ink slats close
-      // in scattered order until the screen is the contact page's ground —
-      // the pin releases straight into it (ink on ink, seamless)
-      const SHUT_ORDER = [3, 0, 5, 1, 6, 2, 4];
+      // BOTTOM-UP (small jitter so it reads organic, not mechanical). The
+      // timeline ends before the top slats complete: the pin releases with
+      // strips of the card still showing at the top while the contact page
+      // (same ink) is already arriving from below.
       bars.forEach((bar, i) => {
+        const fromBottom = bars.length - 1 - i;
+        // the top two slats never fully close — remnant strips of the card
+        // ride away with the deck while the contact page is already here
+        const closed = i === 0 ? 0.86 : i === 1 ? 0.95 : 1;
         gsap.set(bar, { scaleY: 0, transformOrigin: i % 2 ? "50% 100%" : "50% 0%" });
         deckTl.fromTo(
           bar,
           { scaleY: 0 },
-          { scaleY: 1, duration: 0.42, ease: "power2.inOut" },
-          cards.length + 0.14 + SHUT_ORDER[i] * 0.055
+          { scaleY: closed, duration: 0.34, ease: "power2.inOut" },
+          cards.length + 0.1 + fromBottom * 0.048 + (i % 3) * 0.014
         );
       });
-      deckTl.to({}, { duration: 0.11 }); // fully dark beat before release
 
       return () => {
         deck.classList.remove("deck-live");

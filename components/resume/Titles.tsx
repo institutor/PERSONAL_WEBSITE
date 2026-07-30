@@ -27,6 +27,8 @@ interface GapTitleProps {
   sqSeg?: number;
   /** Square color while dwelling here (bone cards need an ink square). */
   sqTone?: "ink" | "bone";
+  /** Dwell across the ENTIRE horizontal pin — the square rides the word. */
+  sqRide?: boolean;
 }
 
 export function GapTitle({
@@ -39,6 +41,7 @@ export function GapTitle({
   hold,
   sqSeg,
   sqTone,
+  sqRide,
 }: GapTitleProps) {
   return (
     <div className={className} role="img" aria-label={text} data-title data-window={win}>
@@ -58,6 +61,7 @@ export function GapTitle({
                 data-sq-hold={hold}
                 data-sq-seg={sqSeg}
                 data-sq-tone={sqTone}
+                data-sq-ride={sqRide ? "" : undefined}
                 className="pointer-events-none absolute bottom-[0.05em] left-1/2 h-[0.72em] w-[0.72em] -translate-x-1/2"
                 aria-hidden="true"
               />

@@ -102,7 +102,14 @@ function ExperienceHorizontal() {
         {/* panel 0 — chapter head; the square becomes the missing N and
             rides sideways inside the word while the page scrolls sideways */}
         <div className="relative flex h-full w-[70vw] shrink-0 flex-col justify-center px-6 sm:px-10">
-          <GapTitle text="EXPERIENCE" gapIndex={7} index="02 · shipped" window="early" sizeClass="text-[clamp(3rem,9.5vw,9rem)]" />
+          <GapTitle
+            text="EXPERIENCE"
+            gapIndex={7}
+            index="02 · shipped"
+            window="early"
+            sqRide
+            sizeClass="text-[clamp(3rem,9.5vw,9rem)]"
+          />
           <p className="statement mt-8 max-w-xl text-[clamp(1.4rem,2.6vw,2.4rem)] opacity-90">
             What I build reaches production.
           </p>
@@ -334,16 +341,17 @@ function CardDeck() {
         </div>
       </article>
 
-      {/* the shutter: staggered ink slats close over the final card at the
-          end of the deck — when they finish, the screen IS the contact
-          page's ground, and the pin releases straight into it */}
+      {/* the shutter: ink slats close BOTTOM-UP over the final card at the
+          end of the deck; the pin releases before the top slats finish, so
+          the contact page is already arriving while strips of the card
+          still show at the top — the reference's exact overlap */}
       <div data-shutter aria-hidden="true" className="pointer-events-none absolute inset-0 z-40">
-        {Array.from({ length: 7 }, (_, i) => (
+        {Array.from({ length: 10 }, (_, i) => (
           <span
             key={i}
             data-shutter-bar
             className="absolute left-0 w-full bg-ink will-change-transform"
-            style={{ top: `${(i * 100) / 7}%`, height: `calc(${100 / 7}% + 1px)` }}
+            style={{ top: `${(i * 100) / 10}%`, height: `calc(${100 / 10}% + 1px)` }}
           />
         ))}
       </div>
