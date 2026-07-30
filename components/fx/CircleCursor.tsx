@@ -61,10 +61,9 @@ export function CircleCursor() {
     };
 
     const tick = () => {
-      // position is 1:1 with the pointer — zero trailing; only the size eases
-      cur.x = pos.x;
-      cur.y = pos.y;
-      cur.s += (cur.target - cur.s) * 0.25;
+      cur.x += (pos.x - cur.x) * 0.45;
+      cur.y += (pos.y - cur.y) * 0.45;
+      cur.s += (cur.target - cur.s) * 0.18;
       dot.style.transform = `translate(${cur.x - BASE / 2}px, ${cur.y - BASE / 2}px) scale(${cur.s})`;
       raf = requestAnimationFrame(tick);
     };
