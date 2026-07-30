@@ -16,6 +16,8 @@ const mono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://jiewenhuang.com"),
+  alternates: { canonical: "/" },
   title: "Jiewen Huang · I'm Jiewen",
   description:
     "Jiewen Huang: CS & Math @ Columbia '30. Makes useful things: NaomiAI ELA, agent-native backends, and this site.",
