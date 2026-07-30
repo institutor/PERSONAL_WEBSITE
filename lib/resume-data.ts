@@ -22,7 +22,7 @@ export const identity = {
 export const journey = {
   from: {
     title: "Stuyvesant High School",
-    detail: "Class of 2026 · SAT 1580 · National Merit Finalist",
+    detail: "Class of 2026",
     label: "DEP · WHERE IT STARTED",
   },
   via: "VIA QUESTBRIDGE · NATIONAL COLLEGE MATCH · FULL RIDE",

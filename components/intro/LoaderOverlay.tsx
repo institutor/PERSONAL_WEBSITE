@@ -93,7 +93,7 @@ export function LoaderOverlay() {
       aria-valuemax={100}
       aria-valuenow={0}
       aria-label="Loading portfolio"
-      className="fixed inset-0 z-[80] flex items-center justify-center text-bone"
+      className="fixed inset-0 z-[80] flex flex-col items-center justify-center text-bone"
       style={{
         background:
           "radial-gradient(circle at 30% 25%, rgba(232,227,216,0.13), transparent 32%), radial-gradient(circle at 72% 66%, rgba(232,227,216,0.07), transparent 36%), var(--ink)",
@@ -154,10 +154,7 @@ export function LoaderOverlay() {
         />
       </svg>
 
-      <p className="lbl absolute bottom-8 left-6 opacity-60" data-loader-label>
-        Drawing the page / preparing the work
-      </p>
-      <p className="absolute bottom-8 right-6 font-mono text-xs tracking-[0.3em] opacity-70">
+      <p className="mt-10 font-mono text-sm tracking-[0.34em] opacity-70">
         <span data-loader-pct style={{ fontVariantNumeric: "tabular-nums" }}>
           000
         </span>

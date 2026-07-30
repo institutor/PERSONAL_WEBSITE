@@ -297,3 +297,11 @@ html[data-motion="on"] [data-rise-fallback] [data-rise] {
 [data-deck].deck-live [data-shutter] {
   display: block;
 }
+
+/* The hero divider must never flash at full width while the loader is
+   still up — it exists only once the intro draws it (gsap inline
+   transform wins over this gate the moment the timeline takes over). */
+html[data-intro="play"] [data-hero-divider] {
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
