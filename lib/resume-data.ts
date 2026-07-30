@@ -7,7 +7,7 @@
 export const identity = {
   name: "Jiewen Huang",
   signature: "by Jiewen",
-  tagline: "CS & Math @ Columbia '30 · builds things that ship.",
+  tagline: "CS & Math @ Columbia '30 · makes useful things.",
   location: "Brooklyn, NY",
   scholar: "QuestBridge National College Match Scholar",
   links: {

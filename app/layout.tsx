@@ -18,16 +18,16 @@ const mono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Jiewen Huang · I'm Jiewen",
   description:
-    "Jiewen Huang: CS & Math @ Columbia '30. Builds things that ship: NaomiAI ELA, agent-native backends, and this site.",
+    "Jiewen Huang: CS & Math @ Columbia '30. Makes useful things: NaomiAI ELA, agent-native backends, and this site.",
   openGraph: {
     title: "I'm Jiewen",
-    description: "CS & Math @ Columbia '30 · builds things that ship.",
+    description: "CS & Math @ Columbia '30 · makes useful things.",
     images: ["/og.jpg"],
   },
   twitter: {
     card: "summary_large_image",
     title: "I'm Jiewen",
-    description: "CS & Math @ Columbia '30 · builds things that ship.",
+    description: "CS & Math @ Columbia '30 · makes useful things.",
     images: ["/og.jpg"],
   },
 };
