@@ -33,9 +33,9 @@ function Sweeps() {
         className="display outline-text relative z-10 whitespace-nowrap text-right text-[clamp(4.5rem,15vw,14rem)]"
         aria-hidden="true"
       >
-        BROOKLYN → MORNINGSIDE HEIGHTS
+        SUNSET PARK → MORNINGSIDE HEIGHTS
       </p>
-      <p className="sr-only">Shipping. Brooklyn to Morningside Heights.</p>
+      <p className="sr-only">Shipping. Sunset Park to Morningside Heights.</p>
     </section>
   );
 }
