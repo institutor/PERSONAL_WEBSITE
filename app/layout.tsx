@@ -3,6 +3,7 @@ import { Geist_Mono, Inter } from "next/font/google";
 import { BottomBar } from "@/components/chrome/BottomBar";
 import { TopBar } from "@/components/chrome/TopBar";
 import { SmoothScroll } from "@/components/fx/SmoothScroll";
+import { WaterCursor } from "@/components/fx/WaterCursor";
 import "./globals.css";
 
 const inter = Inter({
@@ -61,6 +62,7 @@ export default function RootLayout({
           {children}
           <BottomBar />
         </SmoothScroll>
+        <WaterCursor />
       </body>
     </html>
   );
