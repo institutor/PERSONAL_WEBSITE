@@ -246,3 +246,44 @@ html[data-motion="on"] [data-rise-fallback] [data-rise] {
     transform: none !important;
   }
 }
+
+/* ------------------------------------------------------- card deck ----- */
+/* Static fallback (no JS / reduced motion): cards stack as normal flow.
+   Live mode (class added by ScrollFx): cards become layers in the pinned
+   viewport, held below stage until their timeline segment lifts them. */
+[data-deck].deck-live {
+  height: 100svh;
+}
+[data-deck].deck-live [data-deck-card] {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  will-change: transform;
+}
+[data-deck].deck-live [data-deck-card]:not(.card-live) {
+  transform: translateY(112%);
+}
+
+/* the traveling square's bite out of every card's top edge */
+.deck-live .deck-notch {
+  clip-path: polygon(
+    0 0,
+    calc(50% - 30px) 0,
+    calc(50% - 30px) 38px,
+    calc(50% + 30px) 38px,
+    calc(50% + 30px) 0,
+    100% 0,
+    100% 100%,
+    0 100%
+  );
+}
+
+/* outlined pill on bone cards (ink-on-bone inverse of .pill) */
+.pill-ink {
+  border: 1px solid var(--ink);
+  padding: 0.3rem 0.85rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+}

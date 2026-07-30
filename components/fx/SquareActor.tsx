@@ -34,11 +34,18 @@ export function SquareActor() {
 
     const measure = () => {
       const vh = window.innerHeight;
+      const deck = document.querySelector<HTMLElement>("[data-deck]");
+      const deckTop = deck ? deck.getBoundingClientRect().top + window.scrollY : 0;
       // A slot's dwell is [arrive..depart] in scroll units; the space between
       // consecutive dwells is transit. data-sq-hold stretches a dwell in both
-      // directions (1 = default) so a word can keep the square longer.
+      // directions (1 = default). Slots inside the pinned card deck map to
+      // their card's segment of the pin instead of their document position.
       marks = slotEls
         .map((el) => {
+          if (deck?.classList.contains("deck-live") && el.dataset.sqSeg !== undefined) {
+            const seg = Number(el.dataset.sqSeg);
+            return { el, arrive: deckTop + (seg + 0.58) * vh, depart: deckTop + (seg + 0.94) * vh };
+          }
           const top = el.getBoundingClientRect().top + window.scrollY;
           const hold = Math.max(1, Number(el.dataset.sqHold) || 1);
           const lead = vh * (0.68 + 0.3 * (hold - 1));
@@ -81,6 +88,10 @@ export function SquareActor() {
         const span = Math.max(1, b.arrive - a.depart);
         t = smooth(gsap.utils.clamp(0, 1, (y - a.depart) / span));
       }
+
+      // bone by default; ink while the dominant slot sits on a bone card
+      const tone = (t < 0.5 ? a : b).el.dataset.sqTone;
+      sq.style.backgroundColor = tone === "ink" ? "var(--ink)" : "var(--bone)";
 
       const ra = a.el.getBoundingClientRect();
       const rb = b.el.getBoundingClientRect();

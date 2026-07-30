@@ -23,6 +23,10 @@ interface GapTitleProps {
   sizeClass?: string;
   /** How long the square lingers in this word (1 = default dwell). */
   hold?: number;
+  /** Deck card index — the slot maps to that segment of the deck pin. */
+  sqSeg?: number;
+  /** Square color while dwelling here (bone cards need an ink square). */
+  sqTone?: "ink" | "bone";
 }
 
 export function GapTitle({
@@ -33,6 +37,8 @@ export function GapTitle({
   className,
   sizeClass = "text-[clamp(3.8rem,13vw,12rem)]",
   hold,
+  sqSeg,
+  sqTone,
 }: GapTitleProps) {
   return (
     <div className={className} role="img" aria-label={text} data-title data-window={win}>
@@ -50,6 +56,8 @@ export function GapTitle({
               <span
                 data-sq-slot
                 data-sq-hold={hold}
+                data-sq-seg={sqSeg}
+                data-sq-tone={sqTone}
                 className="pointer-events-none absolute bottom-[0.05em] left-1/2 h-[0.72em] w-[0.72em] -translate-x-1/2"
                 aria-hidden="true"
               />

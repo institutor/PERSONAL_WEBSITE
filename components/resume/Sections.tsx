@@ -169,121 +169,150 @@ function ExperienceHorizontal() {
   );
 }
 
-/* ---------------------------------------------------------------- 03 ---- */
-
-function Leadership() {
-  const windows = ["early", "mid", "late"] as const;
+/* ------------------------------------------------- 03-05 · the deck ----- */
+/**
+ * SAKAZUKI-style card deck: after the horizontal chapter, each remaining
+ * section is a full card that slides UP over the previous one — arriving
+ * at its own organic angle, slightly inset (never covering the full screen
+ * mid-flight), then straightening and locking edge-to-edge. Every card's
+ * top edge has a square notch bitten out — the traveling square's mark.
+ * The page after the deck (Contact) enters straight and full-width: the
+ * bold return to normal flow. Choreography lives in ScrollFx ([data-deck]).
+ */
+function CardDeck() {
   return (
-    <Band id="leadership">
-      <BackTicker word="LEADERSHIP" posClass="top-[10%]" />
-      {/* the square becomes the missing I */}
-      <GapTitle text="LEADERSHIP" gapIndex={8} index="03 — teams" window="mid" className="relative z-10" />
+    <section data-deck data-band className="band-ink relative overflow-hidden">
+      {/* base layer: table of contents the cards will cover one by one */}
+      <div className="pointer-events-none flex min-h-svh flex-col justify-center px-4 sm:px-6" aria-hidden="true">
+        <p className="lbl mb-6 opacity-60">( 03 — 05 )</p>
+        <p className="display outline-text text-[clamp(3.4rem,10.5vw,10rem)] leading-[1.04]">LEADERSHIP</p>
+        <p className="display outline-text text-[clamp(3.4rem,10.5vw,10rem)] leading-[1.04]">AWARDS</p>
+        <p className="display outline-text text-[clamp(3.4rem,10.5vw,10rem)] leading-[1.04]">STACK</p>
+      </div>
 
-      <div className="relative z-10 mt-16 grid gap-12 md:grid-cols-3" data-zoom-in>
-        {leadership.map((entry, i) => (
-          <div key={entry.org} data-scrub-rise data-window={windows[i]}>
-            <p className="statement text-2xl">{entry.org}</p>
-            <p className="lbl mt-1 opacity-80">{entry.role}</p>
-            <p className="lbl mt-1 opacity-50">{entry.period}</p>
-            <div className="mt-4 space-y-3">
-              {entry.bullets.map((b, bi) => (
-                <p key={bi} className="bodycol opacity-75">
-                  {b}
-                </p>
-              ))}
+      {/* card 03 — LEADERSHIP, bone */}
+      <article
+        id="leadership"
+        data-deck-card
+        className="deck-notch flex flex-col justify-center bg-bone px-4 py-20 text-ink sm:px-10"
+      >
+        <GapTitle
+          text="LEADERSHIP"
+          gapIndex={8}
+          index="03 — teams"
+          sqSeg={0}
+          sqTone="ink"
+          sizeClass="text-[clamp(3rem,9.5vw,9rem)]"
+        />
+        <div className="mt-14 grid gap-10 border-t-[3px] border-ink pt-10 md:grid-cols-3">
+          {leadership.map((entry) => (
+            <div key={entry.org} data-card-rise>
+              <p className="statement text-2xl">{entry.org}</p>
+              <p className="lbl mt-1 opacity-80">{entry.role}</p>
+              <p className="lbl mt-1 opacity-50">{entry.period}</p>
+              <div className="mt-4 space-y-3">
+                {entry.bullets.map((b, bi) => (
+                  <p key={bi} className="bodycol opacity-75">
+                    {b}
+                  </p>
+                ))}
+              </div>
+              {entry.note && <p className="bodycol mt-4 font-semibold">— {entry.note}</p>}
+              {entry.org === "Science Olympiad" && (
+                <p className="lbl mt-4 opacity-60">MEDALS ×9 — YALE · COLUMBIA · BROWN</p>
+              )}
             </div>
-            {entry.note && <p className="bodycol mt-4 font-semibold">— {entry.note}</p>}
-            {entry.org === "Science Olympiad" && (
-              <p className="lbl mt-4 opacity-60">MEDALS ×9 — YALE · COLUMBIA · BROWN</p>
-            )}
-          </div>
-        ))}
-      </div>
-    </Band>
-  );
-}
+          ))}
+        </div>
+      </article>
 
-/* ---------------------------------------------------------------- 04 ---- */
-
-function Awards() {
-  return (
-    <Band id="awards">
-      <BackTicker word="AWARDS" posClass="top-[6%]" />
-      {/* the square becomes the missing second A */}
-      <GapTitle text="AWARDS" gapIndex={2} index="04 — proof" window="mid" className="relative z-10" />
-
-      <ul className="relative z-10 mt-20">
-        {awards.map((a, i) => (
-          <li
-            key={a.title}
-            className="flex items-baseline gap-6 border-t border-bone/15 py-4"
-            data-driftx
-            data-window={(["early", "mid", "late"] as const)[i % 3]}
-          >
-            <span className="display w-24 shrink-0 text-2xl">{a.big ?? "—"}</span>
-            <span className="statement min-w-0 flex-1 text-lg">
-              {a.big ? a.detail : a.title}
-              {!a.big && <span className="bodycol ml-3 inline opacity-60">{a.detail}</span>}
-            </span>
-            <span className="lbl shrink-0 opacity-60">{a.year}</span>
-          </li>
-        ))}
-      </ul>
-
-      <div className="relative z-10 mt-16 flex flex-col justify-between gap-10 sm:flex-row" data-zoom-in>
-        {programs.map((p, i) => (
-          <p key={p.name} className={`bodycol ${i === 1 ? "sm:text-right" : ""}`}>
-            <strong>
-              {p.name} — {p.period}
-            </strong>
-            {p.detail}
-          </p>
-        ))}
-      </div>
-    </Band>
-  );
-}
-
-/* ---------------------------------------------------------------- 05 ---- */
-
-function Stack() {
-  return (
-    <Band id="stack">
-      <BackTicker word="STACK" posClass="top-[12%]" />
-      {/* the square becomes the missing A */}
-      <GapTitle text="STACK" gapIndex={2} index="05 — instruments" window="late" className="relative z-10" />
-
-      <div className="relative z-10 mt-14 space-y-8" data-zoom-in>
-        {Object.entries(skills).map(([group, items]) => (
-          <div key={group} className="grid gap-4 sm:grid-cols-[200px_1fr]">
-            <p className="lbl pt-1.5 opacity-60">{group}</p>
-            <ul className="flex flex-wrap gap-2">
-              {items.map((item) => {
-                const live = liveStack.includes(item);
-                return (
-                  <li key={item} className={`pill ${live ? "font-semibold" : "opacity-70"}`}>
-                    {item}
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ))}
-
-        <p className="paren pt-2 opacity-80">( the bold ones are rendering this page right now )</p>
-
-        <div className="space-y-4 pt-8">
-          {teaching.map((t) => (
-            <p key={t.org} className="bodycol !max-w-xl opacity-75">
+      {/* card 04 — AWARDS, ink with a bone frame */}
+      <article
+        id="awards"
+        data-deck-card
+        className="deck-notch flex flex-col justify-center bg-ink px-4 py-20 text-bone sm:px-10"
+      >
+        <div className="pointer-events-none absolute inset-3 border-[3px] border-bone sm:inset-5" aria-hidden="true" />
+        <GapTitle
+          text="AWARDS"
+          gapIndex={2}
+          index="04 — proof"
+          sqSeg={1}
+          sizeClass="text-[clamp(3rem,9.5vw,9rem)]"
+        />
+        <ul className="mt-12">
+          {awards.map((a) => (
+            <li key={a.title} className="flex items-baseline gap-6 border-t border-bone/15 py-3.5" data-card-rise>
+              <span className="display w-24 shrink-0 text-2xl">{a.big ?? "—"}</span>
+              <span className="statement min-w-0 flex-1 text-lg">
+                {a.big ? a.detail : a.title}
+                {!a.big && <span className="bodycol ml-3 inline opacity-60">{a.detail}</span>}
+              </span>
+              <span className="lbl shrink-0 opacity-60">{a.year}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-10 flex flex-col justify-between gap-8 sm:flex-row" data-card-rise>
+          {programs.map((p, i) => (
+            <p key={p.name} className={`bodycol ${i === 1 ? "sm:text-right" : ""}`}>
               <strong>
-                {t.org} — {t.role}
+                {p.name} — {p.period}
               </strong>
-              {t.detail}
+              {p.detail}
             </p>
           ))}
         </div>
-      </div>
-    </Band>
+      </article>
+
+      {/* card 05 — STACK, bone */}
+      <article
+        id="stack"
+        data-deck-card
+        className="deck-notch flex flex-col justify-center bg-bone px-4 py-20 text-ink sm:px-10"
+      >
+        <GapTitle
+          text="STACK"
+          gapIndex={2}
+          index="05 — instruments"
+          sqSeg={2}
+          sqTone="ink"
+          sizeClass="text-[clamp(3rem,9.5vw,9rem)]"
+        />
+
+        <div className="mt-12 space-y-7 border-t-[3px] border-ink pt-10">
+          {Object.entries(skills).map(([group, items]) => (
+            <div key={group} className="grid gap-4 sm:grid-cols-[200px_1fr]" data-card-rise>
+              <p className="lbl pt-1.5 opacity-60">{group}</p>
+              <ul className="flex flex-wrap gap-2">
+                {items.map((item) => {
+                  const live = liveStack.includes(item);
+                  return (
+                    <li key={item} className={`pill-ink ${live ? "font-semibold" : "opacity-70"}`}>
+                      {item}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+
+          <p className="paren pt-1 opacity-80" data-card-rise>
+            ( the bold ones are rendering this page right now )
+          </p>
+
+          <div className="space-y-4 pt-5" data-card-rise>
+            {teaching.map((t) => (
+              <p key={t.org} className="bodycol !max-w-xl opacity-75">
+                <strong>
+                  {t.org} — {t.role}
+                </strong>
+                {t.detail}
+              </p>
+            ))}
+          </div>
+        </div>
+      </article>
+    </section>
   );
 }
 
@@ -389,9 +418,7 @@ export function Resume() {
       <Sweeps />
       <Trajectory />
       <ExperienceHorizontal />
-      <Leadership />
-      <Awards />
-      <Stack />
+      <CardDeck />
       <Contact />
     </main>
   );

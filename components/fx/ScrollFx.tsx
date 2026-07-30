@@ -27,6 +27,70 @@ export function ScrollFx() {
   useGSAP(() => {
     const mm = gsap.matchMedia();
 
+    /* ---- the card deck (SAKAZUKI mechanic), desktop only: each section
+           card slides UP over the previous — arriving at its own organic
+           angle, slightly inset so it never covers the full screen
+           mid-flight, then straightening and locking edge-to-edge. The
+           section after the deck enters straight and full-width: the bold
+           return to normal flow. On small screens the cards stay stacked
+           sections — pinned full-viewport cards would clip tall content.
+           Registered FIRST so .deck-live exists before the generic title
+           loop filters deck titles out. ---- */
+    mm.add("(prefers-reduced-motion: no-preference) and (min-width: 768px)", () => {
+      const deck = document.querySelector<HTMLElement>("[data-deck]");
+      if (!deck) return;
+      const cards = gsap.utils.toArray<HTMLElement>("[data-deck-card]", deck);
+      const angles = [3.4, -2.7, 4.1]; // organic variety, alternating lean
+      deck.classList.add("deck-live");
+      const deckTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: deck,
+          start: "top top",
+          end: () => "+=" + (cards.length + 0.38) * window.innerHeight,
+          scrub: 0.4,
+          pin: true,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+          refreshPriority: 9,
+        },
+      });
+      cards.forEach((card, k) => {
+        gsap.set(card, { zIndex: 10 + k });
+        card.classList.add("card-live");
+        deckTl.fromTo(
+          card,
+          { yPercent: 112, rotation: angles[k % angles.length], scale: 0.93, transformOrigin: "50% 85%" },
+          { yPercent: 0, rotation: 0, scale: 1, duration: 0.62, ease: "power2.out" },
+          k
+        );
+        // the card's title letters assemble just as it locks in
+        card.querySelectorAll<HTMLElement>("[data-tl]").forEach((el, i) => {
+          el.classList.add("tl-live");
+          deckTl.fromTo(
+            el,
+            { yPercent: 108 + ((i * 53) % 70) },
+            { yPercent: 0, duration: 0.3, ease: "none" },
+            k + 0.3 + (i % 5) * 0.016
+          );
+        });
+        const rises = card.querySelectorAll<HTMLElement>("[data-card-rise]");
+        if (rises.length) {
+          deckTl.fromTo(
+            rises,
+            { y: 74 },
+            { y: 0, duration: 0.28, stagger: 0.035, ease: "power1.out" },
+            k + 0.42
+          );
+        }
+      });
+      deckTl.to({}, { duration: 0.38 }); // settled hold before release
+
+      return () => {
+        deck.classList.remove("deck-live");
+        cards.forEach((c) => c.classList.remove("card-live"));
+      };
+    });
+
     mm.add("(prefers-reduced-motion: no-preference)", () => {
       /* ---- pinned horizontal chapter (first: it owns layout).
              Enters ZOOMED OUT (overview of the panels), zooms to full,
@@ -115,7 +179,9 @@ export function ScrollFx() {
 
       /* ---- gap-titles: invisible → letters slide up from their own spots
              at varying speeds, assembling as you scroll (scrubbed) ---- */
-      for (const t of gsap.utils.toArray<HTMLElement>("[data-title]")) {
+      for (const t of gsap.utils
+        .toArray<HTMLElement>("[data-title]")
+        .filter((el) => !el.closest("[data-deck].deck-live"))) {
         const [start, end] = WINDOWS[t.dataset.window ?? "early"];
         const letters = t.querySelectorAll<HTMLElement>("[data-tl]");
         letters.forEach((el, i) => {
