@@ -60,9 +60,12 @@ export function SquareActor() {
 
     const smooth = (t: number) => t * t * (3 - 2 * t);
     const state = { x: 0, y: 0, s: 1, r: 0, init: false };
+    let entryAt = -1; // ticker time the entrance flight began
 
     const update = (time: number) => {
       if (marks.length < 2) return;
+      // hold until the intro releases the page — the square then FLOATS in
+      if (!state.init && document.documentElement.dataset.intro === "play") return;
       const y = window.scrollY;
 
       // piecewise: DWELL inside a mark's [arrive..depart], transit between
@@ -116,14 +119,29 @@ export function SquareActor() {
       cy += Math.sin(time * 1.4 + ai * 1.7) * 5 * drift;
       cx += Math.cos(time * 0.9 + ai) * 3 * drift;
 
+      // entrance: a decaying curl on the target so the approach is a float,
+      // not a beeline; fades to nothing within ~2.6s
+      if (entryAt >= 0) {
+        const age = time - entryAt;
+        if (age < 2.6) {
+          const env = Math.pow(1 - age / 2.6, 1.6);
+          cx += Math.sin(age * 2.4 + 1) * 90 * env;
+          cy += Math.cos(age * 1.7) * 60 * env;
+        } else {
+          entryAt = -1;
+        }
+      }
+
       const tx = cx - BASE / 2;
       const ty = cy - BASE / 2;
       const ts = Math.max(0.2, size / BASE);
 
       if (!state.init) {
-        state.x = tx;
-        state.y = ty;
-        state.s = ts;
+        // born offscreen above-right, small — drifts down into the slot
+        state.x = tx + Math.min(360, window.innerWidth * 0.25);
+        state.y = ty - Math.min(440, window.innerHeight * 0.55);
+        state.s = ts * 0.35;
+        entryAt = time;
         state.init = true;
       }
       const k = 0.075; // soft damping — lazy, fluid follow
