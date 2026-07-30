@@ -16,9 +16,9 @@ const mono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Jiewen Huang — I'm Jiewen",
+  title: "Jiewen Huang · I'm Jiewen",
   description:
-    "Jiewen Huang — CS & Math @ Columbia '30. Builds things that ship: NaomiAI ELA, agent-native backends, and this site.",
+    "Jiewen Huang: CS & Math @ Columbia '30. Builds things that ship: NaomiAI ELA, agent-native backends, and this site.",
   openGraph: {
     title: "I'm Jiewen",
     description: "CS & Math @ Columbia '30 · builds things that ship.",

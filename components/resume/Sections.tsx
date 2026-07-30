@@ -6,6 +6,7 @@ import {
   journey,
   leadership,
   programs,
+  sciolyMedals,
   skills,
   liveStack,
   teaching,
@@ -42,7 +43,6 @@ function Sweeps() {
 /* ---------------------------------------------------------------- 01 ---- */
 
 function Trajectory() {
-  const windows = ["early", "mid", "late"] as const;
   return (
     <Band id="trajectory" className="min-h-svh">
       <BackTicker word="TRAJECTORY" posClass="top-[4%]" />
@@ -50,30 +50,41 @@ function Trajectory() {
       <GapTitle
         text="TRAJECTORY"
         gapIndex={7}
-        index="01 — the path"
+        index="01 · the path"
         window="early"
         hold={1.8}
         className="relative z-10"
       />
 
-      {/* the square swells huge behind the stations, then shrinks — sits low
-          in the band so the title above it gets a long, unhurried dwell */}
+      {/* the square swells huge behind the itinerary, then shrinks */}
       <span
         data-sq-slot
         className="pointer-events-none absolute right-[8%] top-[74%] h-[36vh] w-[36vh]"
         aria-hidden="true"
       />
 
-      <div className="relative z-10 space-y-14 pt-20">
-        {journey.map((stop, i) => (
-          <div key={stop.title} data-scrub-rise data-window={windows[i]}>
-            <p className="lbl mb-2 opacity-60">
-              0{i + 1} — {stop.note}
-            </p>
-            <p className="display text-[clamp(2.6rem,7vw,6.5rem)]">{stop.title}</p>
-            <p className="bodycol mt-3 opacity-75">{stop.detail}</p>
-          </div>
-        ))}
+      {/* the itinerary: one departure, one arrival, the match as the route */}
+      <div className="relative z-10 pt-24">
+        <div data-scrub-rise data-window="early">
+          <p className="lbl mb-2 opacity-60">DEP · {journey.from.note}</p>
+          <p className="display text-[clamp(2.6rem,7vw,6.5rem)]">{journey.from.title}</p>
+          <p className="bodycol mt-3 opacity-75">{journey.from.detail}</p>
+        </div>
+
+        <div className="my-16 flex items-center gap-5" data-scrub-rise data-window="mid">
+          <span className="h-[3px] w-10 bg-bone sm:w-24" aria-hidden="true" />
+          <p className="lbl whitespace-nowrap opacity-80">{journey.via}</p>
+          <span className="h-[3px] flex-1 bg-bone" aria-hidden="true" />
+          <span className="lbl opacity-70" aria-hidden="true">
+            ▶
+          </span>
+        </div>
+
+        <div className="text-right" data-scrub-rise data-window="late">
+          <p className="lbl mb-2 opacity-60">ARR · {journey.to.note}</p>
+          <p className="display text-[clamp(2.6rem,7vw,6.5rem)]">{journey.to.title}</p>
+          <p className="bodycol ml-auto mt-3 opacity-75">{journey.to.detail}</p>
+        </div>
       </div>
     </Band>
   );
@@ -91,11 +102,10 @@ function ExperienceHorizontal() {
         {/* panel 0 — chapter head; the square becomes the missing N and
             rides sideways inside the word while the page scrolls sideways */}
         <div className="relative flex h-full w-[70vw] shrink-0 flex-col justify-center px-6 sm:px-10">
-          <GapTitle text="EXPERIENCE" gapIndex={7} index="02 — shipped" window="early" sizeClass="text-[clamp(3rem,9.5vw,9rem)]" />
+          <GapTitle text="EXPERIENCE" gapIndex={7} index="02 · shipped" window="early" sizeClass="text-[clamp(3rem,9.5vw,9rem)]" />
           <p className="statement mt-8 max-w-xl text-[clamp(1.4rem,2.6vw,2.4rem)] opacity-90">
-            Two years, three teams, one habit: things reach production.
+            What I build reaches production.
           </p>
-          <p className="lbl mt-10 opacity-60">SCROLL — THE PAGE TURNS SIDEWAYS HERE →</p>
         </div>
 
         {/* panel 1 — NaomiAI: the filled panel */}
@@ -106,7 +116,7 @@ function ExperienceHorizontal() {
             <span>{naomi.period}</span>
           </div>
           <p className="statement mt-8 max-w-3xl text-[clamp(1.8rem,3.6vw,3.4rem)]">
-            NaomiAI ELA — a K-8 reading-intervention platform, live for 190 students in the South
+            NaomiAI ELA: a K-8 reading-intervention platform, live for 190 students in the South
             Bronx.
           </p>
           <div className="mt-8 flex flex-wrap gap-10">
@@ -132,7 +142,7 @@ function ExperienceHorizontal() {
         {/* panel 2 — Fed10: the framed panel */}
         <div className="relative m-6 flex w-[58vw] shrink-0 flex-col justify-center self-stretch border-[3px] border-bone px-8 sm:px-12">
           <p className="lbl opacity-60">
-            {fed10.period} — {fed10.location}
+            {fed10.period} · {fed10.location}
           </p>
           <p className="display mt-3 text-[clamp(2.4rem,5vw,4.5rem)]">{fed10.company}</p>
           <p className="lbl mt-2 opacity-80">{fed10.role}</p>
@@ -151,7 +161,7 @@ function ExperienceHorizontal() {
             O₂
           </p>
           <p className="lbl opacity-60">
-            {o2.period} — {o2.location}
+            {o2.period} · {o2.location}
           </p>
           <p className="display mt-3 text-[clamp(2.4rem,5vw,4.5rem)]">{o2.company}</p>
           <p className="lbl mt-2 opacity-80">{o2.role}</p>
@@ -189,65 +199,29 @@ function CardDeck() {
           data-mega
           className="display outline-text whitespace-nowrap text-[clamp(9rem,26vw,24rem)] opacity-20 will-change-transform"
         >
-          LEADERSHIP — AWARDS — STACK — LEADERSHIP — AWARDS
+          AWARDS · STACK · LEADERSHIP · AWARDS · STACK
         </p>
       </div>
       <div className="min-h-svh" aria-hidden="true" />
 
-      {/* card 03 — LEADERSHIP, bone */}
+      {/* card 03 — AWARDS, bone */}
       <article
-        id="leadership"
+        id="awards"
         data-deck-card
-        className="deck-notch flex flex-col justify-center bg-bone px-4 py-20 text-ink sm:px-10"
+        className="deck-notch relative flex flex-col justify-center bg-bone px-4 py-20 text-ink sm:px-10"
       >
         <GapTitle
-          text="LEADERSHIP"
-          gapIndex={8}
-          index="03 — teams"
+          text="AWARDS"
+          gapIndex={2}
+          index="03 · proof"
           sqSeg={0}
           sqTone="ink"
           sizeClass="text-[clamp(3rem,9.5vw,9rem)]"
         />
-        <div className="mt-14 grid gap-10 border-t-[3px] border-ink pt-10 md:grid-cols-3">
-          {leadership.map((entry) => (
-            <div key={entry.org} data-card-rise>
-              <p className="statement text-2xl">{entry.org}</p>
-              <p className="lbl mt-1 opacity-80">{entry.role}</p>
-              <p className="lbl mt-1 opacity-50">{entry.period}</p>
-              <div className="mt-4 space-y-3">
-                {entry.bullets.map((b, bi) => (
-                  <p key={bi} className="bodycol opacity-75">
-                    {b}
-                  </p>
-                ))}
-              </div>
-              {entry.note && <p className="bodycol mt-4 font-semibold">— {entry.note}</p>}
-              {entry.org === "Science Olympiad" && (
-                <p className="lbl mt-4 opacity-60">MEDALS ×9 — YALE · COLUMBIA · BROWN</p>
-              )}
-            </div>
-          ))}
-        </div>
-      </article>
-
-      {/* card 04 — AWARDS, ink with a bone frame */}
-      <article
-        id="awards"
-        data-deck-card
-        className="deck-notch flex flex-col justify-center bg-ink px-4 py-20 text-bone sm:px-10"
-      >
-        <div className="pointer-events-none absolute inset-3 border-[3px] border-bone sm:inset-5" aria-hidden="true" />
-        <GapTitle
-          text="AWARDS"
-          gapIndex={2}
-          index="04 — proof"
-          sqSeg={1}
-          sizeClass="text-[clamp(3rem,9.5vw,9rem)]"
-        />
-        <ul className="mt-12">
+        <ul className="mt-12 border-t-[3px] border-ink">
           {awards.map((a) => (
-            <li key={a.title} className="flex items-baseline gap-6 border-t border-bone/15 py-3.5" data-card-rise>
-              <span className="display w-24 shrink-0 text-2xl">{a.big ?? "—"}</span>
+            <li key={a.title} className="flex items-baseline gap-6 border-b border-ink/15 py-3.5" data-card-rise>
+              <span className="display w-24 shrink-0 text-2xl">{a.big ?? "·"}</span>
               <span className="statement min-w-0 flex-1 text-lg">
                 {a.big ? a.detail : a.title}
                 {!a.big && <span className="bodycol ml-3 inline opacity-60">{a.detail}</span>}
@@ -260,7 +234,7 @@ function CardDeck() {
           {programs.map((p, i) => (
             <p key={p.name} className={`bodycol ${i === 1 ? "sm:text-right" : ""}`}>
               <strong>
-                {p.name} — {p.period}
+                {p.name} · {p.period}
               </strong>
               {p.detail}
             </p>
@@ -268,22 +242,22 @@ function CardDeck() {
         </div>
       </article>
 
-      {/* card 05 — STACK, bone */}
+      {/* card 04 — STACK, ink with a bone frame */}
       <article
         id="stack"
         data-deck-card
-        className="deck-notch flex flex-col justify-center bg-bone px-4 py-20 text-ink sm:px-10"
+        className="deck-notch relative flex flex-col justify-center bg-ink px-4 py-20 text-bone sm:px-10"
       >
+        <div className="pointer-events-none absolute inset-3 border-[3px] border-bone sm:inset-5" aria-hidden="true" />
         <GapTitle
           text="STACK"
           gapIndex={2}
-          index="05 — instruments"
-          sqSeg={2}
-          sqTone="ink"
+          index="04 · instruments"
+          sqSeg={1}
           sizeClass="text-[clamp(3rem,9.5vw,9rem)]"
         />
 
-        <div className="mt-12 space-y-7 border-t-[3px] border-ink pt-10">
+        <div className="mt-12 space-y-7 border-t-[3px] border-bone pt-10">
           {Object.entries(skills).map(([group, items]) => (
             <div key={group} className="grid gap-4 sm:grid-cols-[200px_1fr]" data-card-rise>
               <p className="lbl pt-1.5 opacity-60">{group}</p>
@@ -291,7 +265,7 @@ function CardDeck() {
                 {items.map((item) => {
                   const live = liveStack.includes(item);
                   return (
-                    <li key={item} className={`pill-ink ${live ? "font-semibold" : "opacity-70"}`}>
+                    <li key={item} className={`pill ${live ? "font-semibold" : "opacity-70"}`}>
                       {item}
                     </li>
                   );
@@ -300,20 +274,63 @@ function CardDeck() {
             </div>
           ))}
 
-          <p className="paren pt-1 opacity-80" data-card-rise>
-            ( the bold ones are rendering this page right now )
-          </p>
-
           <div className="space-y-4 pt-5" data-card-rise>
             {teaching.map((t) => (
               <p key={t.org} className="bodycol !max-w-xl opacity-75">
                 <strong>
-                  {t.org} — {t.role}
+                  {t.org} · {t.role}
                 </strong>
                 {t.detail}
               </p>
             ))}
           </div>
+        </div>
+      </article>
+
+      {/* card 05 — LEADERSHIP, bone (the deck's finale) */}
+      <article
+        id="leadership"
+        data-deck-card
+        className="deck-notch relative flex flex-col justify-center bg-bone px-4 py-20 text-ink sm:px-10"
+      >
+        <GapTitle
+          text="LEADERSHIP"
+          gapIndex={8}
+          index="05 · teams"
+          sqSeg={2}
+          sqTone="ink"
+          sizeClass="text-[clamp(3rem,9.5vw,9rem)]"
+        />
+        <div className="mt-12 grid gap-10 border-t-[3px] border-ink pt-9 md:grid-cols-3">
+          {leadership.map((entry) => (
+            <div key={entry.org} data-card-rise>
+              <p className="statement text-2xl">{entry.org}</p>
+              <p className="lbl mt-1 opacity-80">{entry.role}</p>
+              <p className="lbl mt-1 opacity-50">{entry.period}</p>
+              <div className="mt-4 space-y-3">
+                {entry.bullets.map((b, bi) => (
+                  <p key={bi} className="bodycol opacity-75">
+                    {b}
+                  </p>
+                ))}
+              </div>
+              {entry.org === "Science Olympiad" && (
+                <div className="mt-5 border-t border-ink/20 pt-3">
+                  <p className="lbl mb-2 opacity-60">THE MEDAL SHELF · ×11</p>
+                  <ul className="space-y-1.5">
+                    {sciolyMedals.map((m) => (
+                      <li key={m.meet + m.place} className="flex items-baseline gap-3 text-[0.7rem] leading-snug">
+                        <span className="display w-[4.6rem] shrink-0 whitespace-nowrap text-sm">{m.place}</span>
+                        <span className="opacity-75">
+                          <strong className="font-semibold opacity-100">{m.meet}</strong> · {m.events}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </article>
     </section>

@@ -19,7 +19,7 @@ export function Hero() {
       <HeroSpaceClient />
 
       {/* I'm — top-left, kissing the edge */}
-      <h1 className="relative z-10" aria-label="I'm Jiewen — Jiewen Huang">
+      <h1 className="relative z-10" aria-label="I'm Jiewen: Jiewen Huang">
         <span aria-hidden="true" className="block" data-hero-word="im">
           <span className="display -ml-[0.045em] block overflow-hidden whitespace-nowrap normal-case text-[clamp(7rem,24vw,22rem)]">
             {IM.map((ch, i) => (
@@ -60,11 +60,6 @@ export function Hero() {
         <p className="paren opacity-0" data-hero-fade>
           ( software engineer )
         </p>
-        <div className="bodycol mt-4 hidden text-right opacity-0 sm:block" data-hero-fade>
-          <strong>The short version</strong>
-          Ships things that matter: a K-8 reading platform live for 190 students, an agent-native
-          100k-line backend at a YC startup. Next: Columbia CS &amp; Math, class of &rsquo;30.
-        </div>
       </div>
 
       <p className="lbl pointer-events-none absolute bottom-12 left-4 z-10 opacity-0 sm:left-6" data-hero-fade>

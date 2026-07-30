@@ -79,7 +79,7 @@ interface BackTickerProps {
 }
 
 export function BackTicker({ word, posClass = "top-[8%]" }: BackTickerProps) {
-  const line = `${word} — ${word} — ${word}`;
+  const line = `${word} · ${word} · ${word}`;
   return (
     <div
       className={`pointer-events-none absolute inset-x-0 z-0 overflow-hidden ${posClass}`}

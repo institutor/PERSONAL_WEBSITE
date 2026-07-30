@@ -18,23 +18,20 @@ export const identity = {
   },
 } as const;
 
-export const journey = [
-  {
+/** The itinerary: one departure, one arrival, the match as the route. */
+export const journey = {
+  from: {
     title: "Stuyvesant High School",
     detail: "Class of 2026 · SAT 1580 · National Merit Finalist",
     note: "where it started",
   },
-  {
-    title: "QuestBridge",
-    detail: "National College Match Recipient",
-    note: "the match",
-  },
-  {
+  via: "VIA QUESTBRIDGE · NATIONAL COLLEGE MATCH · FULL RIDE",
+  to: {
     title: "Columbia University",
     detail: "B.A. Computer Science & Mathematics, Class of 2030",
     note: "what's next",
   },
-] as const;
+} as const;
 
 export interface ExperienceEntry {
   company: string;
@@ -55,7 +52,7 @@ export const experience: ExperienceEntry[] = [
     period: "Feb 2025 – Present",
     featured: true,
     bullets: [
-      "Designed and shipped NaomiAI ELA from scratch — a K-8 reading-intervention platform now in production for 190 students at Legacy College Prep (South Bronx charter), with a paid annual contract and a 2-year research partnership.",
+      "Designed and shipped NaomiAI ELA from scratch: a K-8 reading-intervention platform now in production for 190 students at Legacy College Prep (South Bronx charter), with a paid annual contract and a 2-year research partnership.",
       "Built a secure Supabase PostgreSQL backend with row-level security across 13+ student-data tables and 160+ singleton services, with a React / TypeScript / Tailwind frontend.",
       "Started as a paid CS4ALL Pathfinders intern under Justice Jones; hired part-time after the internship for outstanding performance.",
     ],
@@ -109,17 +106,16 @@ export const leadership: LeadershipEntry[] = [
     role: "VP of Web Development",
     period: "Sep 2025 – Jun 2026",
     bullets: [
-      "Lead the web crew building stuycast.org in Next.js, React, TypeScript and Tailwind — showcasing video productions to 3,000+ students.",
+      "Lead the web crew building stuycast.org in Next.js, React, TypeScript and Tailwind, showcasing video productions to 3,000+ students.",
       "Shipped the team roster, a YouTube-integrated video gallery, Instagram embeds, and Three.js + Framer Motion visual effects.",
     ],
-    note: "yes, this site's stack — I've shipped it before",
   },
   {
     org: "Junior & Senior Caucus",
     role: "Web Developer / IT Lead",
     period: "Jul 2024 – Jun 2026",
     bullets: [
-      "Spearheaded front-end development of the Junior and Senior Caucus sites — 3,000+ lines of React over two years, maintained live through the school year.",
+      "Spearheaded front-end development of the Junior and Senior Caucus sites: 3,000+ lines of React over two years, maintained live through the school year.",
       "Helped raise $2,000 toward Junior Prom.",
     ],
   },
@@ -128,11 +124,22 @@ export const leadership: LeadershipEntry[] = [
     role: "Varsity Competitor & Web Dev Lead",
     period: "Sep 2023 – Jun 2026",
     bullets: [
-      "Biology study division — 2nd in Epidemiology, 6th in Microbiology out of 300+ schoolwide.",
-      "Medal consistently at collegiate invitationals against 60-90+ team fields at Yale, Columbia, and Brown.",
+      "Biology study division: 2nd in Epidemiology, 6th in Microbiology out of 300+ schoolwide.",
+      "Medal consistently at collegiate invitationals against 60-90+ team fields.",
     ],
   },
 ];
+
+/** The medal shelf: 11 Science Olympiad medals, meet by meet. */
+export const sciolyMedals = [
+  { place: "1st ×2", meet: "Lexington Invitational", events: "Water Quality & Pokémon Pset (trial)" },
+  { place: "1st & 5th", meet: "Enloe Invitational '26", events: "Pop Quiz (trial) & Water Quality" },
+  { place: "3rd & 4th", meet: "Jordan Invitational '26", events: "Troll Facts (trial) & Water Quality" },
+  { place: "3rd", meet: "Brown Invitational '26", events: "Disease Detectives" },
+  { place: "3rd", meet: "Yale Invitational '26", events: "Water Quality" },
+  { place: "4th", meet: "Columbia Invitational '26", events: "Water Quality" },
+  { place: "4th ×2", meet: "Yale Invitational '25", events: "Microbe Mission, solo vs teams of two" },
+] as const;
 
 export const programs = [
   {
@@ -164,7 +171,7 @@ export const awards: readonly Award[] = [
   { title: "Best Academic Award, Economics", detail: "MITES Summer @ MIT", year: "2025" },
   { title: "Irwin Zahn Spirit of Innovation Prize", detail: "$1,000", year: "2025" },
   { title: "Daniel Bergstein 1980 Memorial Scholarship", detail: "$2,500", year: "2025" },
-  { title: "9× Science Olympiad medals", detail: "Yale, Columbia & Brown invitationals", year: "2023–26" },
+  { title: "11× Science Olympiad medals", detail: "Yale, Columbia, Brown, Enloe, Jordan & Lexington invitationals", year: "2023–26" },
 ];
 
 export const teaching = [
@@ -214,4 +221,4 @@ export const adjectives = [
 ] as const;
 
 export const colophon =
-  "drawn in code — rough.js, three.js, GSAP · no illustrators were harmed";
+  "drawn in code: three.js, GSAP · no illustrators were harmed";

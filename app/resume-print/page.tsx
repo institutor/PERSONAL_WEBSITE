@@ -11,7 +11,7 @@ import {
 } from "@/lib/resume-data";
 
 export const metadata: Metadata = {
-  title: "Jiewen Huang — Resume",
+  title: "Jiewen Huang · Resume",
   robots: { index: false },
 };
 
@@ -32,11 +32,12 @@ export default function ResumePrint() {
       </header>
 
       <Section title="Education">
-        {journey.map((j) => (
+        {[journey.from, journey.to].map((j) => (
           <p key={j.title} className="mt-1">
-            <strong>{j.title}</strong> — {j.detail}
+            <strong>{j.title}</strong>: {j.detail}
           </p>
         ))}
+        <p className="mt-1">QuestBridge National College Match Recipient</p>
       </Section>
 
       <Section title="Experience">
@@ -78,7 +79,7 @@ export default function ResumePrint() {
           </p>
         ))}
         <p className="mt-2">
-          {awards.map((a) => `${a.title} — ${a.detail} (${a.year})`).join(" · ")}
+          {awards.map((a) => `${a.title}: ${a.detail} (${a.year})`).join(" · ")}
         </p>
       </Section>
 

@@ -1,9 +1,9 @@
 const NAV = [
   ["TRAJECTORY", "#trajectory"],
   ["EXPERIENCE", "#experience"],
-  ["LEADERSHIP", "#leadership"],
   ["AWARDS", "#awards"],
   ["STACK", "#stack"],
+  ["LEADERSHIP", "#leadership"],
   ["CONTACT", "#contact"],
 ] as const;
 
@@ -21,7 +21,7 @@ export function TopBar() {
             {label}
           </a>
         ))}
-        <span className="md:hidden text-[10px] tracking-[0.14em]">JIEWEN HUANG — PORTFOLIO</span>
+        <span className="md:hidden text-[10px] tracking-[0.14em]">JIEWEN HUANG · PORTFOLIO</span>
       </nav>
     </header>
   );
