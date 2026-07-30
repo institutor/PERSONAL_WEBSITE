@@ -65,7 +65,7 @@ export function Hero() {
       </div>
 
       <p className="lbl pointer-events-none absolute bottom-12 left-4 z-10 opacity-0 sm:left-6" data-hero-fade>
-        BROOKLYN, NY — QUESTBRIDGE NATIONAL COLLEGE MATCH
+        BROOKLYN, NEW YORK
       </p>
     </section>
   );

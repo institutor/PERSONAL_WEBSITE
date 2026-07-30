@@ -21,6 +21,8 @@ interface GapTitleProps {
   window?: "early" | "mid" | "late";
   className?: string;
   sizeClass?: string;
+  /** How long the square lingers in this word (1 = default dwell). */
+  hold?: number;
 }
 
 export function GapTitle({
@@ -30,6 +32,7 @@ export function GapTitle({
   window: win = "early",
   className,
   sizeClass = "text-[clamp(3.8rem,13vw,12rem)]",
+  hold,
 }: GapTitleProps) {
   return (
     <div className={className} role="img" aria-label={text} data-title data-window={win}>
@@ -46,6 +49,7 @@ export function GapTitle({
               &#8203;
               <span
                 data-sq-slot
+                data-sq-hold={hold}
                 className="pointer-events-none absolute bottom-[0.05em] left-1/2 h-[0.72em] w-[0.72em] -translate-x-1/2"
                 aria-hidden="true"
               />

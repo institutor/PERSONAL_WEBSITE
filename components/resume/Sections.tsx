@@ -36,7 +36,7 @@ function Sweeps() {
       </p>
       <p className="sr-only">Builds things that ship. Brooklyn to Morningside Heights.</p>
 
-      <span data-sq-slot className="pointer-events-none absolute left-[12%] top-[46%] h-10 w-10" aria-hidden="true" />
+      <span data-sq-slot className="pointer-events-none absolute left-[12%] top-[22%] h-10 w-10" aria-hidden="true" />
     </section>
   );
 }
@@ -49,12 +49,20 @@ function Trajectory() {
     <Band id="trajectory" className="min-h-svh">
       <BackTicker word="TRAJECTORY" posClass="top-[4%]" />
       {/* the square becomes the missing O */}
-      <GapTitle text="TRAJECTORY" gapIndex={7} index="01 — the path" window="early" className="relative z-10" />
+      <GapTitle
+        text="TRAJECTORY"
+        gapIndex={7}
+        index="01 — the path"
+        window="early"
+        hold={1.8}
+        className="relative z-10"
+      />
 
-      {/* mid-section: the square swells huge behind the stations, then shrinks */}
+      {/* the square swells huge behind the stations, then shrinks — sits low
+          in the band so the title above it gets a long, unhurried dwell */}
       <span
         data-sq-slot
-        className="pointer-events-none absolute right-[8%] top-[46%] h-[36vh] w-[36vh]"
+        className="pointer-events-none absolute right-[8%] top-[74%] h-[36vh] w-[36vh]"
         aria-hidden="true"
       />
 

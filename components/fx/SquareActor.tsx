@@ -34,11 +34,16 @@ export function SquareActor() {
 
     const measure = () => {
       const vh = window.innerHeight;
-      // shorter dwell → longer, lazier transits between letters
+      // A slot's dwell is [arrive..depart] in scroll units; the space between
+      // consecutive dwells is transit. data-sq-hold stretches a dwell in both
+      // directions (1 = default) so a word can keep the square longer.
       marks = slotEls
         .map((el) => {
           const top = el.getBoundingClientRect().top + window.scrollY;
-          return { el, arrive: top - vh * 0.68, depart: top - vh * 0.34 };
+          const hold = Math.max(1, Number(el.dataset.sqHold) || 1);
+          const lead = vh * (0.68 + 0.3 * (hold - 1));
+          const exit = vh * Math.max(0.08, 0.34 - 0.18 * (hold - 1));
+          return { el, arrive: top - lead, depart: top - exit };
         })
         .sort((a, b) => a.arrive - b.arrive);
       // ranges must never overlap or the piecewise walk breaks
