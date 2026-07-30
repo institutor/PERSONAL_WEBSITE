@@ -106,16 +106,10 @@ export function ScrollFx() {
         );
       });
 
-      return () => {
-        deck.classList.remove("deck-live");
-        cards.forEach((c) => c.classList.remove("card-live"));
-      };
-    });
-
-    mm.add("(prefers-reduced-motion: no-preference)", () => {
-      /* ---- pinned horizontal chapter (first: it owns layout).
-             Enters ZOOMED OUT (overview of the panels), zooms to full,
-             then vertical scroll becomes sideways travel. ---- */
+      /* ---- pinned horizontal chapter, desktop only (phones get the
+             stacked-card layout from CSS). Enters ZOOMED OUT (overview of
+             the panels), zooms to full, then vertical scroll becomes
+             sideways travel. ---- */
       const hs = document.querySelector<HTMLElement>("[data-hsection]");
       const track = hs?.querySelector<HTMLElement>("[data-htrack]");
       if (hs && track) {
@@ -140,6 +134,14 @@ export function ScrollFx() {
           )
           .to(track, { x: () => -dist(), duration: 0.8, ease: "none" });
       }
+
+      return () => {
+        deck.classList.remove("deck-live");
+        cards.forEach((c) => c.classList.remove("card-live"));
+      };
+    });
+
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
       const inTrack = (el: Element) => !!el.closest("[data-htrack]");
 
       /* ---- mega titles: massive lines traveling straight across ---- */

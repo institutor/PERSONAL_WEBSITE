@@ -38,7 +38,7 @@ export function Hero() {
         {/* JIEWEN — bottom-right; the square actor is born as the full stop:
             "I'm JIEWEN." — so the name sits slightly in from the edge */}
         <span aria-hidden="true" className="block text-right" data-hero-word="name">
-          <span className="display block overflow-hidden whitespace-nowrap pr-[0.015em] text-[clamp(5.9rem,26.1vw,26rem)]">
+          <span className="display block overflow-hidden whitespace-nowrap pr-[0.015em] text-[25.2vw] sm:text-[clamp(5.9rem,26.1vw,26rem)]">
             {NAME.map((ch, i) => (
               <span key={i} className="inline-block will-change-transform" data-hero-letter>
                 {ch}

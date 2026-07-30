@@ -56,10 +56,11 @@ function Trajectory() {
         className="relative z-10"
       />
 
-      {/* the square swells huge behind the itinerary, then shrinks */}
+      {/* the square swells huge behind the itinerary, then shrinks —
+          desktop only; on phones it would sit on top of the text */}
       <span
         data-sq-slot
-        className="pointer-events-none absolute right-[8%] top-[74%] h-[36vh] w-[36vh]"
+        className="pointer-events-none absolute right-[8%] top-[74%] hidden h-[36vh] w-[36vh] md:block"
         aria-hidden="true"
       />
 
@@ -73,7 +74,7 @@ function Trajectory() {
 
         <div className="my-16 flex items-center gap-5" data-scrub-rise data-window="mid">
           <span className="h-[3px] w-10 bg-bone sm:w-24" aria-hidden="true" />
-          <p className="lbl whitespace-nowrap opacity-80">{journey.via}</p>
+          <p className="lbl min-w-0 opacity-80">{journey.via}</p>
           <span className="h-[3px] flex-1 bg-bone" aria-hidden="true" />
           <span className="lbl opacity-70" aria-hidden="true">
             ▶
@@ -98,10 +99,11 @@ function ExperienceHorizontal() {
     <section id="experience" data-band data-hsection className="band-ink relative overflow-hidden">
       <BackTicker word="EXPERIENCE" posClass="top-[6%]" />
 
-      <div data-htrack className="relative z-10 flex h-svh w-max items-center">
+      {/* stacked cards on phones; the pinned sideways track from md up */}
+      <div data-htrack className="relative z-10 flex w-full flex-col md:h-svh md:w-max md:flex-row md:items-center">
         {/* panel 0 — chapter head; the square becomes the missing N and
             rides sideways inside the word while the page scrolls sideways */}
-        <div className="relative flex h-full w-[70vw] shrink-0 flex-col justify-center px-6 sm:px-10">
+        <div className="relative flex w-full shrink-0 flex-col justify-center px-4 py-20 md:h-full md:w-[70vw] md:px-10 md:py-0">
           <GapTitle
             text="EXPERIENCE"
             gapIndex={7}
@@ -116,7 +118,7 @@ function ExperienceHorizontal() {
         </div>
 
         {/* panel 1 — NaomiAI: the filled panel */}
-        <div className="relative m-6 flex w-[84vw] shrink-0 flex-col justify-center self-stretch bg-bone px-8 text-ink sm:px-12">
+        <div className="relative mx-4 my-4 flex shrink-0 flex-col justify-center self-stretch bg-bone px-6 py-14 text-ink md:m-6 md:w-[84vw] md:px-12 md:py-0">
           <div className="lbl flex flex-wrap justify-between gap-2 opacity-80">
             <span>{naomi.company}</span>
             <span>{naomi.role}</span>
@@ -147,7 +149,7 @@ function ExperienceHorizontal() {
         </div>
 
         {/* panel 2 — Fed10: the framed panel */}
-        <div className="relative m-6 flex w-[58vw] shrink-0 flex-col justify-center self-stretch border-[3px] border-bone px-8 sm:px-12">
+        <div className="relative mx-4 my-4 flex shrink-0 flex-col justify-center self-stretch border-[3px] border-bone px-6 py-14 md:m-6 md:w-[58vw] md:px-12 md:py-0">
           <p className="lbl opacity-60">
             {fed10.period} · {fed10.location}
           </p>
@@ -163,7 +165,7 @@ function ExperienceHorizontal() {
         </div>
 
         {/* panel 3 — O2NYC: filled again + tail */}
-        <div className="relative m-6 flex w-[58vw] shrink-0 flex-col justify-center self-stretch bg-bone px-8 text-ink sm:px-12">
+        <div className="relative mx-4 my-4 flex shrink-0 flex-col justify-center self-stretch bg-bone px-6 py-14 text-ink md:m-6 md:w-[58vw] md:px-12 md:py-0">
           <p className="numeral pointer-events-none absolute right-6 top-6 opacity-20" aria-hidden="true">
             O₂
           </p>
@@ -179,7 +181,7 @@ function ExperienceHorizontal() {
               </p>
             ))}
           </div>
-          <p className="lbl mt-12 opacity-60">← BACK TO VERTICAL</p>
+          <p className="lbl mt-12 hidden opacity-60 md:block">← BACK TO VERTICAL</p>
         </div>
       </div>
     </section>
@@ -431,10 +433,10 @@ function Contact() {
       <div className="mt-20 text-center" data-reveal data-resume-glide>
         <a
           href={identity.links.resumePdf}
-          className="display inline-flex items-baseline gap-4 text-[clamp(3rem,9vw,7.5rem)] transition-opacity hover:opacity-85"
+          className="display inline-flex items-baseline gap-2 whitespace-nowrap text-[clamp(2.1rem,9vw,7.5rem)] transition-opacity hover:opacity-85 sm:gap-4"
         >
           RESUME
-          <span className="chevrons" aria-hidden="true">
+          <span className="chevrons text-[0.8em]" aria-hidden="true">
             <span>▶</span>
             <span>▶</span>
             <span>▶</span>

@@ -51,6 +51,7 @@ export function SquareActor() {
       // a data-sq-ride slot dwells across the WHOLE horizontal pin, so the
       // square floats passively in the word while the page moves sideways.
       marks = slotEls
+        .filter((el) => el.getBoundingClientRect().width > 0) // skip display:none slots
         .map((el) => {
           if (deck?.classList.contains("deck-live") && el.dataset.sqSeg !== undefined) {
             const seg = Number(el.dataset.sqSeg);
