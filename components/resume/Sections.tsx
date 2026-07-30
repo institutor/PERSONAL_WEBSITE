@@ -35,8 +35,6 @@ function Sweeps() {
         BROOKLYN → MORNINGSIDE HEIGHTS
       </p>
       <p className="sr-only">Builds things that ship. Brooklyn to Morningside Heights.</p>
-
-      <span data-sq-slot className="pointer-events-none absolute left-[12%] top-[22%] h-10 w-10" aria-hidden="true" />
     </section>
   );
 }
