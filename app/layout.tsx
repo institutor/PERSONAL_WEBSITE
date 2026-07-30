@@ -15,23 +15,16 @@ const mono = Geist_Mono({
   subsets: ["latin"],
 });
 
+/**
+ * No OpenGraph / Twitter card metadata by choice: link posts stay a plain
+ * link instead of an embed card. Title + description remain for search.
+ */
 export const metadata: Metadata = {
   metadataBase: new URL("https://jiewenhuang.com"),
   alternates: { canonical: "/" },
   title: "Jiewen Huang · I'm Jiewen",
   description:
     "Jiewen Huang: CS & Math @ Columbia '30. Makes useful things: NaomiAI ELA, agent-native backends, and this site.",
-  openGraph: {
-    title: "I'm Jiewen",
-    description: "CS & Math @ Columbia '30 · makes useful things.",
-    images: ["/og.jpg"],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "I'm Jiewen",
-    description: "CS & Math @ Columbia '30 · makes useful things.",
-    images: ["/og.jpg"],
-  },
 };
 
 /**
