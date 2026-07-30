@@ -85,21 +85,36 @@ export function SquareActor() {
       let cy = gsap.utils.interpolate(ra.top + ra.height / 2, rb.top + rb.height / 2, t);
       const size = gsap.utils.interpolate(ra.width, rb.width, t);
 
-      // free-floating transit: drift along a curved path, not a straight line
+      // free-floating transit: a meandering flight, not a straight line.
+      // Layers: primary arc + two slower counter-waves across the path,
+      // a sway along the travel direction, and a live time-based drift so
+      // the square keeps wandering even if the scroll pauses mid-flight.
+      // Every layer is gated by arc = sin(t*PI), so arrivals stay exact.
+      let flight = 0;
       if (t > 0 && t < 1) {
         const dx = rb.left - ra.left;
         const dy = rb.top - ra.top;
         const dist = Math.hypot(dx, dy) || 1;
-        const amp = Math.min(120, dist * 0.22) * (ai % 2 === 0 ? 1 : -1);
+        const nx = -dy / dist;
+        const ny = dx / dist;
+        const ux = dx / dist;
+        const uy = dy / dist;
         const arc = Math.sin(t * Math.PI);
-        cx += (-dy / dist) * amp * arc;
-        cy += (dx / dist) * amp * arc;
+        flight = arc;
+        const amp = Math.min(170, dist * 0.3) * (ai % 2 === 0 ? 1 : -1);
+        const meander =
+          1 +
+          Math.sin(t * Math.PI * 2.3 + ai * 2.1) * 0.45 +
+          Math.sin(t * Math.PI * 4.7 + time * 0.9) * 0.22;
+        const sway = Math.sin(t * Math.PI * 1.7 + ai + time * 0.6) * Math.min(80, dist * 0.14);
+        cx += nx * amp * arc * meander + ux * sway * arc;
+        cy += ny * amp * arc * meander + uy * sway * arc;
       }
 
-      // gentle idle bob so it always feels afloat
-      const bob = Math.sin(time * 1.4 + ai * 1.7);
-      cy += bob * 5;
-      cx += Math.cos(time * 0.9 + ai) * 3;
+      // gentle idle bob, swelling to a real float mid-flight
+      const drift = 1 + flight * 2.2;
+      cy += Math.sin(time * 1.4 + ai * 1.7) * 5 * drift;
+      cx += Math.cos(time * 0.9 + ai) * 3 * drift;
 
       const tx = cx - BASE / 2;
       const ty = cy - BASE / 2;
