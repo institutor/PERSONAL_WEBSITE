@@ -58,7 +58,7 @@ export function Hero() {
       {/* corner matter */}
       <div className="pointer-events-none absolute right-4 top-12 z-10 text-right sm:right-6" aria-hidden="true">
         <p className="paren opacity-0" data-hero-fade>
-          ( software engineer )
+          ( jee-WEN )
         </p>
       </div>
 
