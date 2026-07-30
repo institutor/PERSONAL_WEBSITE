@@ -2,7 +2,7 @@ const NAV = [
   ["TRAJECTORY", "#trajectory"],
   ["EXPERIENCE", "#experience"],
   ["AWARDS", "#awards"],
-  ["STACK", "#stack"],
+  ["SKILLS", "#skills"],
   ["LEADERSHIP", "#leadership"],
   ["CONTACT", "#contact"],
 ] as const;

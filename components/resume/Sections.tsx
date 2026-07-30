@@ -206,7 +206,7 @@ function CardDeck() {
           data-mega
           className="display outline-text whitespace-nowrap text-[clamp(9rem,26vw,24rem)] opacity-20 will-change-transform"
         >
-          AWARDS · STACK · LEADERSHIP · AWARDS · STACK
+          AWARDS · SKILLS · LEADERSHIP · AWARDS · SKILLS
         </p>
       </div>
       <div className="min-h-svh" aria-hidden="true" />
@@ -251,13 +251,13 @@ function CardDeck() {
 
       {/* card 04 — STACK, ink with a bone frame */}
       <article
-        id="stack"
+        id="skills"
         data-deck-card
         className="deck-notch relative flex flex-col justify-center bg-ink px-4 py-20 text-bone sm:px-10"
       >
         <div className="pointer-events-none absolute inset-3 border-[3px] border-bone sm:inset-5" aria-hidden="true" />
         <GapTitle
-          text="STACK"
+          text="SKILLS"
           gapIndex={2}
           index="04 · instruments"
           sqSeg={1}
