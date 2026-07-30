@@ -305,3 +305,9 @@ html[data-intro="play"] [data-hero-divider] {
   transform: scaleX(0);
   transform-origin: 0 50%;
 }
+
+/* Circle cursor active: retire the native pointer */
+.circle-cursor,
+.circle-cursor * {
+  cursor: none !important;
+}
