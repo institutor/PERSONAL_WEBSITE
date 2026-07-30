@@ -182,13 +182,17 @@ function ExperienceHorizontal() {
 function CardDeck() {
   return (
     <section data-deck data-band className="band-ink relative overflow-hidden">
-      {/* base layer: table of contents the cards will cover one by one */}
-      <div className="pointer-events-none flex min-h-svh flex-col justify-center px-4 sm:px-6" aria-hidden="true">
-        <p className="lbl mb-6 opacity-60">( 03 — 05 )</p>
-        <p className="display outline-text text-[clamp(3.4rem,10.5vw,10rem)] leading-[1.04]">LEADERSHIP</p>
-        <p className="display outline-text text-[clamp(3.4rem,10.5vw,10rem)] leading-[1.04]">AWARDS</p>
-        <p className="display outline-text text-[clamp(3.4rem,10.5vw,10rem)] leading-[1.04]">STACK</p>
+      {/* base layer: the usual colossal hollow ticker — the same background
+          words that ride behind every band, traveling under the cards */}
+      <div className="pointer-events-none absolute inset-0 flex items-center overflow-hidden" aria-hidden="true">
+        <p
+          data-mega
+          className="display outline-text whitespace-nowrap text-[clamp(9rem,26vw,24rem)] opacity-20 will-change-transform"
+        >
+          LEADERSHIP — AWARDS — STACK — LEADERSHIP — AWARDS
+        </p>
       </div>
+      <div className="min-h-svh" aria-hidden="true" />
 
       {/* card 03 — LEADERSHIP, bone */}
       <article
