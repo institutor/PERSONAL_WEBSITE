@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
 import { BottomBar } from "@/components/chrome/BottomBar";
 import { TopBar } from "@/components/chrome/TopBar";
+import { CursorFx } from "@/components/fx/CursorFx";
 import { SmoothScroll } from "@/components/fx/SmoothScroll";
 import "./globals.css";
 
@@ -61,6 +62,7 @@ export default function RootLayout({
           {children}
           <BottomBar />
         </SmoothScroll>
+        <CursorFx />
       </body>
     </html>
   );
