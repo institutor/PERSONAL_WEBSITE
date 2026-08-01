@@ -164,12 +164,15 @@ export function SquareActor() {
       const ts = Math.max(0.2, size / BASE);
 
       if (!state.init) {
-        // born offscreen above-right, small — drifts down into the slot
+        // born offscreen above-right, small — drifts down into the slot.
+        // The element ships opacity-0 and turns visible only on this first
+        // POSITIONED frame, so it can never flash untransformed at 0,0.
         state.x = tx + Math.min(360, window.innerWidth * 0.25);
         state.y = ty - Math.min(440, window.innerHeight * 0.55);
         state.s = ts * 0.35;
         entryAt = time;
         state.init = true;
+        gsap.set(sq, { autoAlpha: 1 });
       }
       const k = 0.075; // soft damping — lazy, fluid follow
       const prevX = state.x;
@@ -196,7 +199,7 @@ export function SquareActor() {
     <div
       data-square-actor
       aria-hidden="true"
-      className="pointer-events-none fixed left-0 top-0 z-[8] h-6 w-6 bg-bone will-change-transform"
+      className="pointer-events-none fixed left-0 top-0 z-[8] h-6 w-6 bg-bone opacity-0 will-change-transform"
     />
   );
 }
