@@ -139,6 +139,14 @@ export function SquareActor() {
         const sway = Math.sin(t * Math.PI * 1.7 + ai + time * 0.6) * Math.min(80, dist * 0.14);
         cx += nx * amp * arc * meander + ux * sway * arc;
         cy += ny * amp * arc * meander + uy * sway * arc;
+
+        // flying INTO the ride word (EXPERIENCE): detour wide through the
+        // right side of the viewport, hanging there mid-flight before
+        // curling in — arc-gated, so the landing stays exact
+        if (b.el.dataset.sqRide !== undefined) {
+          const straight = gsap.utils.interpolate(ra.left + ra.width / 2, rb.left + rb.width / 2, t);
+          cx += (window.innerWidth * 0.84 - straight) * arc * 0.85;
+        }
       }
 
       // gentle idle bob, swelling to a real float mid-flight
