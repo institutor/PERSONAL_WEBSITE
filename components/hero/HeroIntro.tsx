@@ -1,15 +1,17 @@
 "use client";
 
 import { ScrollTrigger, gsap, useGSAP } from "@/lib/gsap";
-import { REST_INSET_PX, bottomRestOffset } from "@/lib/hero-intro-math";
+import { HANDOFF_LINE_PX, REST_INSET_PX, bottomRestOffset } from "@/lib/hero-intro-math";
 import { type IntroPhase, useIntroStore } from "@/lib/intro-store";
 import { orchestrator } from "@/lib/load-orchestrator";
 
 /**
- * Hero controller: takes the handoff from the loader and plays the intro
- * (spec §3.1): I'M rises, JIEWEN climbs letter by letter out of the bottom
- * edge with the lockup resting low, the bars fade in and their lines rise,
- * then the lockup floats to centre. Skip, reduced motion, a mid-page reload
+ * Hero controller: takes the handoff from the loader and plays the intro.
+ * On "handoff" it stages the pre-intro pose — lockup resting low, the quote
+ * bar shown as the loader's 2px line (the loader flies its ink line onto
+ * it), the school tab folded up. On "reveal": I'M rises, JIEWEN climbs
+ * letter by letter out of the bottom edge, the line thickens into the bar,
+ * the tab unfolds, their lines rise, then the lockup floats to centre. Skip, reduced motion, a mid-page reload
  * and already-finished phases all share finalState() instead.
  *
  * Scroll: the hero is a sticky z-0 layer; while the sections slide over it,
@@ -27,7 +29,11 @@ export function HeroIntro() {
     const say = gsap.utils.toArray<HTMLElement>("[data-hero-say] [data-hero-line]", hero);
     const bars = gsap.utils.toArray<HTMLElement>("[data-hero-bar]", hero);
     const lines = gsap.utils.toArray<HTMLElement>("[data-hero-lockup] [data-hero-line]", hero);
-    if (!lockup || !im || !sayBox) return;
+    const quoteBar = hero.querySelector<HTMLElement>('[data-hero-bar="quote"]');
+    const tab = hero.querySelector<HTMLElement>('[data-hero-bar="school"]');
+    const quoteLine = hero.querySelector<HTMLElement>('[data-hero-bar="quote"] [data-hero-line]');
+    const tabLine = hero.querySelector<HTMLElement>('[data-hero-bar="school"] [data-hero-line]');
+    if (!lockup || !im || !sayBox || !quoteBar || !tab || !quoteLine || !tabLine) return;
 
     const docEl = document.documentElement;
     let unsubPhase: (() => void) | null = null;
@@ -44,21 +50,24 @@ export function HeroIntro() {
     // touch, so every yPercent set also zeroes y.
     const finalState = () => {
       gsap.set([...imLetters, ...nameLetters, ...lines, ...say], { y: 0, yPercent: 0 });
-      gsap.set(bars, { autoAlpha: 1 });
+      gsap.set(bars, { autoAlpha: 1, scaleY: 1 });
       gsap.set(lockup, { y: 0 });
       done();
     };
 
-    const playIntro = () => {
-      if (window.scrollY > window.innerHeight * 0.4) {
-        finalState();
-        return;
-      }
-      gsap.set(imLetters, { y: 0, yPercent: 110 });
-      gsap.set(nameLetters, { y: 0, yPercent: 110 });
-      gsap.set(bars, { autoAlpha: 0 });
-      gsap.set([...lines, ...say], { y: 0, yPercent: 110 });
+    let staged = false;
+    const stage = () => {
+      if (staged) return;
+      staged = true;
+      gsap.set([...imLetters, ...nameLetters, ...lines, ...say], { y: 0, yPercent: 110 });
+      gsap.set(quoteBar, {
+        autoAlpha: 1,
+        scaleY: HANDOFF_LINE_PX / quoteBar.offsetHeight,
+        transformOrigin: "50% 50%",
+      });
+      gsap.set(tab, { autoAlpha: 1, scaleY: 0, transformOrigin: "50% 0%" });
       // measured at home (the lockup itself is never gated); resize mid-intro is ignored
+      gsap.set(lockup, { y: 0 });
       const r = lockup.getBoundingClientRect();
       const rest = bottomRestOffset({
         viewportHeight: window.innerHeight,
@@ -67,14 +76,25 @@ export function HeroIntro() {
         inset: REST_INSET_PX,
       });
       gsap.set(lockup, { y: rest });
+    };
+
+    const playIntro = () => {
+      if (window.scrollY > window.innerHeight * 0.4) {
+        finalState();
+        return;
+      }
+      stage();
 
       intro = gsap
         .timeline({ onComplete: done })
         .to(imLetters, { yPercent: 0, duration: 0.7, ease: "power3.out", stagger: 0.08 }, 0)
         .to(say, { yPercent: 0, duration: 0.7, ease: "power3.out" }, 0.12)
         .to(nameLetters, { yPercent: 0, duration: 0.95, ease: "power3.out", stagger: 0.085 }, 0.25)
-        .to(bars, { autoAlpha: 1, duration: 0.5, ease: "power2.out" }, 0.75)
-        .to(lines, { yPercent: 0, duration: 0.7, ease: "power3.out", stagger: 0.06 }, 0.92)
+        // the loader's line thickens into the quote bar; the tab unfolds off it
+        .to(quoteBar, { scaleY: 1, duration: 0.6, ease: "power3.inOut" }, 0.75)
+        .to(quoteLine, { yPercent: 0, duration: 0.7, ease: "power3.out" }, 1.15)
+        .to(tab, { scaleY: 1, duration: 0.45, ease: "power3.out" }, 1.2)
+        .to(tabLine, { yPercent: 0, duration: 0.6, ease: "power3.out" }, 1.38)
         // the period pops in as JIEWEN's last letters land (SquareActor)
         .call(() => {
           docEl.dataset.square = "in";
@@ -112,18 +132,24 @@ export function HeroIntro() {
       return;
     }
 
-    const handoff = (phase: IntroPhase) => (phase === "reveal" ? playIntro() : finalState());
+    // "handoff" stages and keeps listening; reveal/skipped/done settle it
+    const settles = (phase: IntroPhase) => phase === "reveal" || phase === "skipped" || phase === "done";
+    const onPhase = (phase: IntroPhase) => {
+      if (phase === "handoff") stage();
+      else if (phase === "reveal") playIntro();
+      else if (settles(phase)) finalState();
+    };
 
     const { phase } = useIntroStore.getState();
-    if (phase !== "loading") {
-      handoff(phase);
-    } else {
+    onPhase(phase);
+    if (!settles(phase)) {
       unsubPhase = useIntroStore.subscribe((state) => {
-        if (state.phase === "loading") return;
-        // unsubscribe first: the handoff sets the phase itself
-        unsubPhase?.();
-        unsubPhase = null;
-        handoff(state.phase);
+        // unsubscribe first: settling sets the phase itself
+        if (settles(state.phase)) {
+          unsubPhase?.();
+          unsubPhase = null;
+        }
+        onPhase(state.phase);
       });
     }
 

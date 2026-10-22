@@ -1,3 +1,4 @@
+import { CLOCK_R, HANDOFF_LINE_PX } from "@/lib/hero-intro-math";
 import { LoaderFx } from "./LoaderFx";
 
 /**
@@ -99,6 +100,7 @@ export function LoaderOverlay() {
       className="fixed inset-0 z-[80] flex flex-col items-center justify-center bg-bone text-ink"
     >
       <svg
+        data-loader-art
         viewBox="0 0 1904 826"
         className="h-auto w-[min(72%,620px)] select-none"
         aria-hidden="true"
@@ -161,12 +163,38 @@ export function LoaderOverlay() {
         />
       </svg>
 
-      <p className="mt-10 font-mono text-sm tracking-[0.34em] opacity-70">
-        <span data-loader-pct style={{ fontVariantNumeric: "tabular-nums" }}>
-          000
-        </span>
-        %
-      </p>
+      {/* the clock: the ring draws itself behind a sweeping hand; when it
+          closes, LoaderFx unrolls it into the line under JIEWEN */}
+      <svg
+        data-loader-clock
+        viewBox="0 0 48 48"
+        className="mt-10 h-12 w-12 overflow-visible"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <g fill="none" stroke="currentColor" strokeWidth={HANDOFF_LINE_PX}>
+          <circle data-clock-track cx="24" cy="24" r={CLOCK_R} opacity="0.15" />
+          <circle
+            data-clock-arc
+            cx="24"
+            cy="24"
+            r={CLOCK_R}
+            pathLength={1}
+            transform="rotate(-90 24 24)"
+            style={HIDDEN}
+          />
+          <line data-clock-hand x1="24" y1="24" x2="24" y2="10" strokeLinecap="round" />
+          <path data-clock-unroll visibility="hidden" />
+        </g>
+        <circle data-clock-hub cx="24" cy="24" r="2" fill="currentColor" />
+      </svg>
+      <span
+        data-loader-line
+        aria-hidden="true"
+        className="pointer-events-none absolute left-0 top-0 origin-left bg-ink opacity-0"
+        style={{ height: HANDOFF_LINE_PX }}
+      />
+
       <button
         type="button"
         data-loader-skip

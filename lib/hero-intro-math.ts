@@ -8,6 +8,11 @@
 
 export const REST_INSET_PX = 56;
 
+/** The loader's clock unrolls into a line this thick; the quote bar starts as it. */
+export const HANDOFF_LINE_PX = 2;
+/** The clock ring's radius in px (its viewBox is 1:1); unrolled it is 2πr long. */
+export const CLOCK_R = 20;
+
 export interface RestArgs {
   viewportHeight: number;
   lockupTop: number;
