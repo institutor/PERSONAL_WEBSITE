@@ -42,7 +42,7 @@ function TrajectoryContent() {
       <GapTitle
         text="TRAJECTORY"
         gapIndex={7}
-        index="01 · the path"
+        index="the path"
         window="early"
         hold={1.8}
         dwell={0.12}
@@ -100,7 +100,7 @@ function ExperienceHorizontal() {
           <GapTitle
             text="EXPERIENCE"
             gapIndex={7}
-            index="02 · shipped"
+            index="shipped"
             window="early"
             sqRide
             sizeClass="text-[clamp(3rem,9.5vw,9rem)]"
@@ -215,7 +215,7 @@ function CardDeck() {
         <GapTitle
           text="AWARDS"
           gapIndex={2}
-          index="03 · proof"
+          index="proof"
           sqSeg={0}
           sqTone="ink"
           sizeClass="text-[clamp(3rem,9.5vw,9rem)]"
@@ -254,7 +254,7 @@ function CardDeck() {
         <GapTitle
           text="SKILLS"
           gapIndex={2}
-          index="04 · instruments"
+          index="instruments"
           sqSeg={1}
           sizeClass="text-[clamp(3rem,9.5vw,9rem)]"
         />
@@ -298,7 +298,7 @@ function CardDeck() {
         <GapTitle
           text="LEADERSHIP"
           gapIndex={8}
-          index="05 · teams"
+          index="teams"
           sqSeg={2}
           sqTone="ink"
           sizeClass="text-[clamp(3rem,9.5vw,9rem)]"
@@ -358,7 +358,7 @@ function CardDeck() {
 
 function Contact() {
   return (
-    <Band id="contact" index="06" paren="( say hi )" className="flex min-h-svh flex-col justify-center pb-32">
+    <Band id="contact" paren="( say hi )" className="flex min-h-svh flex-col justify-center pb-32">
       <BackTicker word="CONTACT" posClass="top-[2%]" />
       <div className="relative z-10" data-zoom-in="1.26">
         <p className="display text-[clamp(2.4rem,6vw,5.5rem)]" aria-hidden="true">
