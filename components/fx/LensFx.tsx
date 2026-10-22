@@ -22,9 +22,9 @@ import {
  * it. The period flies there itself (the lens slot rendered here is one of
  * its marks), spinning into a circle over the fading JIEWEN; at p 0.15 disk A
  * (bone) takes over from its live shape, blends onto the centre and swells;
- * disk B (ink) and disk C (bone) appear inside it, each half the one outside;
- * then Trajectory's window opens inside C (a clip-path circle in the window's
- * own, scrolling, coordinates) and covers the screen exactly as the O reaches
+ * then Trajectory's window opens inside it (a clip-path circle in the
+ * window's own, scrolling, coordinates), settling to half its radius, and
+ * covers the screen exactly as the O reaches
  * the centre, where the actor grows back in as one more bone circle. Scrolled
  * back below 0.15, the actor takes disk A's shape over (data-lens-*).
  *
@@ -47,9 +47,8 @@ export function LensFx() {
     const actor = document.querySelector<HTMLElement>("[data-square-actor]");
     const lensSlot = document.querySelector<HTMLElement>("[data-sq-lens]");
     if (!root || !win || !oSlot) return;
-    const [diskA, diskB, diskC] = (["a", "b", "c"] as const).map(
-      (k) => root.querySelector<HTMLElement>(`[data-lens-disk="${k}"]`)!
-    );
+    const diskA = root.querySelector<HTMLElement>('[data-lens-disk="a"]');
+    if (!diskA) return;
 
     let lastClip = "";
     const clip = (value: string) => {
@@ -90,7 +89,7 @@ export function LensFx() {
       cover = coverRadius(cx, cy, vw, vh);
       rTravel = LENS.rTravelFrac * Math.min(vw, vh);
       closed = `circle(0px at ${wx}px 0px)`;
-      gsap.set([diskA, diskB, diskC], { width: cover * 2, height: cover * 2 });
+      gsap.set(diskA, { width: cover * 2, height: cover * 2 });
       // the actor's mark at the lens centre: it flies here, rT in radius
       if (lensSlot) {
         Object.assign(lensSlot.style, {
@@ -211,8 +210,6 @@ export function LensFx() {
         rot: lerp(handoff.rot, 0, b),
       };
       place(diskA, a.x, a.y, a.r, a.round, a.rot);
-      place(diskB, cx, cy, renderRadius(radii.b, cover));
-      place(diskC, cx, cy, renderRadius(radii.c, cover));
       rw = renderRadius(radii.window, cover);
       clip(windowClip());
       const hidden = !(actorVisible(p) && oInWindow(oDocY - window.scrollY - cy, oHalf, rw));
@@ -260,8 +257,6 @@ export function LensFx() {
     <>
       <div data-lens aria-hidden="true" className="pointer-events-none fixed inset-0 z-[1] hidden overflow-hidden">
         <div data-lens-disk="a" className="lens-disk bg-bone" />
-        <div data-lens-disk="b" className="lens-disk bg-ink" />
-        <div data-lens-disk="c" className="lens-disk bg-bone" />
       </div>
       {/* measurable, never painted; stays display:none (out of the actor's
           route) unless LensFx runs and places it */}

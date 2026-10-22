@@ -189,3 +189,12 @@ which already flies organically (damped follow, arc + meander, velocity spin).
   spin `1080 + 360·t`; `ai > o` → round 0, spin 1440 (no morph on the final
   approach to BU■LD any more). A route with no O mark gets no morph; fewer
   than two marks never reach `squareMorph` (SquareActor returns first).
+
+## v2.2 — two circles, not four (2026-10-22)
+
+Jiewen: "there might be one too many white and black circles, get rid of
+one of each." Disks B (ink) and C (bone) are removed. The lens is now one
+bone disk (A) with the ink page opening inside it: `window = A × K`
+(K = 0.5), appearing at p 0.45 (ramp width 0.12); disk A grows to
+`cover / K` so the window is exactly `cover` at p = 1. Everything else is
+unchanged.

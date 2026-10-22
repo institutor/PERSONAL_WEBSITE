@@ -2,11 +2,11 @@
  * The hero → TRAJECTORY lens, v2.1. A fixed lens at mid-screen while the page
  * keeps scrolling beneath it: the period flies there itself (the lens slot is
  * one of its marks), spinning into a circle; at p = travelEnd it hands over to
- * a bone disk (A) that blends onto the lens centre and grows exponentially; an
- * ink disk (B), a bone disk (C) and finally the page itself (the window
- * onto Trajectory) appear inside it in turn, each settling to half the
- * radius of the one outside (K = 0.5), so the window covers the viewport
- * exactly when TRAJECTORY's O reaches the centre (p = 1). The actor grows
+ * a bone disk (A) that blends onto the lens centre and grows exponentially;
+ * the page itself (the ink window onto Trajectory) then appears inside it and
+ * settles to half its radius (K = 0.5), so the window covers the viewport
+ * exactly when TRAJECTORY's O reaches the centre (p = 1). (v2.2: one bone
+ * circle and one ink circle; the intermediate B/C rings are gone.) The actor grows
  * back into the O as one more bone circle.
  *
  * Every function here is a pure function of the lens progress `p` (0..1 over
@@ -19,9 +19,9 @@ export const LENS = {
   travelEnd: 0.15, // the actor reaches the lens slot; disk A takes over
   handoffEase: 0.07, // p over which disk A blends from the actor's box to the centre
   lensSlotDepart: 0.4, // the (hidden) actor leaves the lens slot for the O
-  K: 0.5, // each inner circle settles to K × the one outside
+  K: 0.5, // the window settles to K × disk A
   rTravelFrac: 0.08, // rTravel = rTravelFrac × min(vw, vh)
-  ramp: { b: 0.25, c: 0.42, window: 0.6 }, // p at which each inner circle appears
+  ramp: { window: 0.45 }, // p at which the window appears inside disk A
   rampWidth: 0.12, // p it takes to catch up to its ratio
   actorReturn: 0.72, // actor visible again (grows in at the O)
 } as const;
@@ -55,31 +55,27 @@ export function smoothstep(x: number): number {
   return t * t * (3 - 2 * t);
 }
 
-/** Disk A: rTravel at the handoff, then exponential growth to cover / K³
-    (so the window, K³ of it, is exactly `cover` at p = 1). */
+/** Disk A: rTravel at the handoff, then exponential growth to cover / K
+    (so the window, K of it, is exactly `cover` at p = 1). */
 export function outerRadius(p: number, rTravel: number, cover: number): number {
   if (p <= LENS.travelEnd) return rTravel;
-  const end = cover / LENS.K ** 3;
+  const end = cover / LENS.K;
   return rTravel * (end / rTravel) ** ((p - LENS.travelEnd) / (1 - LENS.travelEnd));
 }
 
 export interface LensRadii {
   a: number;
-  b: number;
-  c: number;
   window: number;
 }
 
-/** Nested radii: a ≥ b ≥ c ≥ window for every p (K < 1, ramps ≤ 1). */
+/** Nested radii: a ≥ window for every p (K < 1, ramp ≤ 1). */
 export function lensRadii(p: number, rTravel: number, cover: number): LensRadii {
   const { K, ramp, rampWidth } = LENS;
   const a = outerRadius(p, rTravel, cover);
   const grown = (start: number) => smoothstep((p - start) / rampWidth);
   return {
     a,
-    b: a * K * grown(ramp.b),
-    c: a * K ** 2 * grown(ramp.c),
-    window: a * K ** 3 * grown(ramp.window),
+    window: a * K * grown(ramp.window),
   };
 }
 

@@ -40,30 +40,22 @@ test("smoothstep", () => {
 test("outer radius: holds at rTravel, then grows exponentially to cover / K^3", () => {
   assert.equal(outerRadius(0.1, 61, 1300), 61);
   assert.equal(outerRadius(LENS.travelEnd, 61, 1300), 61);
-  assert.ok(close(outerRadius(1, 61, 1300), 1300 / LENS.K ** 3, 1e-6));
+  assert.ok(close(outerRadius(1, 61, 1300), 1300 / LENS.K, 1e-6));
   const mid = outerRadius(0.575, 61, 1300); // halfway in p → geometric mean in radius
-  assert.ok(close(mid, Math.sqrt(61 * (1300 / LENS.K ** 3)), 1e-6));
+  assert.ok(close(mid, Math.sqrt(61 * (1300 / LENS.K)), 1e-6));
 });
 
-test("ratios hold after the ramps", () => {
-  for (const p of [0.37, 0.5, 0.8, 1]) {
+test("the window settles to K × disk A once its ramp is done", () => {
+  for (const p of [0.57, 0.7, 0.9, 1]) {
     const r = lensRadii(p, 61, 1300);
-    assert.ok(close(r.b / r.a, LENS.K), `b/a at ${p}`);
-  }
-  for (const p of [0.54, 0.8, 1]) {
-    const r = lensRadii(p, 61, 1300);
-    assert.ok(close(r.c / r.b, LENS.K), `c/b at ${p}`);
-  }
-  for (const p of [0.72, 0.9, 1]) {
-    const r = lensRadii(p, 61, 1300);
-    assert.ok(close(r.window / r.c, LENS.K), `window/c at ${p}`);
+    assert.ok(close(r.window / r.a, LENS.K), `window/a at ${p}`);
   }
 });
 
-test("inner circles are absent before their ramps and the window covers at 1", () => {
-  const r = lensRadii(0.2, 61, 1300);
-  assert.deepEqual([r.b, r.c, r.window], [0, 0, 0]);
-  assert.equal(lensRadii(0.5, 61, 1300).window, 0);
+test("the window is absent before its ramp and covers at 1", () => {
+  assert.equal(lensRadii(0.2, 61, 1300).window, 0);
+  assert.equal(lensRadii(LENS.ramp.window, 61, 1300).window, 0);
+  assert.ok(lensRadii(0.5, 61, 1300).window > 0);
   assert.ok(close(lensRadii(1, 61, 1300).window, 1300, 1e-6));
 });
 
@@ -72,8 +64,8 @@ test("nested and monotone for every p", () => {
   for (let i = 1; i <= 200; i++) {
     const p = i / 200;
     const r = lensRadii(p, 61, 1300);
-    assert.ok(r.a >= r.b && r.b >= r.c && r.c >= r.window, `crossed at ${p}`);
-    assert.ok(r.a >= prev.a && r.b >= prev.b && r.c >= prev.c && r.window >= prev.window, `shrank at ${p}`);
+    assert.ok(r.a >= r.window, `crossed at ${p}`);
+    assert.ok(r.a >= prev.a && r.window >= prev.window, `shrank at ${p}`);
     prev = r;
   }
 });
