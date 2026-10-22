@@ -94,3 +94,10 @@ export function diskATravel(p: number): { u: number; round: number } {
 export function actorVisible(p: number): boolean {
   return p <= 0 || p >= LENS.actorReturn;
 }
+
+/** Whether the whole O slot lies inside the open window (its centre `oOffset`
+    px from the lens centre on the same column): the actor reappears only
+    there, so it never pops up on a ring outside the page. */
+export function oInWindow(oOffset: number, slotHalf: number, rWindow: number): boolean {
+  return rWindow > 0 && Math.abs(oOffset) + slotHalf <= rWindow;
+}

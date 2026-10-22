@@ -8,6 +8,7 @@ import {
   lensEnd,
   lensProgress,
   lensRadii,
+  oInWindow,
   outerRadius,
   renderRadius,
   smoothstep,
@@ -87,4 +88,12 @@ test("disk A travel and actor visibility", () => {
   assert.equal(actorVisible(0), true);
   assert.equal(actorVisible(0.3), false);
   assert.equal(actorVisible(LENS.actorReturn), true);
+});
+
+test("the actor returns only once the O sits inside the open window", () => {
+  // O 300 px below the centre, slot half-size 22: needs a window of 322
+  assert.equal(oInWindow(300, 22, 321), false);
+  assert.equal(oInWindow(300, 22, 322), true);
+  assert.equal(oInWindow(-300, 22, 322), true); // above the centre on the way back
+  assert.equal(oInWindow(0, 22, 0), false); // a closed window shows nothing
 });

@@ -1,5 +1,7 @@
 "use client";
 
+import { useLenis } from "lenis/react";
+import { useRef } from "react";
 import { ScrollTrigger, gsap, useGSAP } from "@/lib/gsap";
 import {
   LENS,
@@ -9,6 +11,7 @@ import {
   lensEnd,
   lensProgress,
   lensRadii,
+  oInWindow,
   renderRadius,
 } from "@/lib/lens-math";
 
@@ -25,10 +28,15 @@ import {
  *
  * The disks are 2 × cover px and only ever scaled DOWN (radii clamp to
  * cover), so edges stay crisp. The actor is hidden through the rings via
- * data-lens-hidden (SquareActor honours it); this tick runs first on the
- * ticker so both read one frame.
+ * data-lens-hidden (SquareActor honours it) until the O is inside the
+ * open window; this tick runs first on the ticker so both read one frame.
+ * Lenis moves the page later in that frame, so its scroll event re-centres
+ * the window's clip on the position actually painted.
  */
 export function LensFx() {
+  const recentreRef = useRef<(() => void) | null>(null);
+  useLenis(() => recentreRef.current?.());
+
   useGSAP(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const root = document.querySelector<HTMLElement>("[data-lens]");
@@ -54,18 +62,29 @@ export function LensFx() {
     let cx = 0; // lens centre in the viewport: the O's column, mid-height
     let cy = 0;
     let wx = 0; // cx in the window's own box (clip-path coordinates)
+    let winDocTop = 0; // the window's document top: its viewport top is winDocTop − scrollY
+    let oDocY = 0; // the O's centre, document y
+    let oHalf = 0;
     let cover = 1;
     let rTravel = 1;
     let closed = "circle(0px)"; // a radius-0 clip: constant, so the write is skipped
+    let measuredW = 0;
+    let measuredH = 0;
     const measure = () => {
       const vw = document.documentElement.clientWidth;
       const vh = window.innerHeight;
+      measuredW = window.innerWidth;
+      measuredH = vh;
       const o = oSlot.getBoundingClientRect();
+      const w = win.getBoundingClientRect();
       cx = o.left + o.width / 2;
       cy = vh / 2;
-      wx = cx - win.getBoundingClientRect().left;
+      wx = cx - w.left;
+      winDocTop = w.top + window.scrollY;
+      oDocY = o.top + o.height / 2 + window.scrollY;
+      oHalf = o.height / 2;
       s0 = LENS.startVh * vh;
-      s1 = lensEnd(o.top + o.height / 2 + window.scrollY, vh);
+      s1 = lensEnd(oDocY, vh);
       cover = coverRadius(cx, cy, vw, vh);
       rTravel = LENS.rTravelFrac * Math.min(vw, vh);
       closed = `circle(0px at ${wx}px 0px)`;
@@ -109,6 +128,9 @@ export function LensFx() {
       });
     };
 
+    let rw = 0; // the window's rendered radius this frame
+    const windowClip = () => (rw > 0 ? `circle(${rw}px at ${wx}px ${cy - (winDocTop - window.scrollY)}px)` : closed);
+
     const tick = () => {
       // a load within 0.4 vh of the top plays the full intro (HeroIntro's
       // rule) with the period popping in at the full stop: no lens until
@@ -119,13 +141,13 @@ export function LensFx() {
       const enteredFromHero = prevP <= 0;
       prevP = p;
       if (p <= 0 || p >= 1) {
+        rw = 0;
         root.style.display = "";
         clip(p >= 1 ? "none" : closed);
         hideActor(false);
         handoff = null;
         return;
       }
-      const winTop = win.getBoundingClientRect().top; // read before this frame's writes
       root.style.display = "block";
       if (!handoff) handoff = enteredFromHero ? actorBox() : slotBox();
 
@@ -144,13 +166,24 @@ export function LensFx() {
       }
       place(diskB, cx, cy, renderRadius(radii.b, cover));
       place(diskC, cx, cy, renderRadius(radii.c, cover));
-      const rw = renderRadius(radii.window, cover);
-      clip(rw > 0 ? `circle(${rw}px at ${wx}px ${cy - winTop}px)` : closed);
-      hideActor(!actorVisible(p));
+      rw = renderRadius(radii.window, cover);
+      clip(windowClip());
+      hideActor(!(actorVisible(p) && oInWindow(oDocY - window.scrollY - cy, oHalf, rw)));
+    };
+    // only while the window is opening: closed and fully open (none) don't move
+    recentreRef.current = () => {
+      if (rw > 0) clip(windowClip());
     };
 
     let resizeTimer = 0;
     const onResize = () => {
+      // touch devices resize on every URL-bar show/hide: keep the lens where
+      // it is, as ScrollTrigger (and so the actor's marks) does
+      const urlBar =
+        ScrollTrigger.isTouch === 1 &&
+        window.innerWidth === measuredW &&
+        Math.abs(window.innerHeight - measuredH) <= measuredH * 0.25;
+      if (urlBar) return;
       window.clearTimeout(resizeTimer);
       resizeTimer = window.setTimeout(measure, 160);
     };
@@ -162,6 +195,7 @@ export function LensFx() {
     gsap.ticker.add(tick, false, true); // first in the frame, before the actor
 
     return () => {
+      recentreRef.current = null;
       gsap.ticker.remove(tick);
       ScrollTrigger.removeEventListener("refresh", measure);
       window.removeEventListener("resize", onResize);
