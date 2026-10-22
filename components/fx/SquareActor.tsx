@@ -1,6 +1,7 @@
 "use client";
 
 import { ScrollTrigger, gsap, useGSAP } from "@/lib/gsap";
+import { squareMorph } from "@/lib/square-morph";
 
 /**
  * The page's protagonist: ONE voltage square that journeys through the site.
@@ -10,6 +11,8 @@ import { ScrollTrigger, gsap, useGSAP } from "@/lib/gsap";
  * growing, shrinking, riding the horizontal chapter (live rects track pinned
  * transforms), spinning with travel velocity — and finally lands in the gap
  * where BUILD's "I" used to be (the letter is knocked out by ScrollFx).
+ * Shape: it spins into a circle across its first flight, stays round
+ * through the site, and spins back into a square for BU■LD.
  *
  * Position is damped (lerped toward target) so the square feels alive, not
  * bolted to the scrollbar.
@@ -91,7 +94,7 @@ export function SquareActor() {
     // transform components in one gsap.set per frame instead.
 
     const smooth = (t: number) => t * t * (3 - 2 * t);
-    const state = { x: 0, y: 0, s: 1, r: 0, init: false };
+    const state = { x: 0, y: 0, s: 1, r: 0, round: 0, spin: 0, init: false };
     let entryAt = -1; // ticker time the entrance flight began
 
     const update = (time: number) => {
@@ -113,6 +116,8 @@ export function SquareActor() {
         const span = Math.max(1, b.arrive - a.depart);
         t = smooth(gsap.utils.clamp(0, 1, (y - a.depart) / span));
       }
+
+      const morph = squareMorph(ai, t, marks.length);
 
       // bone by default; ink while the dominant slot sits on a bone card
       const tone = (t < 0.5 ? a : b).el.dataset.sqTone;
@@ -187,6 +192,8 @@ export function SquareActor() {
         state.x = tx + Math.min(360, window.innerWidth * 0.25);
         state.y = ty - Math.min(440, window.innerHeight * 0.55);
         state.s = ts * 0.35;
+        state.round = morph.round;
+        state.spin = morph.spin;
         entryAt = time;
         state.init = true;
         gsap.set(sq, { autoAlpha: 1 });
@@ -196,12 +203,20 @@ export function SquareActor() {
       state.x += (tx - state.x) * k;
       state.y += (ty - state.y) * k;
       state.s += (ts - state.s) * k;
-      // spin with horizontal travel, settle back to square
+      // spin with horizontal travel, settle back to upright
       const vel = state.x - prevX;
       state.r += vel * 0.18;
       state.r *= 0.94;
+      state.round += (morph.round - state.round) * k;
+      state.spin += (morph.spin - state.spin) * k;
 
-      gsap.set(sq, { x: state.x, y: state.y, scale: state.s, rotation: state.r });
+      gsap.set(sq, {
+        x: state.x,
+        y: state.y,
+        scale: state.s,
+        rotation: state.r + state.spin,
+        borderRadius: `${state.round * 50}%`,
+      });
     };
 
     gsap.ticker.add(update);
