@@ -1,6 +1,7 @@
 "use client";
 
 import { ScrollTrigger, gsap, useGSAP } from "@/lib/gsap";
+import { LENS, lensEnd, lensSlotRange } from "@/lib/lens-math";
 import { squareMorph } from "@/lib/square-morph";
 
 /**
@@ -11,15 +12,18 @@ import { squareMorph } from "@/lib/square-morph";
  * growing, shrinking, riding the horizontal chapter (live rects track pinned
  * transforms), spinning with travel velocity — and finally lands in the gap
  * where BUILD's "I" used to be (the letter is knocked out by ScrollFx).
- * Shape: it spins into a circle across its first flight, stays round
- * through the site, and spins back into a square for BU■LD. That first
- * flight is unseen: LensFx's rings stand in for it (data-lens-hidden) and
- * it grows back into TRAJECTORY's O as the lens finishes.
+ * Shape: it spins three turns into a circle across its first flight (to the
+ * lens slot at mid-screen), stays round through the site, and spins back
+ * into a square for BU■LD. At the lens slot LensFx's rings take over
+ * (data-lens-hidden) and it grows back into TRAJECTORY's O as the lens
+ * finishes; scrolling back, it takes disk A's shape over (data-lens-*).
  *
  * Position is damped (lerped toward target) so the square feels alive, not
  * bolted to the scrollbar.
  */
 const BASE = 24; // px — element's natural size; scale = slotWidth / BASE
+/** An angle folded into [−45°, 45°): a rounded square looks the same every 90°. */
+const wrap90 = (deg: number) => ((((deg + 45) % 90) + 90) % 90) - 45;
 
 export function SquareActor() {
   useGSAP(() => {
@@ -64,24 +68,33 @@ export function SquareActor() {
       // directions (1 = default). Deck slots map to their card's pin segment;
       // a data-sq-ride slot dwells across the WHOLE horizontal pin, so the
       // square floats passively in the word while the page moves sideways.
+      const oSlot = document.querySelector<HTMLElement>("[data-lens-window] [data-sq-slot]");
       marks = slotEls
         .filter((el) => el.getBoundingClientRect().width > 0) // skip display:none slots
-        .map((el) => {
+        .flatMap((el): Mark[] => {
+          // the lens slot (LensFx, fixed at mid-screen) dwells over the same
+          // scroll window LensFx derives from the O, whichever measures first
+          if (el.dataset.sqLens !== undefined) {
+            if (!oSlot) return [];
+            const o = oSlot.getBoundingClientRect();
+            const s1 = lensEnd(o.top + window.scrollY + o.height / 2, vh);
+            return [{ el, ...lensSlotRange(LENS.startVh * vh, s1) }];
+          }
           if (deck?.classList.contains("deck-live") && el.dataset.sqSeg !== undefined) {
             const seg = Number(el.dataset.sqSeg);
-            return { el, arrive: deckTop + (seg + 0.58) * vh, depart: deckTop + (seg + 0.94) * vh };
+            return [{ el, arrive: deckTop + (seg + 0.58) * vh, depart: deckTop + (seg + 0.94) * vh }];
           }
           if (el.dataset.sqRide !== undefined && hs && htrack) {
             const top = spacerTop(hs);
             const pinLen = Math.max(0, htrack.scrollWidth - window.innerWidth) + vh * 0.45;
-            return { el, arrive: top - vh * 0.5, depart: top + pinLen - vh * 0.2 };
+            return [{ el, arrive: top - vh * 0.5, depart: top + pinLen - vh * 0.2 }];
           }
           const top = el.getBoundingClientRect().top + window.scrollY - heroShift(el);
           const hold = Math.max(1, Number(el.dataset.sqHold) || 1);
           const lead = vh * (0.68 + 0.3 * (hold - 1));
           const exit = vh * Math.max(0.08, 0.34 - 0.18 * (hold - 1));
           const dwell = Number(el.dataset.sqDwell) || 0; // extra rest, in viewports
-          return { el, arrive: top - lead, depart: top - exit + dwell * vh };
+          return [{ el, arrive: top - lead, depart: top - exit + dwell * vh }];
         })
         .sort((a, b) => a.arrive - b.arrive);
       // ranges must never overlap or the piecewise walk breaks
@@ -199,16 +212,28 @@ export function SquareActor() {
         if (hidden) {
           gsap.set(sq, { autoAlpha: 0 });
         } else {
-          // back from the lens: in place and settled (the damped state may
-          // still be mid-flight after a fast scroll), growing into the O
-          // from 15 %. At the full stop the lens hands back the actor's own
-          // box, so there it simply reappears.
-          state.x = tx;
-          state.y = ty;
-          state.s = ai > 0 ? ts * 0.15 : ts;
-          state.r = 0;
-          state.round = morph.round;
-          state.spin = morph.spin;
+          const lensIdx = marks.findIndex((m) => m.el.dataset.sqLens !== undefined);
+          const d = sq.dataset;
+          if (d.lensX !== undefined && lensIdx >= 0 && ai <= lensIdx) {
+            // scrolled back below the handoff: take disk A's shape over
+            // exactly (centre, size, roundness, rotation mod 90°), then the
+            // damped flight carries it home
+            state.x = Number(d.lensX) - BASE / 2;
+            state.y = Number(d.lensY) - BASE / 2;
+            state.s = (Number(d.lensR) * 2) / BASE;
+            state.round = Number(d.lensRound ?? 1);
+            state.r = 0;
+            state.spin = morph.spin + wrap90(Number(d.lensRot ?? 0) - morph.spin);
+          } else {
+            // back at the O: in place and settled (the damped state may
+            // still be mid-flight after a fast scroll), growing in from 15 %
+            state.x = tx;
+            state.y = ty;
+            state.s = ai > Math.max(0, lensIdx) ? ts * 0.15 : ts;
+            state.r = 0;
+            state.round = morph.round;
+            state.spin = morph.spin;
+          }
           gsap.set(sq, { autoAlpha: 1 });
         }
       }

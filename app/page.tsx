@@ -9,8 +9,9 @@ export default function Home() {
     <>
       <LoaderOverlay />
       <Resume />
-      <SquareActor />
+      {/* LensFx first: it places the lens slot before the actor measures its route */}
       <LensFx />
+      <SquareActor />
       <ScrollFx />
     </>
   );

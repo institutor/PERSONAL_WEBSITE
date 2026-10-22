@@ -44,6 +44,7 @@ export function LensFx() {
     const oSlot = win?.querySelector<HTMLElement>("[data-sq-slot]");
     const fullStop = document.querySelector<HTMLElement>('[data-section="hero"] [data-sq-slot]');
     const actor = document.querySelector<HTMLElement>("[data-square-actor]");
+    const lensSlot = document.querySelector<HTMLElement>("[data-sq-lens]");
     if (!root || !win || !oSlot) return;
     const [diskA, diskB, diskC] = (["a", "b", "c"] as const).map(
       (k) => root.querySelector<HTMLElement>(`[data-lens-disk="${k}"]`)!
@@ -89,6 +90,16 @@ export function LensFx() {
       rTravel = LENS.rTravelFrac * Math.min(vw, vh);
       closed = `circle(0px at ${wx}px 0px)`;
       gsap.set([diskA, diskB, diskC], { width: cover * 2, height: cover * 2 });
+      // the actor's mark at the lens centre: it flies here, rT in radius
+      if (lensSlot) {
+        Object.assign(lensSlot.style, {
+          display: "block",
+          left: `${cx - rTravel}px`,
+          top: `${cy - rTravel}px`,
+          width: `${rTravel * 2}px`,
+          height: `${rTravel * 2}px`,
+        });
+      }
       lastClip = ""; // force a rewrite at the new centre
     };
 
@@ -206,10 +217,15 @@ export function LensFx() {
   });
 
   return (
-    <div data-lens aria-hidden="true" className="pointer-events-none fixed inset-0 z-[1] hidden overflow-hidden">
-      <div data-lens-disk="a" className="lens-disk bg-bone" />
-      <div data-lens-disk="b" className="lens-disk bg-ink" />
-      <div data-lens-disk="c" className="lens-disk bg-bone" />
-    </div>
+    <>
+      <div data-lens aria-hidden="true" className="pointer-events-none fixed inset-0 z-[1] hidden overflow-hidden">
+        <div data-lens-disk="a" className="lens-disk bg-bone" />
+        <div data-lens-disk="b" className="lens-disk bg-ink" />
+        <div data-lens-disk="c" className="lens-disk bg-bone" />
+      </div>
+      {/* measurable, never painted; stays display:none (out of the actor's
+          route) unless LensFx runs and places it */}
+      <span data-sq-slot data-sq-lens aria-hidden="true" className="pointer-events-none invisible fixed left-0 top-0 hidden" />
+    </>
   );
 }
