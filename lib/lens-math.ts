@@ -1,23 +1,26 @@
 /**
- * The hero → TRAJECTORY lens. Leaving the full stop, the square becomes a
- * bone disk (A) that travels to TRAJECTORY's O and swells; an ink disk (B)
- * and a bone disk (C) grow inside it in turn, then the page itself (the ink
- * window) opens inside C, and the actor grows back into the O as one more
- * bone circle.
+ * The hero → TRAJECTORY lens, v2. A fixed lens at mid-screen while the page
+ * keeps scrolling beneath it: leaving the full stop, the square becomes a
+ * bone disk (A) that travels to the lens centre and grows exponentially; an
+ * ink disk (B), a bone disk (C) and finally the page itself (the window
+ * onto Trajectory) appear inside it in turn, each settling to half the
+ * radius of the one outside (K = 0.5), so the window covers the viewport
+ * exactly when TRAJECTORY's O reaches the centre (p = 1). The actor grows
+ * back into the O as one more bone circle.
  *
  * Every function here is a pure function of the lens progress `p` (0..1 over
- * the scroll from S0 to the moment Trajectory unsticks), so the whole thing
- * scrubs and reverses with the scrollbar.
+ * the scroll from S0 to that moment), so the whole thing scrubs and reverses
+ * with the scrollbar.
  */
 
 export const LENS = {
   startVh: 0.2, // S0 = startVh × viewportHeight
-  travelEnd: 0.18, // disk A reaches the centre, fully round
-  start: { a: 0.18, b: 0.38, c: 0.56, window: 0.72 }, // p at which each radius starts growing
-  reach: { a: 0.86, b: 0.92, c: 0.97, window: 1.0 }, // p at which each reaches `cover`
-  actorReturn: 0.86, // actor visible again (grows in at the O)
-  startDiameterFrac: 0.16, // disk A's diameter at travelEnd, × min(vw, vh)
-  growthPower: 1.6,
+  travelEnd: 0.15, // disk A reaches the centre, fully round, radius rTravel
+  K: 0.5, // each inner circle settles to K × the one outside
+  rTravelFrac: 0.08, // rTravel = rTravelFrac × min(vw, vh)
+  ramp: { b: 0.25, c: 0.42, window: 0.6 }, // p at which each inner circle appears
+  rampWidth: 0.12, // p it takes to catch up to its ratio
+  actorReturn: 0.72, // actor visible again (grows in at the O)
 } as const;
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
@@ -27,6 +30,11 @@ export function lensProgress(scrollY: number, s0: number, s1: number): number {
   return clamp01((scrollY - s0) / (s1 - s0));
 }
 
+/** S1: the scroll at which the O's centre reaches mid-screen. */
+export function lensEnd(oCentreDocY: number, viewportHeight: number): number {
+  return oCentreDocY - viewportHeight / 2;
+}
+
 /** Radius of a disk centred at (cx, cy) that hides the whole viewport. */
 export function coverRadius(cx: number, cy: number, vw: number, vh: number): number {
   const dx = Math.max(cx, vw - cx);
@@ -34,11 +42,17 @@ export function coverRadius(cx: number, cy: number, vw: number, vh: number): num
   return Math.hypot(dx, dy) + 2;
 }
 
-/** Ease-in growth inside [start..reach]: appears as a dot and accelerates. */
-export function growth(p: number, start: number, reach: number): number {
-  if (p <= start) return 0;
-  if (p >= reach) return 1;
-  return ((p - start) / (reach - start)) ** LENS.growthPower;
+export function smoothstep(x: number): number {
+  const t = clamp01(x);
+  return t * t * (3 - 2 * t);
+}
+
+/** Disk A: rTravel through the handoff, then exponential growth to cover / K³
+    (so the window, K³ of it, is exactly `cover` at p = 1). */
+export function outerRadius(p: number, rTravel: number, cover: number): number {
+  if (p <= LENS.travelEnd) return rTravel;
+  const end = cover / LENS.K ** 3;
+  return rTravel * (end / rTravel) ** ((p - LENS.travelEnd) / (1 - LENS.travelEnd));
 }
 
 export interface LensRadii {
@@ -48,15 +62,23 @@ export interface LensRadii {
   window: number;
 }
 
-/** Nested radii (a ≥ b ≥ c ≥ window for every p: starts and reaches are ordered). */
-export function lensRadii(p: number, startRadius: number, cover: number): LensRadii {
-  const { start, reach } = LENS;
+/** Nested radii: a ≥ b ≥ c ≥ window for every p (K < 1, ramps ≤ 1). */
+export function lensRadii(p: number, rTravel: number, cover: number): LensRadii {
+  const { K, ramp, rampWidth } = LENS;
+  const a = outerRadius(p, rTravel, cover);
+  const grown = (start: number) => smoothstep((p - start) / rampWidth);
   return {
-    a: startRadius + (cover - startRadius) * growth(p, start.a, reach.a),
-    b: cover * growth(p, start.b, reach.b),
-    c: cover * growth(p, start.c, reach.c),
-    window: cover * growth(p, start.window, reach.window),
+    a,
+    b: a * K * grown(ramp.b),
+    c: a * K ** 2 * grown(ramp.c),
+    window: a * K ** 3 * grown(ramp.window),
   };
+}
+
+/** Once a disk covers the viewport nothing larger looks different; clamping
+    keeps every disk at scale ≤ 1 (crisp edges). */
+export function renderRadius(r: number, cover: number): number {
+  return Math.min(r, cover);
 }
 
 const easeInOutQuad = (x: number) => (x < 0.5 ? 2 * x * x : 1 - (-2 * x + 2) ** 2 / 2);

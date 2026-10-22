@@ -57,7 +57,7 @@ export function LensFx() {
       cy = o.top - st.top + o.height / 2; // constant, stuck or not
       wx = cx - win.getBoundingClientRect().left;
       cover = coverRadius(cx, cy, vw, vh);
-      startRadius = (LENS.startDiameterFrac * Math.min(vw, vh)) / 2;
+      startRadius = LENS.rTravelFrac * Math.min(vw, vh);
       gsap.set([diskA, diskB, diskC], { width: cover * 2, height: cover * 2 });
       lastClip = ""; // force a rewrite at the new centre
     };
