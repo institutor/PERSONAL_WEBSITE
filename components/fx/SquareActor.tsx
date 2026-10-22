@@ -53,18 +53,6 @@ export function SquareActor() {
       return hero.getBoundingClientRect().top + hero.offsetHeight - next.getBoundingClientRect().top;
     };
 
-    // Slots in the sticky lens stage (Trajectory) reach the reading zone
-    // only after the stage unsticks: shift them by the spacer's length,
-    // less however far the stage is stuck right now (its rect includes it).
-    const lensShift = (el: HTMLElement) => {
-      const wrap = el.closest<HTMLElement>("[data-lens-wrap]");
-      const stage = wrap?.querySelector<HTMLElement>("[data-lens-stage]");
-      const spacer = wrap?.querySelector<HTMLElement>("[data-lens-spacer]");
-      if (!wrap || !stage || !spacer) return 0;
-      const stuck = stage.getBoundingClientRect().top - wrap.getBoundingClientRect().top;
-      return spacer.offsetHeight - stuck;
-    };
-
     const measure = () => {
       const vh = window.innerHeight;
       const deck = document.querySelector<HTMLElement>("[data-deck]");
@@ -88,7 +76,7 @@ export function SquareActor() {
             const pinLen = Math.max(0, htrack.scrollWidth - window.innerWidth) + vh * 0.45;
             return { el, arrive: top - vh * 0.5, depart: top + pinLen - vh * 0.2 };
           }
-          const top = el.getBoundingClientRect().top + window.scrollY - heroShift(el) + lensShift(el);
+          const top = el.getBoundingClientRect().top + window.scrollY - heroShift(el);
           const hold = Math.max(1, Number(el.dataset.sqHold) || 1);
           const lead = vh * (0.68 + 0.3 * (hold - 1));
           const exit = vh * Math.max(0.08, 0.34 - 0.18 * (hold - 1));

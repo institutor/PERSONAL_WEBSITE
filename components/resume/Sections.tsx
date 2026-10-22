@@ -18,27 +18,19 @@ import { BackTicker, GapTitle } from "./Titles";
 /* ---------------------------------------------------------------- 01 ---- */
 
 /**
- * Trajectory is the lens stage: it sticks at the top for --lens-length of
- * scroll while LensFx swells bone/ink rings out of the square and opens the
- * window (a clip-path circle on the O) onto the section. The nav anchor sits
- * at the lens end, so TRAJECTORY lands on the fully open section.
+ * Trajectory scrolls up behind the lens: LensFx swells bone/ink rings out
+ * of the square at mid-screen while the page moves, then opens the window
+ * (a clip-path circle) onto the section just as TRAJECTORY's O reaches the
+ * lens centre. The empty [data-lens-gap] before it is the room the lens
+ * plays in.
  */
 function Trajectory() {
   return (
-    <div data-lens-wrap data-band className="relative">
-      <span
-        id="trajectory"
-        aria-hidden="true"
-        className="pointer-events-none absolute left-0 h-px w-px"
-        style={{ top: "var(--lens-length)" }}
-      />
-      <section data-lens-stage className="sticky top-0 z-[2] min-h-svh overflow-hidden text-bone">
-        <div data-lens-window className="relative min-h-svh bg-ink px-4 py-24 sm:px-6 sm:py-28">
-          <TrajectoryContent />
-        </div>
-      </section>
-      <div data-lens-spacer aria-hidden="true" style={{ height: "var(--lens-length)" }} />
-    </div>
+    <section id="trajectory" data-band className="relative z-[2] min-h-svh overflow-hidden text-bone">
+      <div data-lens-window className="relative min-h-svh bg-ink px-4 py-24 sm:px-6 sm:py-28">
+        <TrajectoryContent />
+      </div>
+    </section>
   );
 }
 
@@ -53,7 +45,7 @@ function TrajectoryContent() {
         index="01 · the path"
         window="early"
         hold={1.8}
-        dwell={0.3}
+        dwell={0.12}
         className="relative z-10"
       />
 
@@ -465,6 +457,7 @@ export function Resume() {
           No z-index here: a stacking context would bury the fixed z-[8]
           square actor under every band. */}
       <div className="relative">
+        <div data-lens-gap aria-hidden="true" style={{ height: "var(--lens-gap)" }} />
         <Trajectory />
         <ExperienceHorizontal />
         <CardDeck />

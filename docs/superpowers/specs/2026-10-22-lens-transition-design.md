@@ -1,163 +1,138 @@
-# Lens transition (hero → TRAJECTORY) — design spec
+# Lens transition (hero → TRAJECTORY) — design spec, v2
 
-Written 2026-10-22 from Jiewen's brief, on top of the block-letter hero that
-landed earlier today (commits d928f87…596402c). Quoted words are the brief;
-the rest are decisions made to carry it out and are open to correction.
+v1 (this morning) pinned Trajectory for 160 svh and grew four evenly staged
+circles toward the O at the top of the section. Jiewen's review: the page
+must keep scrolling while the lens plays; the final dot must land on
+TRAJECTORY's O with the word near the centre of the screen; the effect must be
+shorter; the circles must not be evenly spaced — an exponential, nested look
+where the outer circles are always substantially bigger; and the lens itself
+sat too high. This spec replaces the v1 design. Quoted words are the brief.
 
 ## Goal
 
-1. Delete the SHIPPING / SUNSET PARK → MORNINGSIDE HEIGHTS sweeps band and the
-   rule between them. "It looks not very good."
-2. In its place, a scroll-driven **lens**: "as the square becomes a circle,
-   we're actually going to have a morph and get larger and larger, and as it
-   gets larger smaller circles of the exact inverted color will appear within
-   the circle and those will get larger too — a white circle, then a black
-   circle inside the white circle, then a white circle inside the black circle
-   inside the white circle, then a black circle inside the white circle inside
-   the black circle inside the white circle." Then it "gives way to the next
-   portion of the page (trajectory), as if it were some sort of lens, with one
-   more white circle centered on the O in trajectory."
+The SHIPPING / SUNSET PARK sweeps band stays deleted. In its place, a
+scroll-driven lens: "as the square becomes a circle … get larger and larger,
+and as it gets larger smaller circles of the exact inverted color will appear
+within the circle and those will get larger too" — bone, ink inside, bone
+inside, ink inside — then it "gives way to the next portion of the page
+(trajectory), as if it were some sort of lens, with one more white circle
+centered on the O in trajectory", which "should be near the center of the
+screen". "The page should continue scrolling while the circle lens animation
+is playing."
 
-"White" is bone `#e8e3d8`, "black" is ink `#0a0a0c` (the site's two colours).
+Bone `#e8e3d8` is "white"; ink `#0a0a0c` is "black".
 
-## What exists today (measured at 1024 × 768)
-
-- Hero: sticky z-0 layer, 100 svh in flow, lockup fading to nothing over the
-  first 0.85 svh of scroll (`HeroIntro`).
-- Sweeps: a transparent 687 px band scrolling over the fading hero.
-- Trajectory: `Band` section (ink), natural top at hero + sweeps = 1455 px,
-  height 851 px. Its `GapTitle` TRAJECTORY has the O knocked out; that
-  `[data-sq-slot]` centre sits at x = 64 % of the viewport width and 196 px
-  below the section's top (23 % of the section), slot width 96 px. A second
-  hidden-on-phones slot (36 vh square) sits at right 8 % / top 74 %.
-- Square actor (`SquareActor`): one fixed 24 px element at z-8, lerped toward
-  the current slot; born a square at the hero's full stop; `squareMorph` spins
-  it into a circle across the first flight (full stop → TRAJECTORY's O) and
-  back into a square on the last (→ BU■LD). Marks are measured from each slot's
-  natural document position (plus `heroShift` for the sticky hero).
-
-## Design
-
-### Structure
+## Structure
 
 ```
 <main>
-  <Hero/>                                   sticky z-0, 100svh in flow
-  <div class="relative">                    (unchanged wrapper, no z-index)
-    <div data-lens-wrap data-band class="relative">          natural top = 100svh
-      <span id="trajectory" style="top: var(--lens-length)"/> nav anchor at the lens end
-      <section data-lens-stage class="sticky top-0 z-[2] …">  Trajectory, transparent bg
-        <div data-lens-window class="bg-ink …">               all Trajectory content; clip-path circle
-      </section>
-      <div data-lens-spacer style="height: var(--lens-length)"/>   the extra scroll the section stays stuck
-    </div>
-    <ExperienceHorizontal/> <CardDeck/> <Contact/>              unchanged
+  <Hero/>                                sticky z-0, 100svh in flow, fades over 0.85svh (unchanged)
+  <div class="relative">                 (unchanged wrapper, no z-index)
+    <div data-lens-gap aria-hidden style="height: var(--lens-gap)"/>   empty room for the lens to play
+    <section id="trajectory" data-band class="relative z-[2] overflow-hidden text-bone …">   NOT sticky; transparent bg
+      <div data-lens-window class="relative bg-ink …">   all Trajectory content; clip-path circle in local coords
+    </section>
+    <ExperienceHorizontal/> <CardDeck/> <Contact/>   unchanged
   </div>
 </main>
 <LensFx/>   fixed inset-0 z-[1] pointer-events-none: three disks (A bone, B ink, C bone)
 ```
 
-`--lens-length: 160svh`. Trajectory sticks at the top for that much scroll;
-during it the lens opens. The `data-band` moves from the section to the
-wrapper so ScrollFx's title/ticker triggers measure a normal-flow element, not
-the sticky one. The section loses `band-ink` (transparent while the window is
-closed); the window carries the ink background inside the clip, so after the
-lens it looks exactly like today's band.
+`--lens-gap: 85svh`. No sticky stage, no spacer, no `lensShift`; the
+`#trajectory` anchor is back on the section. The section keeps a transparent
+background while the window is closed; the window carries the ink background,
+so after the lens it looks exactly like the old band.
 
-### Progress
+## Geometry
 
-`p = clamp((scrollY − S0) / (S1 − S0), 0, 1)` with
-`S0 = 0.2 × viewportHeight` (the actor is still dwelling at the full stop and
-JIEWEN is only 24 % faded, so the growing circle overlaps the name) and
-`S1 = wrapTop + lensLength` (the scroll at which Trajectory unsticks). At
-1024 × 768: S0 = 154 px, S1 = 768 + 1229 = 1997 px, range ≈ 2.4 viewports.
+- **Lens centre** `(cx, cy)`: `cx` = the O slot's live viewport x centre
+  (constant across scroll); `cy = viewportHeight / 2`. Fixed in the viewport:
+  the page scrolls beneath the lens.
+- **End of the lens** `S1` = the scroll at which the O's centre reaches `cy`:
+  `S1 = oCentreDocY − viewportHeight / 2` (`oCentreDocY` = slot centre's
+  document y, measured at refresh). **Start** `S0 = 0.2 × viewportHeight`.
+  `p = clamp((scrollY − S0) / (S1 − S0), 0, 1)`.
+  At 1024 × 768 with the 85 svh gap: O centre ≈ 768 + 653 + 196 = 1617 →
+  S1 ≈ 1233, S0 = 154, length ≈ 1.4 viewports (v1 was 2.4).
+- **Cover** = farthest viewport corner from the centre + 2 px.
+- **Ratio** `K = 0.5`: each inner circle's radius is half the next outer one's
+  once it has appeared, so the outer circle is always at least 2× (area 4×)
+  the inner. **Exponential growth**: the outer radius
+  `R(p) = rT · (REnd / rT) ^ ((p − 0.15) / 0.85)` for `p ≥ 0.15`, with
+  `rT = 0.08 × min(vw, vh)` (disk A at the end of travel) and
+  `REnd = cover / K³` (so the window reaches `cover` at `p = 1`).
+- **Appearance ramps**: inner ring *i* is `R · K^i · ramp((p − a_i) / 0.12)`
+  with smoothstep `ramp` and `a_b = 0.25`, `a_c = 0.42`, `a_window = 0.60`
+  — each appears as a dot and catches up to its ratio. Nesting
+  `a ≥ b ≥ c ≥ window` holds for every `p` because `K < 1` and the ramps are
+  ordered; a test pins it.
+- **Rendered radius** = `min(radius, cover)`: once a disk covers the viewport
+  nothing larger looks different, and clamping keeps every disk at
+  `scale ≤ 1` (crisp edges).
 
-### Lens centre and cover radius
+## Choreography
 
-Centre `(cx, cy)` = the O slot's centre in the stuck frame: `cx` = the slot's
-viewport x; `cy` = the slot's offset from the section's top + half its height
-(constant whether or not the section is stuck). `cover` = the largest distance
-from the centre to a viewport corner + 2 px, so a disk of that radius hides the
-whole viewport. Both re-measure on resize / ScrollTrigger refresh.
+| p         | what                                                                  |
+| --------- | --------------------------------------------------------------------- |
+| ≤ 0       | nothing: actor dwelling at the full stop, window `circle(0)`, disks hidden |
+| 0 → 0.15  | **disk A** takes over from the actor's live box (a square), travels to `(cx, cy)` (power2.inOut), morphs square → circle, grows to radius `rT`; actor hidden from the first frame p > 0 |
+| 0.15 → 1  | disk A grows exponentially (`R(p)`), covering the viewport at p ≈ 0.66 |
+| 0.25 →    | **disk B** (ink) appears at the centre and settles to `R/2`            |
+| 0.42 →    | **disk C** (bone) appears and settles to `R/4`                         |
+| 0.60 →    | **window** opens on Trajectory's content, settling to `R/8`, = `cover` at p = 1 |
+| ≥ 0.72    | **one more bone circle on the O**: the actor shows again at the O, growing in from 15 % of the slot (its own damping) |
+| 1         | disks hidden, `clip-path: none`; the O is at mid-screen; Trajectory just keeps scrolling |
 
-### Choreography (all pure functions of `p`)
+Meanwhile the page scrolls normally: the hero fades under disk A; Trajectory's
+top enters the viewport around 0.85 svh (p ≈ 0.46) but is invisible until the
+window opens; TRAJECTORY's letters assemble inside the lens as the page moves;
+the O slides up into the centre exactly as the window finishes opening.
 
-| p            | what                                                                 |
-| ------------ | -------------------------------------------------------------------- |
-| ≤ 0          | nothing: actor dwelling at the full stop, window `circle(0)`, disks hidden |
-| 0 → 0.18     | **disk A** (bone) takes over from the actor: starts exactly at the actor's live box (a square), travels to the centre (power2.inOut), morphs square → circle (`border-radius 0 → 50%` with the same curve) and grows to diameter `0.16 × min(vw, vh)`. The actor is hidden from the first frame p > 0. |
-| 0.18 → 0.86  | disk A grows from that radius to `cover`                             |
-| 0.38 → 0.92  | **disk B** (ink) appears at the centre and grows to `cover`          |
-| 0.56 → 0.97  | **disk C** (bone) appears and grows to `cover`                       |
-| 0.72 → 1.00  | **window** opens: Trajectory's content `clip-path: circle(r at cx cy)` grows to `cover` — the fourth, ink, circle *is* the page |
-| ≥ 0.86       | **one more bone circle on the O**: the actor becomes visible again at the O slot, growing in from 15 % of the slot size (its own damping does the growth) |
-| 1            | disks hidden, `clip-path: none`; Trajectory unsticks and scrolls normally |
+Everything is a pure function of `p`; scrolling back reverses it.
 
-Growth curve for every radius: `u^1.6` of the normalised time inside its own
-start→reach range (ease-in: each circle appears as a dot and accelerates).
-Because every start and every reach is ordered A < B < C < window, the radii
-stay nested (`a ≥ b ≥ c ≥ window`) for all `p`; a unit test pins this.
+## The actor's route
 
-Everything is reversible: scrolling back closes the window, shrinks the rings,
-shows the actor at the full stop again.
+- No sticky shift. Marks use natural positions as before. With the gap, the O
+  mark arrives at ≈ p 0.66 (while hidden) and the actor reappears at 0.72
+  already settled in the O.
+- `GapTitle dwell={0.12}` on TRAJECTORY (v1's 0.3 over-held: the O had left
+  the screen before the actor moved on).
+- Hide/grow-in protocol unchanged: `data-lens-hidden="1"` while
+  `0 < p < 0.72`; on return at the O, snap to target and scale 15 %; back at
+  the full stop, full size, square, upright.
 
-### The actor's route
+## Rendering
 
-- `SquareActor.measure` adds `lensShift(slot)` = the spacer height for slots
-  inside `[data-lens-wrap]`, because those slots' effective document position
-  is their natural position plus the stuck length. With that, TRAJECTORY's O
-  mark arrives at ≈ p 0.72 (while hidden) and departs just after the section
-  unsticks; the 36 vh slot follows as before.
-- `GapTitle` gains `dwell?: number` → `data-sq-dwell` (viewport heights added
-  to `depart`); TRAJECTORY uses `0.3` so the circle rests in the O for ≈ 0.7
-  viewports of scroll after it appears.
-- `LensFx` toggles `data-lens-hidden="1"` on `[data-square-actor]` while
-  `0 < p < 0.86`. `SquareActor` honours it: hidden → `autoAlpha 0`; on
-  becoming visible → snap `x, y` to the target and set `scale` to 15 % of the
-  target so it grows in place. A page loaded mid-lens starts hidden.
-- `squareMorph` is unchanged (the first flight still rounds the actor; it is
-  simply unseen now). The visible square→circle morph is disk A's.
+- Disks: three `div`s sized `2 × cover`, `border-radius: 50%`,
+  `transform: translate(cx − cover, cy − cover) scale(rendered / cover)`,
+  `will-change: transform`; disk A's border-radius is `50% × morph` during
+  travel; hidden when rendered radius is 0 or outside `0 < p < 1`.
+- Window: `clip-path: circle(r px at cx px cyLocal px)` on `[data-lens-window]`
+  with `cyLocal = cy − windowRect.top` recomputed every frame (the window is
+  scrolling); `circle(0px …)` for p < 0.60 including p ≤ 0; `none` at p ≥ 1.
+  Skip writes that would not change the value.
+- Z-order unchanged: hero 0 < disks 1 < Trajectory 2 < actor 8 < chrome 40.
+- Reduced motion: `[data-lens-gap] { display: none }`, window `clip-path:
+  none !important`, `LensFx` does nothing.
+- Re-measure (centre, cover, S1, disk sizes) on resize (debounced) and
+  ScrollTrigger refresh.
 
-### Rendering details
+## Code that goes away (relative to v1)
 
-- Disks are three `div`s sized `2 × cover` px, `border-radius: 50%`, placed with
-  `transform: translate(cx − cover, cy − cover) scale(r / cover)` (scale ≤ 1,
-  so edges stay crisp); `will-change: transform`; `display: none` outside
-  `0 < p < 1`. Disk A's border-radius is `50% × morph` during travel.
-- Window: `clip-path: circle(r px at cx px cy px)` on `[data-lens-window]`;
-  `circle(0px …)` while p < 0.72 (including p ≤ 0, since Trajectory's top edge
-  enters the viewport at scroll 0); `none` at p ≥ 1.
-- Z-order: hero 0 < disks 1 < Trajectory 2 < actor 8 < chrome 40. The disks are
-  above every other band too, but they only exist mid-lens.
-- Reduced motion: no lens — spacer `display: none`, stage `position: static`,
-  window `clip-path: none`, `LensFx` does nothing (the actor already bails).
-- Nav: `#trajectory` is an absolutely positioned anchor at `top: var(--lens-length)`
-  inside the wrapper, i.e. at S1: clicking TRAJECTORY lands on the fully open
-  section with the circle in the O.
-
-## Code that goes away
-
-- `Sweeps()` in `components/resume/Sections.tsx`, its sr-only text, and the
-  `[data-sweep]` block in `components/fx/ScrollFx.tsx` (nothing else uses it).
-- Trajectory no longer uses `Band` (it needs the sticky/window structure); `Band`
-  stays for Contact.
-
-## Non-goals
-
-- No changes to the hero, the loader, EXPERIENCE, the deck or Contact.
-- No change to the actor's shape logic beyond hide/show and the lens shift.
-- Itinerary `data-scrub-rise` items keep their existing triggers (they finish
-  rising behind the closed window; when it opens they are in place).
+- `[data-lens-wrap]`, `[data-lens-stage]`, `[data-lens-spacer]`, the anchor
+  span, `--lens-length`, the sticky/stuck-shift logic in `SquareActor`, the
+  `lensShift` helper, and the reduced-motion `position: static` rule.
 
 ## Verification
 
-- `node --test lib/*.test.ts` (lens math: progress clamp, cover radius, growth
-  ease, nesting over p, actor visibility windows).
+- `node --test lib/*.test.ts` (v2 lens math: progress, end-of-lens, exponential
+  outer radius, K ratios after ramps, nesting/monotonic over p, window = cover
+  at 1, actor visibility).
 - `npm run lint`, `npx tsc --noEmit`, `npm run build`.
-- Browser replay at 1440 × 900 and 390 × 844: scroll slowly from the hero —
-  the square leaves the full stop, rounds and swells over the fading JIEWEN;
-  ink, bone, then the page open inside it in turn; TRAJECTORY appears inside
-  the lens with its O empty; a bone circle grows into the O; the rings leave
-  the screen; Trajectory scrolls on; the circle later flies to the 36 vh slot
-  and the rest of the journey is unchanged. Scroll back: all of it reverses.
-  Nav → TRAJECTORY lands on the open section.
+- Browser replay at 1440 × 900 and 390 × 844: scroll steadily from the hero —
+  the page never stops; the square rounds and swells over the fading JIEWEN at
+  mid-height; ink, bone, then the page open inside it, each clearly smaller
+  than the one outside at every moment; TRAJECTORY arrives inside the lens and
+  its O reaches mid-screen as the rings leave; a bone circle grows into the O;
+  the actor later flies on to the 36 vh slot. Scroll back: it reverses. Nav →
+  TRAJECTORY lands with the lens finished.

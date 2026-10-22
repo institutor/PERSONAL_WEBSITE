@@ -330,11 +330,13 @@ html[data-intro="play"] [data-hero-bar] { opacity: 0; }
   [data-section="hero"] { position: relative; }
 }
 
-/* ------------------------------------------------------- lens stage ---- */
-/* Trajectory sticks for --lens-length of scroll while LensFx opens the
-   window's clip-path circle; without the lens (no JS) the page shows whole. */
-[data-lens-wrap] { --lens-length: 160svh; }
-[data-lens-window] { clip-path: none; }
+/* ------------------------------------------------------------- lens ---- */
+/* The empty room before Trajectory in which LensFx plays; it only exists
+   when the lens can run (the pre-paint script sets data-motion="on"), so
+   without JS or with reduced motion Trajectory follows the hero directly. */
+:root { --lens-gap: 0px; }
+html[data-motion="on"] { --lens-gap: 85svh; }
+[data-lens-window] { clip-path: none; } /* LensFx drives it */
 /* LensFx's rings: sized 2 × cover, placed and scaled (≤ 1) by GSAP. */
 .lens-disk {
   position: absolute;
@@ -344,11 +346,7 @@ html[data-intro="play"] [data-hero-bar] { opacity: 0; }
   transform-origin: 50% 50%;
   will-change: transform;
 }
-/* Reduced motion: no lens — Trajectory is a plain in-flow band and the nav
-   anchor sits at its top. */
 @media (prefers-reduced-motion: reduce) {
-  [data-lens-wrap] { --lens-length: 0px; }
-  [data-lens-spacer] { display: none; }
-  [data-lens-stage] { position: static; }
+  [data-lens-gap] { display: none; }
   [data-lens-window] { clip-path: none !important; }
 }
