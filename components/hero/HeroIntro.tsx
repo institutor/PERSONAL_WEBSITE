@@ -23,9 +23,11 @@ export function HeroIntro() {
     const nameLetters = gsap.utils.toArray<HTMLElement>("[data-hero-lockup] [data-block-letter]", hero);
     const lockup = hero.querySelector<HTMLElement>("[data-hero-lockup]");
     const im = hero.querySelector<HTMLElement>("[data-hero-im]");
+    const sayBox = hero.querySelector<HTMLElement>("[data-hero-say]");
+    const say = gsap.utils.toArray<HTMLElement>("[data-hero-say] [data-hero-line]", hero);
     const bars = gsap.utils.toArray<HTMLElement>("[data-hero-bar]", hero);
     const lines = gsap.utils.toArray<HTMLElement>("[data-hero-lockup] [data-hero-line]", hero);
-    if (!lockup || !im) return;
+    if (!lockup || !im || !sayBox) return;
 
     const docEl = document.documentElement;
     let unsubPhase: (() => void) | null = null;
@@ -33,6 +35,7 @@ export function HeroIntro() {
 
     const done = () => {
       docEl.dataset.intro = "done";
+      docEl.dataset.square = "in";
       useIntroStore.getState().setPhase("done");
       ScrollTrigger.refresh();
     };
@@ -40,7 +43,7 @@ export function HeroIntro() {
     // GSAP parses the CSS gate's translateY(115%) into px `y` on first
     // touch, so every yPercent set also zeroes y.
     const finalState = () => {
-      gsap.set([...imLetters, ...nameLetters, ...lines], { y: 0, yPercent: 0 });
+      gsap.set([...imLetters, ...nameLetters, ...lines, ...say], { y: 0, yPercent: 0 });
       gsap.set(bars, { autoAlpha: 1 });
       gsap.set(lockup, { y: 0 });
       done();
@@ -54,7 +57,7 @@ export function HeroIntro() {
       gsap.set(imLetters, { y: 0, yPercent: 110 });
       gsap.set(nameLetters, { y: 0, yPercent: 110 });
       gsap.set(bars, { autoAlpha: 0 });
-      gsap.set(lines, { y: 0, yPercent: 110 });
+      gsap.set([...lines, ...say], { y: 0, yPercent: 110 });
       // measured at home (the lockup itself is never gated); resize mid-intro is ignored
       const r = lockup.getBoundingClientRect();
       const rest = bottomRestOffset({
@@ -68,9 +71,14 @@ export function HeroIntro() {
       intro = gsap
         .timeline({ onComplete: done })
         .to(imLetters, { yPercent: 0, duration: 0.7, ease: "power3.out", stagger: 0.08 }, 0)
+        .to(say, { yPercent: 0, duration: 0.7, ease: "power3.out" }, 0.12)
         .to(nameLetters, { yPercent: 0, duration: 0.95, ease: "power3.out", stagger: 0.085 }, 0.25)
         .to(bars, { autoAlpha: 1, duration: 0.5, ease: "power2.out" }, 0.75)
         .to(lines, { yPercent: 0, duration: 0.7, ease: "power3.out", stagger: 0.06 }, 0.92)
+        // the period pops in as JIEWEN's last letters land (SquareActor)
+        .call(() => {
+          docEl.dataset.square = "in";
+        }, [], 1.3)
         .to(lockup, { y: 0, duration: 1.05, ease: "power3.inOut" }, 1.65);
     };
 
@@ -79,7 +87,7 @@ export function HeroIntro() {
     const mm = gsap.matchMedia();
     mm.add("(prefers-reduced-motion: no-preference)", () => {
       gsap.fromTo(
-        [lockup, im],
+        [lockup, im, sayBox],
         { autoAlpha: 1 },
         {
           autoAlpha: 0,

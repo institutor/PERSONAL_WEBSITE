@@ -307,6 +307,12 @@ html[data-motion="on"] [data-rise-fallback] [data-rise] {
   line-height: 1.3;
 }
 .line-mask { display: block; overflow: hidden; }
+/* The school tab: merged under the quote bar's right end (1px overlap, no
+   seam), its left side cut at 45° (slant = its own 2em height). */
+.hero-tab {
+  padding-left: 2.1em;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 2em 100%);
+}
 /* Landscape phones: the centred lockup rises into I'M's band, so there I'M
    scales with the height instead of the width (unlayered: beats w-[…]). */
 @media (max-height: 480px) {

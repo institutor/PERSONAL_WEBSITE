@@ -5,8 +5,10 @@ import { identity } from "@/lib/resume-data";
 
 /**
  * Title screen in the reference's block letterforms: a small I'M top-left,
- * then the JIEWEN. lockup centred across the gutters — the word, a bone
- * bar carrying the cycling quote, and a shorter bar with the school line.
+ * "( jee-WEN )" top-right, then the JIEWEN. lockup centred across the
+ * gutters — the word, a bone bar carrying the cycling quote, and the school
+ * line on a tab hanging off the bar's right end (45° cut on its left, like
+ * the letters' chamfers; straight and flush on the right).
  * The square actor is born as the full stop: "I'M JIEWEN."
  *
  * Sticky z-0 layer: the sections scroll up over it while HeroIntro fades
@@ -29,6 +31,18 @@ export function Hero() {
         <BlockWord text="I'M" />
       </div>
 
+      <div
+        data-hero-say
+        aria-hidden="true"
+        className="pointer-events-none absolute right-4 top-[3.25rem] text-right sm:right-6 sm:top-14"
+      >
+        <span className="line-mask">
+          <span data-hero-line className="paren block">
+            ( jee-WEN )
+          </span>
+        </span>
+      </div>
+
       {/* centring wrapper; GSAP never touches it */}
       <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 sm:inset-x-6">
         <div data-hero-lockup className="will-change-transform">
@@ -36,11 +50,8 @@ export function Hero() {
           <div data-hero-bar="quote" className="hero-bar mt-[clamp(2px,0.55vw,9px)] w-full">
             <QuoteBar />
           </div>
-          <div
-            data-hero-bar="school"
-            className="hero-bar ml-auto mt-[clamp(2px,0.55vw,9px)] w-fit min-w-[26%] max-w-full sm:ml-[50%] sm:max-w-[50%]"
-          >
-            {/* phones: right-aligned (starts ≈ at centre) so the line never clips */}
+          <div data-hero-bar="school" className="hero-bar hero-tab -mt-px ml-auto w-fit min-w-[20%] max-w-full">
+            {/* starts 4/5 across; on phones it widens to fit its line */}
             <span className="line-mask">
               <span data-hero-line className="block whitespace-nowrap">
                 {identity.heroLine}
