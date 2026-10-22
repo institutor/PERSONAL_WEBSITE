@@ -1,3 +1,4 @@
+import { LensFx } from "@/components/fx/LensFx";
 import { ScrollFx } from "@/components/fx/ScrollFx";
 import { SquareActor } from "@/components/fx/SquareActor";
 import { LoaderOverlay } from "@/components/intro/LoaderOverlay";
@@ -9,6 +10,7 @@ export default function Home() {
       <LoaderOverlay />
       <Resume />
       <SquareActor />
+      <LensFx />
       <ScrollFx />
     </>
   );
