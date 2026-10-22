@@ -4,7 +4,7 @@ import { identity } from "@/lib/resume-data";
 
 /**
  * Title screen in the reference's block letterforms: a small I'M top-left,
- * "( jee-WEN )" top-right, then the JIEWEN. lockup centred across the
+ * "( jee-WEN )" top-right (and, on phones, a best-on-desktop note bottom-left), then the JIEWEN. lockup centred across the
  * gutters — the word, a bone bar (shape only: no copy, sized like the
  * reference's ~7% of cap height), and the school line on a tab hanging off
  * the bar's right end (45° cut on its left, like the letters' chamfers;
@@ -39,6 +39,20 @@ export function Hero() {
         <span className="line-mask">
           <span data-hero-line className="paren block">
             ( jee-WEN )
+          </span>
+        </span>
+      </div>
+
+      {/* phones: the site is built for a wide screen; say so quietly. Rises
+          with ( jee-WEN ) and fades with the hero (data-hero-say). */}
+      <div
+        data-hero-say
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-12 left-4 md:hidden"
+      >
+        <span className="line-mask">
+          <span data-hero-line className="lbl block opacity-60">
+            BEST EXPERIENCED ON DESKTOP
           </span>
         </span>
       </div>

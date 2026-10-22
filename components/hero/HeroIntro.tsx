@@ -25,14 +25,14 @@ export function HeroIntro() {
     const nameLetters = gsap.utils.toArray<HTMLElement>("[data-hero-lockup] [data-block-letter]", hero);
     const lockup = hero.querySelector<HTMLElement>("[data-hero-lockup]");
     const im = hero.querySelector<HTMLElement>("[data-hero-im]");
-    const sayBox = hero.querySelector<HTMLElement>("[data-hero-say]");
+    const sayBoxes = gsap.utils.toArray<HTMLElement>("[data-hero-say]", hero);
     const say = gsap.utils.toArray<HTMLElement>("[data-hero-say] [data-hero-line]", hero);
     const bars = gsap.utils.toArray<HTMLElement>("[data-hero-bar]", hero);
     const lines = gsap.utils.toArray<HTMLElement>("[data-hero-lockup] [data-hero-line]", hero);
     const quoteBar = hero.querySelector<HTMLElement>('[data-hero-bar="quote"]');
     const tab = hero.querySelector<HTMLElement>('[data-hero-bar="school"]');
     const tabLine = hero.querySelector<HTMLElement>('[data-hero-bar="school"] [data-hero-line]');
-    if (!lockup || !im || !sayBox || !quoteBar || !tab || !tabLine) return;
+    if (!lockup || !im || sayBoxes.length === 0 || !quoteBar || !tab || !tabLine) return;
 
     const docEl = document.documentElement;
     let unsubPhase: (() => void) | null = null;
@@ -105,7 +105,7 @@ export function HeroIntro() {
     const mm = gsap.matchMedia();
     mm.add("(prefers-reduced-motion: no-preference)", () => {
       gsap.fromTo(
-        [lockup, im, sayBox],
+        [lockup, im, ...sayBoxes],
         { autoAlpha: 1 },
         {
           autoAlpha: 0,
