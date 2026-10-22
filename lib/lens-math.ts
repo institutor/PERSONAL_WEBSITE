@@ -18,6 +18,7 @@ export const LENS = {
   startVh: 0.2, // S0 = startVh × viewportHeight
   travelEnd: 0.15, // the actor reaches the lens slot; disk A takes over
   handoffEase: 0.07, // p over which disk A blends from the actor's box to the centre
+  handoffTime: 0.12, // s: the fastest that blend may go (time constant), however hard the flick
   lensSlotDepart: 0.4, // the (hidden) actor leaves the lens slot for the O
   K: 0.5, // the window settles to K × disk A
   rTravelFrac: 0.08, // rTravel = rTravelFrac × min(vw, vh)
@@ -88,6 +89,19 @@ export function renderRadius(r: number, cover: number): number {
 /** 0 → 1 as disk A moves from the actor's live box onto the lens centre. */
 export function handoffBlend(p: number): number {
   return smoothstep((p - LENS.travelEnd) / LENS.handoffEase);
+}
+
+/** How far disk A has blended from the actor's captured shape onto the lens
+    centre: the scroll blend restarted from the p at which the shape was taken
+    (`blendAtCapture` = handoffBlend there), but never faster than an ease of
+    time constant handoffTime since the capture — a strong flick crosses the
+    whole 0.15 → 0.22 window in a frame or two. 1 once (nearly) settled. */
+export function handoffMix(p: number, blendAtCapture: number, elapsed: number): number {
+  const byScroll =
+    blendAtCapture >= 1 ? 1 : Math.max(0, (handoffBlend(p) - blendAtCapture) / (1 - blendAtCapture));
+  const byTime = 1 - Math.exp(-Math.max(0, elapsed) / LENS.handoffTime);
+  const mix = Math.min(byScroll, byTime);
+  return mix > 0.995 ? 1 : mix;
 }
 
 /** The actor flies the first leg itself, then reappears at the O (from actorReturn). */

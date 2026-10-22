@@ -8,6 +8,7 @@ import {
   actorVisible,
   coverRadius,
   handoffBlend,
+  handoffMix,
   lensEnd,
   lensProgress,
   lensRadii,
@@ -108,7 +109,9 @@ export function LensFx() {
     // Read from GSAP's transform cache: a rotated element's rect is too big.
     type Shape = { x: number; y: number; r: number; round: number; rot: number };
     let handoff: Shape | null = null;
+    let fromActor = false; // the shape is the actor's (blending), not the centre
     let handoffFrom = 0; // handoffBlend at the frame the shape was taken
+    let handoffAt = 0; // ticker time of that frame
     let prevP: number | null = null;
     const centreShape = (): Shape => ({ x: cx, y: cy, r: rTravel, round: 1, rot: 0 });
     const actorShape = (): Shape => {
@@ -192,16 +195,23 @@ export function LensFx() {
       }
       root.style.display = "block";
       if (!handoff) {
+        fromActor = fromBelow;
         handoff = fromBelow ? actorShape() : centreShape();
         handoffFrom = handoffBlend(p);
+        handoffAt = gsap.ticker.time;
       }
 
       const radii = lensRadii(p, rTravel, cover);
       const lerp = gsap.utils.interpolate;
-      // the blend restarts from wherever p was when the shape was taken: a
-      // fast scroll can overshoot 0.15 in one frame, and disk A must still
-      // start exactly on the actor
-      const b = handoffFrom >= 1 ? 1 : Math.max(0, (handoffBlend(p) - handoffFrom) / (1 - handoffFrom));
+      // from the actor: the blend restarts where p was when the shape was
+      // taken and is eased in time, so even a hard flick slides disk A over
+      // instead of teleporting it; once settled the capture is dropped and
+      // the lens is pure p again (scrolling back shrinks it at the centre)
+      const b = fromActor ? handoffMix(p, handoffFrom, gsap.ticker.time - handoffAt) : 1;
+      if (fromActor && b >= 1) {
+        fromActor = false;
+        handoff = centreShape();
+      }
       const a: Shape = {
         x: lerp(handoff.x, cx, b),
         y: lerp(handoff.y, cy, b),
