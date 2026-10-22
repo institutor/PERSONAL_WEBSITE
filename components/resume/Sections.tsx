@@ -49,14 +49,6 @@ function TrajectoryContent() {
         className="relative z-10"
       />
 
-      {/* the square swells huge behind the itinerary, then shrinks —
-          desktop only; on phones it would sit on top of the text */}
-      <span
-        data-sq-slot
-        className="pointer-events-none absolute right-[8%] top-[74%] hidden h-[36vh] w-[36vh] md:block"
-        aria-hidden="true"
-      />
-
       {/* the itinerary: one departure, one arrival, the match as the route */}
       <div className="relative z-10 pt-24">
         <div data-scrub-rise data-window="early">
@@ -74,9 +66,35 @@ function TrajectoryContent() {
           </span>
         </div>
 
-        <div className="text-right" data-scrub-rise data-window="late">
+        <div className="relative text-right" data-scrub-rise data-window="late">
+          {/* the square swells huge ON the arrival line, centred on its right
+              end, then shrinks — desktop only; on phones it would sit on top of
+              the text. It arrives late and leaves late (lead / exit in
+              viewports) so the pass across "Columbia University" is slow enough
+              to watch the letters part (LetterFlow). */}
+          <span
+            data-sq-slot
+            data-sq-lead="0.65"
+            data-sq-exit="0.15"
+            className="pointer-events-none absolute right-0 top-1/2 hidden h-[36vh] w-[36vh] -translate-y-1/2 md:block"
+            aria-hidden="true"
+          />
           <p className="lbl mb-2 opacity-60">{journey.to.label}</p>
-          <p className="display text-[clamp(2.6rem,7vw,6.5rem)]">{journey.to.title}</p>
+          {/* letter by letter: LetterFlow parts them around the travelling shape */}
+          <p className="display text-[clamp(2.6rem,7vw,6.5rem)]" role="img" aria-label={journey.to.title} data-flow>
+            {journey.to.title.split(" ").map((word, wi) => (
+              <span key={wi}>
+                {wi > 0 && " "}
+                <span className="inline-block whitespace-nowrap">
+                  {word.split("").map((ch, i) => (
+                    <span key={i} data-flow-letter aria-hidden="true" className="inline-block will-change-transform">
+                      {ch}
+                    </span>
+                  ))}
+                </span>
+              </span>
+            ))}
+          </p>
           <p className="bodycol ml-auto mt-3 opacity-75">{journey.to.detail}</p>
         </div>
       </div>
@@ -103,6 +121,7 @@ function ExperienceHorizontal() {
             index="shipped"
             window="early"
             sqRide
+            lead={0.15}
             sizeClass="text-[clamp(3rem,9.5vw,9rem)]"
           />
           <p className="statement mt-8 max-w-xl text-[clamp(1.4rem,2.6vw,2.4rem)] opacity-90">

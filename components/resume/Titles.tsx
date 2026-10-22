@@ -25,6 +25,8 @@ interface GapTitleProps {
   hold?: number;
   /** Extra dwell after the default departure, in viewport heights. */
   dwell?: number;
+  /** Arrive this many viewports before the slot's natural position (overrides hold's lead). */
+  lead?: number;
   /** Deck card index — the slot maps to that segment of the deck pin. */
   sqSeg?: number;
   /** Square color while dwelling here (bone cards need an ink square). */
@@ -42,6 +44,7 @@ export function GapTitle({
   sizeClass = "text-[clamp(3.8rem,13vw,12rem)]",
   hold,
   dwell,
+  lead,
   sqSeg,
   sqTone,
   sqRide,
@@ -63,6 +66,7 @@ export function GapTitle({
                 data-sq-slot
                 data-sq-hold={hold}
                 data-sq-dwell={dwell}
+                data-sq-lead={lead}
                 data-sq-seg={sqSeg}
                 data-sq-tone={sqTone}
                 data-sq-ride={sqRide ? "" : undefined}

@@ -198,3 +198,27 @@ bone disk (A) with the ink page opening inside it: `window = A × K`
 (K = 0.5), appearing at p 0.45 (ramp width 0.12); disk A grows to
 `cover / K` so the window is exactly `cover` at p = 1. Everything else is
 unchanged.
+
+## v2.3 — "Columbia University" parts for the shape (2026-10-22)
+
+Jiewen: "as the circle/square is moving to COLUMBIA UNIVERSITY, make it
+interact with the letters, the letters should move to accommodate the shape
+and go around it, and move back as it moves past. Also have the shape move
+more slowly past that section so visitors can see it clearly."
+
+- The arrival line is rendered letter by letter (`[data-flow] [data-flow-letter]`,
+  words kept unbreakable, `role="img"` with the full text as its label).
+- `LetterFlow` (fixed controller after the actor on the ticker) pushes every
+  letter straight out from the actor's centre until it clears the shape by
+  0.3 of the letter's height, easing 20 % per frame toward the target and
+  back to rest when the shape moves on (`lib/letter-flow.ts`, tested). A
+  square's reach is boosted 10 % for its corners.
+- The 36 vh slot now lives inside the arrival block, centred on the title
+  line at its right end, so the shape lands on "University" rather than
+  grazing the line from below.
+- Slower pass: that slot takes `data-sq-lead="0.65"` and `data-sq-exit="0.15"`
+  (viewports; new overrides of the hold-derived timing in `SquareActor`), and
+  EXPERIENCE's ride slot `lead={0.15}`. The shape lands on the line while it
+  is in the lower half of the screen, rides up with it for ≈ 0.5 viewport of
+  scroll with the letters held apart, and leaves (letters closing) with the
+  line still 15 % from the top, instead of jumping on and off in a frame.

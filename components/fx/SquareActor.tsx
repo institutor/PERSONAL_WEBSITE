@@ -87,12 +87,15 @@ export function SquareActor() {
           if (el.dataset.sqRide !== undefined && hs && htrack) {
             const top = spacerTop(hs);
             const pinLen = Math.max(0, htrack.scrollWidth - window.innerWidth) + vh * 0.45;
-            return [{ el, arrive: top - vh * 0.5, depart: top + pinLen - vh * 0.2 }];
+            const rideLead = el.dataset.sqLead !== undefined ? Number(el.dataset.sqLead) : 0.5;
+            return [{ el, arrive: top - vh * rideLead, depart: top + pinLen - vh * 0.2 }];
           }
           const top = el.getBoundingClientRect().top + window.scrollY - heroShift(el);
           const hold = Math.max(1, Number(el.dataset.sqHold) || 1);
-          const lead = vh * (0.68 + 0.3 * (hold - 1));
-          const exit = vh * Math.max(0.08, 0.34 - 0.18 * (hold - 1));
+          // data-sq-lead / data-sq-exit (viewports) override the hold-derived timing
+          const lead = vh * (el.dataset.sqLead !== undefined ? Number(el.dataset.sqLead) : 0.68 + 0.3 * (hold - 1));
+          const exit =
+            vh * (el.dataset.sqExit !== undefined ? Number(el.dataset.sqExit) : Math.max(0.08, 0.34 - 0.18 * (hold - 1)));
           const dwell = Number(el.dataset.sqDwell) || 0; // extra rest, in viewports
           return [{ el, arrive: top - lead, depart: top - exit + dwell * vh }];
         })
