@@ -48,3 +48,4 @@ Every observed design/artistic choice, numbered. ✦ = adopted in our overhaul (
 - Loader unchanged mechanically; checkmark recolors to ultramarine.
 - 2026-10-22: the hero is now the block-letter lockup (small I'M top-left; JIEWEN rising letter by letter out of the bottom edge, a bone quote bar and a shorter school bar, the lockup floating to centre), pinned while the sections scroll over it and fading to nothing — see [the block-hero spec](superpowers/specs/2026-10-22-block-hero-design.md).
 - The WebGL pixel-dissolve (and three.js) is retired; the loader's background glows are gone too (flat ink field).
+- 2026-10-22: the SHIPPING / SUNSET PARK sweeps are retired; the hero → TRAJECTORY handoff is now the lens — the square swells into a bone disk over the fading JIEWEN, ink and bone circles grow inside it, TRAJECTORY opens in the innermost one and a bone circle grows into its O — see [the lens spec](superpowers/specs/2026-10-22-lens-transition-design.md).
