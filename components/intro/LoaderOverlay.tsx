@@ -6,7 +6,9 @@ import { LoaderFx } from "./LoaderFx";
  * The original textured artwork is revealed through one continuous
  * handwriting mask. A narrow round pen tip leads a full-width butt-capped
  * fill, preserving the handmade final mark without large circular starts.
- * The field behind it is flat ink: no glows, no atmosphere.
+ * Bone field, ink artwork (the light source art is recoloured by an sRGB
+ * matrix that keeps its texture); no glows. LoaderFx exits by wiping the
+ * field away upward, so the black site rises in from the bottom.
  *
  * SSR-hidden: every mask stroke ships with dashoffset 1, so nothing flashes
  * before hydration.
@@ -94,7 +96,7 @@ export function LoaderOverlay() {
       aria-valuemax={100}
       aria-valuenow={0}
       aria-label="Loading portfolio"
-      className="fixed inset-0 z-[80] flex flex-col items-center justify-center bg-ink text-bone"
+      className="fixed inset-0 z-[80] flex flex-col items-center justify-center bg-bone text-ink"
     >
       <svg
         viewBox="0 0 1904 826"
@@ -103,6 +105,13 @@ export function LoaderOverlay() {
         focusable="false"
       >
         <defs>
+          {/* white → ink (#0a0a0c), greys → dark greys: the texture survives */}
+          <filter id="ink-art" colorInterpolationFilters="sRGB">
+            <feColorMatrix
+              type="matrix"
+              values="-0.961 0 0 0 1  0 -0.961 0 0 1  0 0 -0.953 0 1  0 0 0 1 0"
+            />
+          </filter>
           <mask
             id="penmask"
             maskUnits="userSpaceOnUse"
@@ -147,6 +156,7 @@ export function LoaderOverlay() {
           href="/loader/by-jiewen-loader.webp"
           width="1904"
           height="826"
+          filter="url(#ink-art)"
           mask="url(#penmask)"
         />
       </svg>
@@ -160,7 +170,7 @@ export function LoaderOverlay() {
       <button
         type="button"
         data-loader-skip
-        className="lbl absolute right-6 top-6 cursor-pointer opacity-70 transition-opacity hover:opacity-100"
+        className="lbl absolute right-6 top-6 cursor-pointer opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-ink"
       >
         Skip →
       </button>

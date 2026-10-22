@@ -72,22 +72,31 @@ export function LoaderFx() {
       if (pctEl) pctEl.textContent = "100";
       root.setAttribute("aria-valuenow", "100");
       const skipping = orchestrator.skipped;
-      // the prototype's exit: slight scale up + fade
+      // The reference's exit: the bone field wipes away upward, so the black
+      // site rises in from the bottom; the hero's text follows 0.34 s in.
+      // A skip lands the final hero first and wipes faster.
       gsap
         .timeline({
+          delay: skipping ? 0 : 0.35,
           onComplete: () => {
             gsap.set(root, { display: "none" });
-            useIntroStore.getState().setPhase(skipping ? "skipped" : "reveal");
           },
         })
-        .to(root, {
-          scale: 1.035,
-          autoAlpha: 0,
-          duration: skipping ? 0.2 : 0.6,
-          ease: "power2.inOut",
-          delay: skipping ? 0 : 0.35,
-          transformOrigin: "50% 50%",
-        });
+        .fromTo(
+          root,
+          { clipPath: "inset(0% 0% 0% 0%)" },
+          {
+            clipPath: "inset(0% 0% 100% 0%)",
+            duration: skipping ? 0.45 : 0.9,
+            ease: "power3.inOut",
+          },
+          0,
+        )
+        .call(
+          () => useIntroStore.getState().setPhase(skipping ? "skipped" : "reveal"),
+          [],
+          skipping ? 0 : 0.34,
+        );
     };
 
     const tick = (_time: number, deltaMS: number) => {
