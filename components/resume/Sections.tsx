@@ -15,36 +15,36 @@ import { Band } from "./Band";
 import { Hero } from "./Hero";
 import { BackTicker, GapTitle } from "./Titles";
 
-/* -------------------------------------------------------------- sweeps -- */
+/* ---------------------------------------------------------------- 01 ---- */
 
-function Sweeps() {
+/**
+ * Trajectory is the lens stage: it sticks at the top for --lens-length of
+ * scroll while LensFx swells bone/ink rings out of the square and opens the
+ * window (a clip-path circle on the O) onto the section. The nav anchor sits
+ * at the lens end, so TRAJECTORY lands on the fully open section.
+ */
+function Trajectory() {
   return (
-    <section data-band className="relative overflow-hidden py-36 text-bone sm:py-44">
-      <p
-        data-sweep="34"
-        className="display relative z-10 whitespace-nowrap text-[clamp(4.5rem,15vw,14rem)]"
+    <div data-lens-wrap data-band className="relative">
+      <span
+        id="trajectory"
         aria-hidden="true"
-      >
-        SHIPPING
-      </p>
-      <div className="my-10 h-[3px] w-full bg-bone" aria-hidden="true" />
-      <p
-        data-sweep="-38"
-        className="display outline-text relative z-10 whitespace-nowrap text-right text-[clamp(4.5rem,15vw,14rem)]"
-        aria-hidden="true"
-      >
-        SUNSET PARK → MORNINGSIDE HEIGHTS
-      </p>
-      <p className="sr-only">Shipping. Sunset Park to Morningside Heights.</p>
-    </section>
+        className="pointer-events-none absolute left-0 h-px w-px"
+        style={{ top: "var(--lens-length)" }}
+      />
+      <section data-lens-stage className="sticky top-0 z-[2] min-h-svh overflow-hidden text-bone">
+        <div data-lens-window className="relative min-h-svh bg-ink px-4 py-24 sm:px-6 sm:py-28">
+          <TrajectoryContent />
+        </div>
+      </section>
+      <div data-lens-spacer aria-hidden="true" style={{ height: "var(--lens-length)" }} />
+    </div>
   );
 }
 
-/* ---------------------------------------------------------------- 01 ---- */
-
-function Trajectory() {
+function TrajectoryContent() {
   return (
-    <Band id="trajectory" className="min-h-svh">
+    <>
       <BackTicker word="TRAJECTORY" posClass="top-[4%]" />
       {/* the square becomes the missing O */}
       <GapTitle
@@ -53,6 +53,7 @@ function Trajectory() {
         index="01 · the path"
         window="early"
         hold={1.8}
+        dwell={0.3}
         className="relative z-10"
       />
 
@@ -87,7 +88,7 @@ function Trajectory() {
           <p className="bodycol ml-auto mt-3 opacity-75">{journey.to.detail}</p>
         </div>
       </div>
-    </Band>
+    </>
   );
 }
 
@@ -464,7 +465,6 @@ export function Resume() {
           No z-index here: a stacking context would bury the fixed z-[8]
           square actor under every band. */}
       <div className="relative">
-        <Sweeps />
         <Trajectory />
         <ExperienceHorizontal />
         <CardDeck />

@@ -329,3 +329,17 @@ html[data-intro="play"] [data-hero-bar] { opacity: 0; }
 @media (prefers-reduced-motion: reduce) {
   [data-section="hero"] { position: relative; }
 }
+
+/* ------------------------------------------------------- lens stage ---- */
+/* Trajectory sticks for --lens-length of scroll while LensFx opens the
+   window's clip-path circle; without the lens (no JS) the page shows whole. */
+[data-lens-wrap] { --lens-length: 160svh; }
+[data-lens-window] { clip-path: none; }
+/* Reduced motion: no lens — Trajectory is a plain in-flow band and the nav
+   anchor sits at its top. */
+@media (prefers-reduced-motion: reduce) {
+  [data-lens-wrap] { --lens-length: 0px; }
+  [data-lens-spacer] { display: none; }
+  [data-lens-stage] { position: static; }
+  [data-lens-window] { clip-path: none !important; }
+}

@@ -8,7 +8,6 @@ import { ScrollTrigger, gsap, useGSAP } from "@/lib/gsap";
  *  - [data-scrub-rise] — large text rises WITH the scroll (scrubbed, not
  *    triggered), each element in its own timing window: "early" moves the
  *    moment it's visible, "mid"/"late" only start partway up the viewport.
- *  - [data-sweep] — huge lines crossing the screen in opposite directions.
  *  - [data-travel] — broken-word rows drifting against each other.
  *  - [data-hsection]/[data-htrack] — the pinned horizontal chapter: vertical
  *    scroll becomes sideways travel, then releases back to vertical.
@@ -239,26 +238,6 @@ export function ScrollFx() {
             yPercent: 0,
             ease: "none",
             scrollTrigger: { trigger: el, start, end, scrub: 0.35 },
-          }
-        );
-      }
-
-      /* ---- opposing full-screen sweeps ---- */
-      for (const el of gsap.utils.toArray<HTMLElement>("[data-sweep]")) {
-        const amp = parseFloat(el.dataset.sweep ?? "0");
-        if (!amp) continue;
-        gsap.fromTo(
-          el,
-          { xPercent: amp },
-          {
-            xPercent: -amp,
-            ease: "none",
-            scrollTrigger: {
-              trigger: el.closest("[data-band]") ?? el,
-              start: "top bottom",
-              end: "bottom top",
-              scrub: 0.35,
-            },
           }
         );
       }

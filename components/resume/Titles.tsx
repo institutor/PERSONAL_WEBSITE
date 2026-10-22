@@ -23,6 +23,8 @@ interface GapTitleProps {
   sizeClass?: string;
   /** How long the square lingers in this word (1 = default dwell). */
   hold?: number;
+  /** Extra dwell after the default departure, in viewport heights. */
+  dwell?: number;
   /** Deck card index — the slot maps to that segment of the deck pin. */
   sqSeg?: number;
   /** Square color while dwelling here (bone cards need an ink square). */
@@ -39,6 +41,7 @@ export function GapTitle({
   className,
   sizeClass = "text-[clamp(3.8rem,13vw,12rem)]",
   hold,
+  dwell,
   sqSeg,
   sqTone,
   sqRide,
@@ -59,6 +62,7 @@ export function GapTitle({
               <span
                 data-sq-slot
                 data-sq-hold={hold}
+                data-sq-dwell={dwell}
                 data-sq-seg={sqSeg}
                 data-sq-tone={sqTone}
                 data-sq-ride={sqRide ? "" : undefined}
