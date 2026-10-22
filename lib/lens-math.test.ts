@@ -5,6 +5,7 @@ import {
   actorVisible,
   coverRadius,
   handoffBlend,
+  handoffMix,
   lensEnd,
   lensProgress,
   lensRadii,
@@ -120,4 +121,23 @@ test("rotation folds into ±45° (a rounded square repeats every 90°)", () => {
   assert.equal(wrap90(-50), 40);
   assert.equal(wrap90(44), 44);
   assert.equal(wrap90(46), -44);
+});
+
+test("handoff mix: starts on the actor, follows the scroll, never faster than its own ease", () => {
+  // at the capture frame disk A is exactly the actor, however far p overshot
+  assert.equal(handoffMix(0.18, handoffBlend(0.18), 0), 0);
+  assert.equal(handoffMix(0.4, 1, 0), 0);
+  // a slow scroll: the time cap has long passed, the scroll drives the blend
+  const slow = handoffMix(0.185, 0, 5);
+  assert.ok(close(slow, handoffBlend(0.185)), `slow ${slow}`);
+  assert.equal(handoffMix(0.22, 0, 5), 1);
+  // a strong flick (captured past 0.22): eased in time, not a one-frame jump
+  const f1 = handoffMix(0.5, 1, 1 / 60);
+  assert.ok(f1 > 0 && f1 < 0.2, `one frame after a flick: ${f1}`);
+  assert.ok(handoffMix(0.5, 1, 0.2) > 0.7, "most of the way after 0.2 s");
+  assert.equal(handoffMix(0.5, 1, 1), 1, "settled after a second");
+  // captured just under 0.22: the rebased scroll blend is ~1 at once, time still caps it
+  assert.ok(handoffMix(0.23, handoffBlend(0.219), 1 / 60) < 0.2);
+  // scrolling back below the capture point returns to the actor's shape
+  assert.equal(handoffMix(0.16, handoffBlend(0.17), 5), 0);
 });
