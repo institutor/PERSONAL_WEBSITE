@@ -49,10 +49,9 @@ body {
   outline-offset: 3px;
 }
 
-/* Scroll locked during loader + intro; JS flips data-intro to 'done'. */
-html[data-intro="play"] {
-  overflow: hidden;
-}
+/* Scroll is locked during loader + intro by SmoothScroll (Lenis stopped,
+   scroll keys swallowed), NOT overflow:hidden — the scrollbar must be there
+   from the first frame and never pop in (or reflow the page) at the end. */
 
 html[data-intro="skip"] [data-loader] {
   display: none;
