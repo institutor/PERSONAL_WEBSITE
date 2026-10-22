@@ -6,6 +6,7 @@ import { LoaderFx } from "./LoaderFx";
  * The original textured artwork is revealed through one continuous
  * handwriting mask. A narrow round pen tip leads a full-width butt-capped
  * fill, preserving the handmade final mark without large circular starts.
+ * The field behind it is flat ink: no glows, no atmosphere.
  *
  * SSR-hidden: every mask stroke ships with dashoffset 1, so nothing flashes
  * before hydration.
@@ -93,11 +94,7 @@ export function LoaderOverlay() {
       aria-valuemax={100}
       aria-valuenow={0}
       aria-label="Loading portfolio"
-      className="fixed inset-0 z-[80] flex flex-col items-center justify-center text-bone"
-      style={{
-        background:
-          "radial-gradient(circle at 30% 25%, rgba(232,227,216,0.13), transparent 32%), radial-gradient(circle at 72% 66%, rgba(232,227,216,0.07), transparent 36%), var(--ink)",
-      }}
+      className="fixed inset-0 z-[80] flex flex-col items-center justify-center bg-ink text-bone"
     >
       <svg
         viewBox="0 0 1904 826"
