@@ -307,10 +307,12 @@ html[data-motion="on"] [data-rise-fallback] [data-rise] {
   font-size: clamp(0.72rem, 0.95vw, 0.9rem);
   line-height: 1.3;
 }
-@media (max-width: 639px) {
-  [data-hero-bar="quote"] { min-height: calc(2 * 1.3em + 0.7em); }   /* two lines + padding: no jump between quotes */
-}
 .line-mask { display: block; overflow: hidden; }
+/* Landscape phones: the centred lockup rises into I'M's band, so there I'M
+   scales with the height instead of the width (unlayered: beats w-[…]). */
+@media (max-height: 480px) {
+  [data-hero-im] { width: 14svh; }
+}
 
 /* Pre-hydration gate: nothing in the hero may flash while the loader is up.
    GSAP's inline styles win the moment the intro (or finalState) runs. */
