@@ -12,7 +12,9 @@ import { squareMorph } from "@/lib/square-morph";
  * transforms), spinning with travel velocity — and finally lands in the gap
  * where BUILD's "I" used to be (the letter is knocked out by ScrollFx).
  * Shape: it spins into a circle across its first flight, stays round
- * through the site, and spins back into a square for BU■LD.
+ * through the site, and spins back into a square for BU■LD. That first
+ * flight is unseen: LensFx's rings stand in for it (data-lens-hidden) and
+ * it grows back into TRAJECTORY's O as the lens finishes.
  *
  * Position is damped (lerped toward target) so the square feels alive, not
  * bolted to the scrollbar.
@@ -51,6 +53,18 @@ export function SquareActor() {
       return hero.getBoundingClientRect().top + hero.offsetHeight - next.getBoundingClientRect().top;
     };
 
+    // Slots in the sticky lens stage (Trajectory) reach the reading zone
+    // only after the stage unsticks: shift them by the spacer's length,
+    // less however far the stage is stuck right now (its rect includes it).
+    const lensShift = (el: HTMLElement) => {
+      const wrap = el.closest<HTMLElement>("[data-lens-wrap]");
+      const stage = wrap?.querySelector<HTMLElement>("[data-lens-stage]");
+      const spacer = wrap?.querySelector<HTMLElement>("[data-lens-spacer]");
+      if (!wrap || !stage || !spacer) return 0;
+      const stuck = stage.getBoundingClientRect().top - wrap.getBoundingClientRect().top;
+      return spacer.offsetHeight - stuck;
+    };
+
     const measure = () => {
       const vh = window.innerHeight;
       const deck = document.querySelector<HTMLElement>("[data-deck]");
@@ -74,11 +88,12 @@ export function SquareActor() {
             const pinLen = Math.max(0, htrack.scrollWidth - window.innerWidth) + vh * 0.45;
             return { el, arrive: top - vh * 0.5, depart: top + pinLen - vh * 0.2 };
           }
-          const top = el.getBoundingClientRect().top + window.scrollY - heroShift(el);
+          const top = el.getBoundingClientRect().top + window.scrollY - heroShift(el) + lensShift(el);
           const hold = Math.max(1, Number(el.dataset.sqHold) || 1);
           const lead = vh * (0.68 + 0.3 * (hold - 1));
           const exit = vh * Math.max(0.08, 0.34 - 0.18 * (hold - 1));
-          return { el, arrive: top - lead, depart: top - exit };
+          const dwell = Number(el.dataset.sqDwell) || 0; // extra rest, in viewports
+          return { el, arrive: top - lead, depart: top - exit + dwell * vh };
         })
         .sort((a, b) => a.arrive - b.arrive);
       // ranges must never overlap or the piecewise walk breaks
@@ -94,7 +109,7 @@ export function SquareActor() {
     // transform components in one gsap.set per frame instead.
 
     const smooth = (t: number) => t * t * (3 - 2 * t);
-    const state = { x: 0, y: 0, s: 1, r: 0, round: 0, spin: 0, init: false };
+    const state = { x: 0, y: 0, s: 1, r: 0, round: 0, spin: 0, init: false, hidden: false };
     let enteredAt = -1; // ticker time the period popped in
 
     const update = (time: number) => {
@@ -105,6 +120,8 @@ export function SquareActor() {
       const introPlaying = docEl.dataset.intro === "play";
       if (!state.init && introPlaying && docEl.dataset.square !== "in") return;
       const y = window.scrollY;
+      // LensFx hides the actor while its rings stand in for it
+      const hidden = sq.dataset.lensHidden === "1";
 
       // piecewise: DWELL inside a mark's [arrive..depart], transit between
       let i = 0;
@@ -186,7 +203,22 @@ export function SquareActor() {
         state.spin = morph.spin - 90;
         enteredAt = time;
         state.init = true;
-        gsap.set(sq, { autoAlpha: 1 });
+        state.hidden = hidden;
+        gsap.set(sq, { autoAlpha: hidden ? 0 : 1 });
+      }
+      if (hidden !== state.hidden) {
+        state.hidden = hidden;
+        if (hidden) {
+          gsap.set(sq, { autoAlpha: 0 });
+        } else {
+          // back from the lens: in place, growing into the O from 15 %. At
+          // the full stop the lens hands back the actor's own box, so there
+          // it simply reappears.
+          state.x = tx;
+          state.y = ty;
+          if (ai > 0) state.s = ts * 0.15;
+          gsap.set(sq, { autoAlpha: 1 });
+        }
       }
       const k = 0.075; // soft damping — lazy, fluid follow
       // while the intro floats the lockup up, ride it locked to the slot
