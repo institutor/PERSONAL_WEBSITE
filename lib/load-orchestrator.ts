@@ -11,13 +11,14 @@
  * Module singleton; set() is a max() so StrictMode double-mounts are no-ops.
  */
 
-export type LoadTask = "fonts" | "chunk" | "textures" | "compile";
+export type LoadTask = "fonts" | "textures" | "hero";
 
+/** fonts → document.fonts.ready · textures → the loader artwork ·
+    hero → the block-letter hero mounted and its display measured. */
 const WEIGHTS: Record<LoadTask, number> = {
-  fonts: 0.2,
-  chunk: 0.2,
+  fonts: 0.3,
   textures: 0.45,
-  compile: 0.15,
+  hero: 0.25,
 };
 
 const MIN_MS = 1600;
@@ -26,9 +27,8 @@ const BAIL_MS = 6000;
 class LoadOrchestrator {
   private progress: Record<LoadTask, number> = {
     fonts: 0,
-    chunk: 0,
     textures: 0,
-    compile: 0,
+    hero: 0,
   };
   private startedAt = 0;
   private smooth = 0;
@@ -43,7 +43,7 @@ class LoadOrchestrator {
     return this.progress[task] >= 1;
   }
 
-  /** Mark every task complete (fallback paths with no WebGL, skip, etc.). */
+  /** Mark every task complete (reduced-motion / skip fallback paths). */
   completeAll(): void {
     for (const k of Object.keys(this.progress) as LoadTask[]) {
       this.progress[k] = 1;

@@ -39,7 +39,7 @@ export const GLYPHS: Readonly<Record<BlockChar, Glyph>> = {
     w: 51,
     polys: [[[0, 21.5], [21.5, 0], [51, 0], [51, 100], [0, 100]]],
   },
-  // stem + three arms (the middle one shorter)
+  // stem + 3 arms (the middle one shorter)
   E: {
     w: 105.7,
     polys: [
@@ -49,7 +49,7 @@ export const GLYPHS: Readonly<Record<BlockChar, Glyph>> = {
       [[54.7, 69.13], [105.7, 69.13], [105.7, 78.5], [84.2, 100], [54.7, 100]],
     ],
   },
-  // three teeth; the middle one lower and peaked
+  // 3 teeth; the middle one lower and peaked
   W: {
     w: 160.4,
     polys: [
