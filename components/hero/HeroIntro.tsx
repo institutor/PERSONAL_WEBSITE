@@ -1,13 +1,16 @@
 "use client";
 
 import { ScrollTrigger, gsap, useGSAP } from "@/lib/gsap";
+import { REST_INSET_PX, bottomRestOffset } from "@/lib/hero-intro-math";
 import { type IntroPhase, useIntroStore } from "@/lib/intro-store";
 import { orchestrator } from "@/lib/load-orchestrator";
 
 /**
- * Hero controller: takes the handoff from the loader and lands the
- * block-letter lockup in its final state (skip, reduced motion and
- * already-finished phases all share finalState()).
+ * Hero controller: takes the handoff from the loader and plays the intro
+ * (spec §3.1): I'M rises, JIEWEN climbs letter by letter out of the bottom
+ * edge with the lockup resting low, the bars fade in and their lines rise,
+ * then the lockup floats to centre. Skip, reduced motion, a mid-page reload
+ * and already-finished phases all share finalState() instead.
  */
 export function HeroIntro() {
   useGSAP(() => {
@@ -22,6 +25,13 @@ export function HeroIntro() {
 
     const docEl = document.documentElement;
     let unsubPhase: (() => void) | null = null;
+    let intro: gsap.core.Timeline | null = null;
+
+    const done = () => {
+      docEl.dataset.intro = "done";
+      useIntroStore.getState().setPhase("done");
+      ScrollTrigger.refresh();
+    };
 
     // GSAP parses the CSS gate's translateY(115%) into px `y` on first
     // touch, so every yPercent set also zeroes y.
@@ -29,9 +39,35 @@ export function HeroIntro() {
       gsap.set([...imLetters, ...nameLetters, ...lines], { y: 0, yPercent: 0 });
       gsap.set(bars, { autoAlpha: 1 });
       gsap.set(lockup, { y: 0 });
-      docEl.dataset.intro = "done";
-      useIntroStore.getState().setPhase("done");
-      ScrollTrigger.refresh();
+      done();
+    };
+
+    const playIntro = () => {
+      if (window.scrollY > window.innerHeight * 0.4) {
+        finalState();
+        return;
+      }
+      gsap.set(imLetters, { y: 0, yPercent: 110 });
+      gsap.set(nameLetters, { y: 0, yPercent: 110 });
+      gsap.set(bars, { autoAlpha: 0 });
+      gsap.set(lines, { y: 0, yPercent: 110 });
+      // measured at home (the lockup itself is never gated); resize mid-intro is ignored
+      const r = lockup.getBoundingClientRect();
+      const rest = bottomRestOffset({
+        viewportHeight: window.innerHeight,
+        lockupTop: r.top,
+        lockupHeight: r.height,
+        inset: REST_INSET_PX,
+      });
+      gsap.set(lockup, { y: rest });
+
+      intro = gsap
+        .timeline({ onComplete: done })
+        .to(imLetters, { yPercent: 0, duration: 0.7, ease: "power3.out", stagger: 0.08 }, 0)
+        .to(nameLetters, { yPercent: 0, duration: 0.95, ease: "power3.out", stagger: 0.085 }, 0.25)
+        .to(bars, { autoAlpha: 1, duration: 0.5, ease: "power2.out" }, 0.75)
+        .to(lines, { yPercent: 0, duration: 0.7, ease: "power3.out", stagger: 0.06 }, 0.92)
+        .to(lockup, { y: 0, duration: 1.05, ease: "power3.inOut" }, 1.65);
     };
 
     // The hero is pure markup: once fonts settle, its display is measured.
@@ -44,22 +80,24 @@ export function HeroIntro() {
       return;
     }
 
-    const released = (phase: IntroPhase) => phase === "reveal" || phase === "skipped" || phase === "done";
+    const handoff = (phase: IntroPhase) => (phase === "reveal" ? playIntro() : finalState());
 
-    if (released(useIntroStore.getState().phase)) {
-      finalState();
+    const { phase } = useIntroStore.getState();
+    if (phase !== "loading") {
+      handoff(phase);
     } else {
       unsubPhase = useIntroStore.subscribe((state) => {
-        if (!released(state.phase)) return;
-        // unsubscribe first: finalState() sets the phase itself
+        if (state.phase === "loading") return;
+        // unsubscribe first: the handoff sets the phase itself
         unsubPhase?.();
         unsubPhase = null;
-        finalState();
+        handoff(state.phase);
       });
     }
 
     return () => {
       unsubPhase?.();
+      intro?.kill();
     };
   });
 
