@@ -26,7 +26,7 @@ import { BackTicker, GapTitle } from "./Titles";
  */
 function Trajectory() {
   return (
-    <section id="trajectory" data-band className="relative z-[2] min-h-svh overflow-hidden text-bone">
+    <section id="trajectory" data-band className="relative z-[2] min-h-svh overflow-x-clip text-bone">
       <div data-lens-window className="relative min-h-svh bg-ink px-4 py-24 sm:px-6 sm:py-28">
         <TrajectoryContent />
       </div>

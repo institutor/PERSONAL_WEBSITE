@@ -337,6 +337,17 @@ html[data-intro="play"] [data-hero-bar] { opacity: 0; }
 :root { --lens-gap: 0px; }
 html[data-motion="on"] { --lens-gap: 85svh; }
 [data-lens-window] { clip-path: none; } /* LensFx drives it */
+/* The window's ink reaches up over the gap, so the lens's innermost circle
+   is whole while Trajectory's top edge is still below the lens centre
+   (the section clips only sideways, so this can show above it). */
+html[data-motion="on"] [data-lens-window]::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: calc(100% - 1px); /* 1px into the top padding: no seam at fractional y */
+  height: calc(var(--lens-gap) + 1px);
+  background: var(--ink);
+}
 /* LensFx's rings: sized 2 × cover, placed and scaled (≤ 1) by GSAP. */
 .lens-disk {
   position: absolute;
@@ -347,6 +358,7 @@ html[data-motion="on"] { --lens-gap: 85svh; }
   will-change: transform;
 }
 @media (prefers-reduced-motion: reduce) {
-  [data-lens-gap] { display: none; }
+  [data-lens-gap],
+  [data-lens-window]::before { display: none; }
   [data-lens-window] { clip-path: none !important; }
 }
