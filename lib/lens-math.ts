@@ -1,7 +1,8 @@
 /**
- * The hero → TRAJECTORY lens, v2. A fixed lens at mid-screen while the page
- * keeps scrolling beneath it: leaving the full stop, the square becomes a
- * bone disk (A) that travels to the lens centre and grows exponentially; an
+ * The hero → TRAJECTORY lens, v2.1. A fixed lens at mid-screen while the page
+ * keeps scrolling beneath it: the period flies there itself (the lens slot is
+ * one of its marks), spinning into a circle; at p = travelEnd it hands over to
+ * a bone disk (A) that blends onto the lens centre and grows exponentially; an
  * ink disk (B), a bone disk (C) and finally the page itself (the window
  * onto Trajectory) appear inside it in turn, each settling to half the
  * radius of the one outside (K = 0.5), so the window covers the viewport
@@ -15,7 +16,9 @@
 
 export const LENS = {
   startVh: 0.2, // S0 = startVh × viewportHeight
-  travelEnd: 0.15, // disk A reaches the centre, fully round, radius rTravel
+  travelEnd: 0.15, // the actor reaches the lens slot; disk A takes over
+  handoffEase: 0.07, // p over which disk A blends from the actor's box to the centre
+  lensSlotDepart: 0.4, // the (hidden) actor leaves the lens slot for the O
   K: 0.5, // each inner circle settles to K × the one outside
   rTravelFrac: 0.08, // rTravel = rTravelFrac × min(vw, vh)
   ramp: { b: 0.25, c: 0.42, window: 0.6 }, // p at which each inner circle appears
@@ -35,6 +38,11 @@ export function lensEnd(oCentreDocY: number, viewportHeight: number): number {
   return oCentreDocY - viewportHeight / 2;
 }
 
+/** The lens slot's dwell window, in scroll px (the actor's mark at the centre). */
+export function lensSlotRange(s0: number, s1: number): { arrive: number; depart: number } {
+  return { arrive: s0 + (s1 - s0) * LENS.travelEnd, depart: s0 + (s1 - s0) * LENS.lensSlotDepart };
+}
+
 /** Radius of a disk centred at (cx, cy) that hides the whole viewport. */
 export function coverRadius(cx: number, cy: number, vw: number, vh: number): number {
   const dx = Math.max(cx, vw - cx);
@@ -47,7 +55,7 @@ export function smoothstep(x: number): number {
   return t * t * (3 - 2 * t);
 }
 
-/** Disk A: rTravel through the handoff, then exponential growth to cover / K³
+/** Disk A: rTravel at the handoff, then exponential growth to cover / K³
     (so the window, K³ of it, is exactly `cover` at p = 1). */
 export function outerRadius(p: number, rTravel: number, cover: number): number {
   if (p <= LENS.travelEnd) return rTravel;
@@ -83,16 +91,20 @@ export function renderRadius(r: number, cover: number): number {
 
 const easeInOutQuad = (x: number) => (x < 0.5 ? 2 * x * x : 1 - (-2 * x + 2) ** 2 / 2);
 
-/** Disk A's handoff flight: `u` along the path from the actor to the centre,
-    `round` 0 (the actor's square) .. 1 (circle). */
+/** v2's straight handoff glide (LensFx still uses it until the v2.1 handoff lands). */
 export function diskATravel(p: number): { u: number; round: number } {
   const u = easeInOutQuad(clamp01(p / LENS.travelEnd));
   return { u, round: u };
 }
 
-/** The actor shows at the full stop (before the lens) and at the O (from actorReturn). */
+/** 0 → 1 as disk A moves from the actor's live box onto the lens centre. */
+export function handoffBlend(p: number): number {
+  return smoothstep((p - LENS.travelEnd) / LENS.handoffEase);
+}
+
+/** The actor flies the first leg itself, then reappears at the O (from actorReturn). */
 export function actorVisible(p: number): boolean {
-  return p <= 0 || p >= LENS.actorReturn;
+  return p < LENS.travelEnd || p >= LENS.actorReturn;
 }
 
 /** Whether the whole O slot lies inside the open window (its centre `oOffset`

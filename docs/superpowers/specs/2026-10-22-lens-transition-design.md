@@ -75,7 +75,8 @@ so after the lens it looks exactly like the old band.
 | p         | what                                                                  |
 | --------- | --------------------------------------------------------------------- |
 | ≤ 0       | nothing: actor dwelling at the full stop, window `circle(0)`, disks hidden |
-| 0 → 0.15  | **disk A** takes over from the actor's live box (a square), travels to `(cx, cy)` (power2.inOut), morphs square → circle, grows to radius `rT`; actor hidden from the first frame p > 0 |
+| 0 → 0.15  | **the actor flies** (v2.1, see below): the period leaves the full stop on its own damped, meandering flight, spins three full turns and rounds into a circle, arriving at `(cx, cy)` at radius `rT`; it stays visible the whole way |
+| 0.15      | **handoff**: disk A appears on the actor's live box (already round) and blends to the exact centre/size over 0.15 → 0.22; the actor hides |
 | 0.15 → 1  | disk A grows exponentially (`R(p)`), covering the viewport at p ≈ 0.66 |
 | 0.25 →    | **disk B** (ink) appears at the centre and settles to `R/2`            |
 | 0.42 →    | **disk C** (bone) appears and settles to `R/4`                         |
@@ -136,3 +137,44 @@ Everything is a pure function of `p`; scrolling back reverses it.
   its O reaches mid-screen as the rings leave; a bone circle grows into the O;
   the actor later flies on to the 36 vh slot. Scroll back: it reverses. Nav →
   TRAJECTORY lands with the lens finished.
+
+## v2.1 — the actor flies the first leg (2026-10-22, after Jiewen's review)
+
+Jiewen: "the movement from the dot to the center of the screen should be
+more fluid, the square should spin a few times and become a circle at the
+center of the screen, and the page should still scroll as you're scrolling
+with the period moving. It should just be that coincidentally we end up with
+the circle at the center of the word trajectory after the transition."
+
+v2's disk A left the actor's box on a straight power2 glide with a
+border-radius morph: mechanical. v2.1 gives the first leg back to the actor,
+which already flies organically (damped follow, arc + meander, velocity spin).
+
+- **Lens slot.** `LensFx` renders one more `[data-sq-slot]` (`data-sq-lens`),
+  fixed, `visibility: hidden` (measurable, never painted), sized `2 × rT` and
+  placed at `(cx − rT, cy − rT)` on every measure. It is the actor's second
+  mark: full stop → lens slot → O → 36 vh slot → … The actor flies to it with
+  its usual flight; `squareMorph`'s first leg now spins **1080°** (three
+  turns) while `round` goes 0 → 1, so the square spins into a circle on the
+  way and is round on arrival.
+- **Dwell window** for the lens slot, in scroll px, derived identically in
+  both controllers from the O slot's document position (no ordering
+  dependency): `arrive = S0 + (S1 − S0) × 0.15`, `depart = S0 + (S1 − S0) × 0.4`.
+  `SquareActor.measure` recognises `data-sq-lens` and uses these instead of
+  the natural-position formula. The O mark is unchanged (arrive ≈ p 0.66,
+  while hidden), so the actor is already settled in the O when it reappears.
+- **Handoff at p 0.15.** `LensFx` draws nothing for p < 0.15. On the first
+  frame p ≥ 0.15 it takes the actor's live box (centre + half-width) as disk A's
+  start and blends it to `(cx, cy, R(p))` with `smoothstep((p − 0.15) / 0.07)`;
+  the actor is hidden from that frame (`actorVisible(p) = p < 0.15 || p ≥
+  actorReturn`). The actor's damping lag (it may trail the slot by tens of px
+  on a fast scroll) is absorbed by the blend, never seen as a jump.
+- **Reverse handoff.** Scrolling back below 0.15 un-hides the actor at full
+  size, snapped to disk A's current centre and radius (`LensFx` writes
+  `data-lens-x`, `data-lens-y`, `data-lens-r` on the actor each frame while
+  it owns the shape; `SquareActor` reads them once on un-hide), then the
+  damped flight carries it back to the full stop. The 15 % grow-in applies
+  only when reappearing at the O.
+- Everything else in v2 (rings, window, S0/S1, dwell 0.12, clamping,
+  reduced motion) is unchanged. The page scrolls throughout; the O still
+  reaches the lens centre exactly at p = 1.

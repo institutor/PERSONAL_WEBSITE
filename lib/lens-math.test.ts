@@ -4,10 +4,11 @@ import {
   LENS,
   actorVisible,
   coverRadius,
-  diskATravel,
+  handoffBlend,
   lensEnd,
   lensProgress,
   lensRadii,
+  lensSlotRange,
   oInWindow,
   outerRadius,
   renderRadius,
@@ -81,12 +82,25 @@ test("rendered radius is clamped to cover", () => {
   assert.equal(renderRadius(300, 1300), 300);
 });
 
-test("disk A travel and actor visibility", () => {
-  assert.deepEqual(diskATravel(0), { u: 0, round: 0 });
-  assert.deepEqual(diskATravel(LENS.travelEnd), { u: 1, round: 1 });
-  assert.equal(diskATravel(LENS.travelEnd / 2).u, 0.5);
+test("the lens slot's dwell window: the actor arrives at the handoff and leaves at 0.4", () => {
+  const { arrive, depart } = lensSlotRange(154, 1233);
+  assert.ok(close(arrive, 154 + 1079 * 0.15), `arrive ${arrive}`);
+  assert.ok(close(depart, 154 + 1079 * 0.4), `depart ${depart}`);
+});
+
+test("the handoff blends disk A from the actor's box to the centre over 0.15 → 0.22", () => {
+  assert.equal(handoffBlend(0.1), 0);
+  assert.equal(handoffBlend(0.15), 0);
+  assert.ok(close(handoffBlend(0.185), 0.5), `${handoffBlend(0.185)}`);
+  assert.equal(handoffBlend(0.22), 1);
+  assert.equal(handoffBlend(0.5), 1);
+});
+
+test("the actor flies the first leg and returns at the O", () => {
   assert.equal(actorVisible(0), true);
-  assert.equal(actorVisible(0.3), false);
+  assert.equal(actorVisible(0.1), true);
+  assert.equal(actorVisible(0.15), false);
+  assert.equal(actorVisible(0.5), false);
   assert.equal(actorVisible(LENS.actorReturn), true);
 });
 

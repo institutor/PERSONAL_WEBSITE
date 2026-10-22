@@ -9,21 +9,21 @@ test("born a square at the full stop", () => {
   assert.deepEqual(squareMorph(0, 0, N), { round: 0, spin: 0 });
 });
 
-test("spins into a circle across the first flight", () => {
-  assert.deepEqual(squareMorph(0, 0.5, N), { round: 0.5, spin: 180 });
-  assert.deepEqual(squareMorph(0, 1, N), { round: 1, spin: 360 });
+test("spins three turns into a circle across the first flight (to the lens)", () => {
+  assert.deepEqual(squareMorph(0, 0.5, N), { round: 0.5, spin: 540 });
+  assert.deepEqual(squareMorph(0, 1, N), { round: 1, spin: 1080 });
 });
 
 test("stays a circle for the rest of the journey", () => {
-  assert.deepEqual(squareMorph(1, 0, N), { round: 1, spin: 360 });
-  assert.deepEqual(squareMorph(2, 0.4, N), { round: 1, spin: 360 });
-  assert.deepEqual(squareMorph(3, 1, N), { round: 1, spin: 360 });
+  assert.deepEqual(squareMorph(1, 0, N), { round: 1, spin: 1080 });
+  assert.deepEqual(squareMorph(2, 0.4, N), { round: 1, spin: 1080 });
+  assert.deepEqual(squareMorph(3, 1, N), { round: 1, spin: 1080 });
 });
 
 test("spins back into a square on the final approach", () => {
-  assert.deepEqual(squareMorph(4, 0.5, N), { round: 0.5, spin: 540 });
-  assert.deepEqual(squareMorph(4, 1, N), { round: 0, spin: 720 });
-  assert.deepEqual(squareMorph(5, 0, N), { round: 0, spin: 720 });
+  assert.deepEqual(squareMorph(4, 0.5, N), { round: 0.5, spin: 1260 });
+  assert.deepEqual(squareMorph(4, 1, N), { round: 0, spin: 1440 });
+  assert.deepEqual(squareMorph(5, 0, N), { round: 0, spin: 1440 });
 });
 
 test("spin never runs backwards along the route", () => {
@@ -40,7 +40,7 @@ test("spin never runs backwards along the route", () => {
 test("a two-stop route rounds out and back in one flight", () => {
   assert.deepEqual(squareMorph(0, 0, 2), { round: 0, spin: 0 });
   assert.equal(squareMorph(0, 0.5, 2).round, 1);
-  assert.deepEqual(squareMorph(1, 0, 2), { round: 0, spin: 720 });
+  assert.deepEqual(squareMorph(1, 0, 2), { round: 0, spin: 1440 });
 });
 
 test("no route, no morph", () => {
