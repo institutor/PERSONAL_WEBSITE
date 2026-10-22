@@ -16,14 +16,14 @@ const mono = Geist_Mono({
 });
 
 /**
- * No OpenGraph / Twitter card metadata by choice: link posts stay a plain
- * link instead of an embed card. Title + description remain for search.
+ * No OpenGraph / Twitter card metadata and no description, by choice: a
+ * shared link stays a plain link (at most the title), never an embed card
+ * with stale copy. Only the title remains for tabs and search.
  */
 export const metadata: Metadata = {
   metadataBase: new URL("https://jiewenhuang.com"),
   alternates: { canonical: "/" },
   title: "Jiewen Huang · I'm Jiewen",
-  description: "Jiewen Huang · CS & Math @ Columbia '30.",
 };
 
 /**
