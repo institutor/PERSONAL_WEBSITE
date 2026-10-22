@@ -178,3 +178,14 @@ which already flies organically (damped follow, arc + meander, velocity spin).
 - Everything else in v2 (rings, window, S0/S1, dwell 0.12, clamping,
   reduced motion) is unchanged. The page scrolls throughout; the O still
   reaches the lens centre exactly at p = 1.
+- **Addendum — square again after the O.** Once the actor leaves
+  TRAJECTORY's O it turns back into a square and stays one for the rest of
+  the journey. `squareMorph(ai, t, roles)` is keyed on the route's roles
+  (`roles = { lens, o }`, the lens slot's and the O's mark indices, derived in
+  `SquareActor.measure` after sorting; `lens = −1` without a lens slot, in
+  which case the O takes its place): `ai < lens` → round `t`, spin `1080·t`;
+  `lens ≤ ai < o` → round 1, spin 1080; `ai = o` (the leg leaving the O,
+  toward the 36 vh slot on desktop or EXPERIENCE on phones) → round `1 − t`,
+  spin `1080 + 360·t`; `ai > o` → round 0, spin 1440 (no morph on the final
+  approach to BU■LD any more). A route with no O mark gets no morph; fewer
+  than two marks never reach `squareMorph` (SquareActor returns first).

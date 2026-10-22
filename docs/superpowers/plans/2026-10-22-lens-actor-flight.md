@@ -89,3 +89,17 @@ export function squareMorph(ai: number, t: number, count: number): SquareMorph; 
 - [ ] `/bin/zsh -lc 'node --test lib/*.test.ts && npm run lint && npx tsc --noEmit && npm run build 2>&1 | tail -8'` → all pass.
 - [ ] One-line update in `docs/motion-study.md`; commit `"Motion study: lens v2.1"`.
 - [ ] Report: branch, commits, what you saw at each replay step, deviations. The planning session merges into main.
+
+---
+
+### Addendum (folded in after Task 4): square again after the O
+
+From the planning session: after the lens, once the actor leaves TRAJECTORY's
+O, it turns back into a square and stays a square. `squareMorph(ai, t, roles)`
+with `roles = { lens, o }` (see the spec's v2.1 addendum bullet); `SquareActor`
+derives the roles in `measure()`. Tests: a 9-mark desktop route (full stop,
+lens, O, 36 vh, EXPERIENCE, three deck slots, BU■LD; roles `{ lens: 1, o: 2 }`),
+the 8-mark phone route, roles `{ lens: −1, o: 1 }` (direct full stop → O), and
+the monotone-spin test. Replay: after the O the circle spins once and lands a
+square in the 36 vh slot (desktop) / EXPERIENCE (phone), and stays a square
+through EXPERIENCE, the deck and BU■LD.

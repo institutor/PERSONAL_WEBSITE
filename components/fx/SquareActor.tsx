@@ -2,7 +2,7 @@
 
 import { ScrollTrigger, gsap, useGSAP } from "@/lib/gsap";
 import { LENS, lensEnd, lensSlotRange, wrap90 } from "@/lib/lens-math";
-import { squareMorph } from "@/lib/square-morph";
+import { type MorphRoles, squareMorph } from "@/lib/square-morph";
 
 /**
  * The page's protagonist: ONE voltage square that journeys through the site.
@@ -13,8 +13,8 @@ import { squareMorph } from "@/lib/square-morph";
  * transforms), spinning with travel velocity — and finally lands in the gap
  * where BUILD's "I" used to be (the letter is knocked out by ScrollFx).
  * Shape: it spins three turns into a circle across its first flight (to the
- * lens slot at mid-screen), stays round through the site, and spins back
- * into a square for BU■LD. At the lens slot LensFx's rings take over
+ * lens slot at mid-screen), stays round into TRAJECTORY's O, and spins back
+ * into a square as it leaves the O, staying square through BU■LD. At the lens slot LensFx's rings take over
  * (data-lens-hidden) and it grows back into TRAJECTORY's O as the lens
  * finishes; scrolling back, it takes disk A's shape over (data-lens-*).
  *
@@ -38,6 +38,8 @@ export function SquareActor() {
       depart: number;
     }
     let marks: Mark[] = [];
+    // the route's roles for the shape: the lens slot and TRAJECTORY's O
+    let roles: MorphRoles = { lens: -1, o: -1 };
 
     // A pinned section's stable scroll anchor is its pin-spacer, not the
     // section itself (which sits viewport-fixed while pinned).
@@ -100,6 +102,10 @@ export function SquareActor() {
         marks[i].arrive = Math.max(marks[i].arrive, marks[i - 1].depart + 1);
         marks[i].depart = Math.max(marks[i].depart, marks[i].arrive + 1);
       }
+      roles = {
+        lens: marks.findIndex((m) => m.el.dataset.sqLens !== undefined),
+        o: marks.findIndex((m) => m.el.closest("[data-lens-window]") !== null),
+      };
     };
     measure();
     ScrollTrigger.addEventListener("refresh", measure);
@@ -136,7 +142,7 @@ export function SquareActor() {
         t = smooth(gsap.utils.clamp(0, 1, (y - a.depart) / span));
       }
 
-      const morph = squareMorph(ai, t, marks.length);
+      const morph = squareMorph(ai, t, roles);
 
       // bone by default; ink while the dominant slot sits on a bone card
       const tone = (t < 0.5 ? a : b).el.dataset.sqTone;
@@ -210,9 +216,8 @@ export function SquareActor() {
         if (hidden) {
           gsap.set(sq, { autoAlpha: 0 });
         } else {
-          const lensIdx = marks.findIndex((m) => m.el.dataset.sqLens !== undefined);
           const d = sq.dataset;
-          if (d.lensX !== undefined && lensIdx >= 0 && ai <= lensIdx) {
+          if (d.lensX !== undefined && roles.lens >= 0 && ai <= roles.lens) {
             // scrolled back below the handoff: take disk A's shape over
             // exactly (centre, size, roundness, rotation mod 90°), then the
             // damped flight carries it home
@@ -237,7 +242,7 @@ export function SquareActor() {
             // still be mid-flight after a fast scroll), growing in from 15 %
             state.x = tx;
             state.y = ty;
-            state.s = ai > Math.max(0, lensIdx) ? ts * 0.15 : ts;
+            state.s = ai > Math.max(0, roles.lens) ? ts * 0.15 : ts;
             state.r = 0;
             state.round = morph.round;
             state.spin = morph.spin;
