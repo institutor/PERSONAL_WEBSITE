@@ -7,11 +7,11 @@ import { orchestrator } from "@/lib/load-orchestrator";
 
 /**
  * Hero controller: takes the handoff from the loader and plays the intro.
- * On "handoff" it stages the pre-intro pose — lockup resting low, the quote
- * bar shown as the loader's 2px line (the loader flies its ink line onto
- * it), the school tab folded up. On "reveal": I'M rises, JIEWEN climbs
- * letter by letter out of the bottom edge, the line thickens into the bar,
- * the tab unfolds, their lines rise, then the lockup floats to centre. Skip, reduced motion, a mid-page reload
+ * On "handoff" it stages the pre-intro pose — lockup resting low, the bar
+ * shown as the loader's 2px line (the loader flies its ink line onto it),
+ * the school tab folded up. On "reveal": I'M rises, JIEWEN climbs letter by
+ * letter out of the bottom edge, the line thickens into the bar (shape
+ * only), the tab unfolds and its line rises, then the lockup floats to centre. Skip, reduced motion, a mid-page reload
  * and already-finished phases all share finalState() instead.
  *
  * Scroll: the hero is a sticky z-0 layer; while the sections slide over it,
@@ -31,9 +31,8 @@ export function HeroIntro() {
     const lines = gsap.utils.toArray<HTMLElement>("[data-hero-lockup] [data-hero-line]", hero);
     const quoteBar = hero.querySelector<HTMLElement>('[data-hero-bar="quote"]');
     const tab = hero.querySelector<HTMLElement>('[data-hero-bar="school"]');
-    const quoteLine = hero.querySelector<HTMLElement>('[data-hero-bar="quote"] [data-hero-line]');
     const tabLine = hero.querySelector<HTMLElement>('[data-hero-bar="school"] [data-hero-line]');
-    if (!lockup || !im || !sayBox || !quoteBar || !tab || !quoteLine || !tabLine) return;
+    if (!lockup || !im || !sayBox || !quoteBar || !tab || !tabLine) return;
 
     const docEl = document.documentElement;
     let unsubPhase: (() => void) | null = null;
@@ -90,9 +89,8 @@ export function HeroIntro() {
         .to(imLetters, { yPercent: 0, duration: 0.7, ease: "power3.out", stagger: 0.08 }, 0)
         .to(say, { yPercent: 0, duration: 0.7, ease: "power3.out" }, 0.12)
         .to(nameLetters, { yPercent: 0, duration: 0.95, ease: "power3.out", stagger: 0.085 }, 0.25)
-        // the loader's line thickens into the quote bar; the tab unfolds off it
+        // the loader's line thickens into the bar; the tab unfolds off it
         .to(quoteBar, { scaleY: 1, duration: 0.6, ease: "power3.inOut" }, 0.75)
-        .to(quoteLine, { yPercent: 0, duration: 0.7, ease: "power3.out" }, 1.15)
         .to(tab, { scaleY: 1, duration: 0.45, ease: "power3.out" }, 1.2)
         .to(tabLine, { yPercent: 0, duration: 0.6, ease: "power3.out" }, 1.38)
         // the period pops in as JIEWEN's last letters land (SquareActor)

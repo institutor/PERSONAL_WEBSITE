@@ -141,6 +141,11 @@ accepted as the "abstract choice" the brief asks for.
 
 ### 2.3 Quotes (`lib/quotes.ts`)
 
+> **Retired 2026-10-22.** Jiewen found the quotes corny; bar 1 is now shape
+> only (an empty bone bar, `clamp(10px, 1.05vw, 16px)` tall, the reference's
+> 16 px at a 215 px cap). `lib/quotes.ts` and `QuoteBar` are deleted. The
+> school tab keeps its line. The list below stays for the record.
+
 Shown one at a time in bar 1, in this order, 7 s each, looping. Swap =
 old line fades out and drifts up 6 px (0.35 s), new line fades in rising 6 px
 (0.45 s, power3.out). Cycling starts only once the intro reports `done`.
