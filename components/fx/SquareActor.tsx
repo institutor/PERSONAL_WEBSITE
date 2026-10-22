@@ -39,6 +39,15 @@ export function SquareActor() {
       return sp.getBoundingClientRect().top + window.scrollY;
     };
 
+    // The sticky hero reports its STUCK position (rect and offsetTop alike);
+    // its natural top is where the flow after it begins, minus its height.
+    const heroShift = (el: HTMLElement) => {
+      const hero = el.closest<HTMLElement>('[data-section="hero"]');
+      const next = hero?.nextElementSibling;
+      if (!hero || !next || getComputedStyle(hero).position !== "sticky") return 0;
+      return hero.getBoundingClientRect().top + hero.offsetHeight - next.getBoundingClientRect().top;
+    };
+
     const measure = () => {
       const vh = window.innerHeight;
       const deck = document.querySelector<HTMLElement>("[data-deck]");
@@ -62,7 +71,7 @@ export function SquareActor() {
             const pinLen = Math.max(0, htrack.scrollWidth - window.innerWidth) + vh * 0.45;
             return { el, arrive: top - vh * 0.5, depart: top + pinLen - vh * 0.2 };
           }
-          const top = el.getBoundingClientRect().top + window.scrollY;
+          const top = el.getBoundingClientRect().top + window.scrollY - heroShift(el);
           const hold = Math.max(1, Number(el.dataset.sqHold) || 1);
           const lead = vh * (0.68 + 0.3 * (hold - 1));
           const exit = vh * Math.max(0.08, 0.34 - 0.18 * (hold - 1));

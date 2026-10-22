@@ -8,13 +8,16 @@ import { identity } from "@/lib/resume-data";
  * then the JIEWEN. lockup centred across the gutters — the word, a bone
  * bar carrying the cycling quote, and a shorter bar with the school line.
  * The square actor is born as the full stop: "I'M JIEWEN."
+ *
+ * Sticky z-0 layer: the sections scroll up over it while HeroIntro fades
+ * the lockup and I'M out (reduced motion: a normal in-flow section).
  */
 export function Hero() {
   return (
     <section
       id="hero"
       data-section="hero"
-      className="relative z-0 h-svh overflow-hidden bg-ink text-bone"
+      className="sticky top-0 z-0 h-svh overflow-hidden bg-ink text-bone"
     >
       <h1 className="sr-only">I&apos;m Jiewen Huang</h1>
 

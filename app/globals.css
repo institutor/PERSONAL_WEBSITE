@@ -317,3 +317,8 @@ html[data-motion="on"] [data-rise-fallback] [data-rise] {
 html[data-intro="play"] [data-section="hero"] [data-block-letter],
 html[data-intro="play"] [data-section="hero"] [data-hero-line] { transform: translateY(115%); }
 html[data-intro="play"] [data-hero-bar] { opacity: 0; }
+
+/* Reduced motion: no pin, no fade — the hero is a normal in-flow section. */
+@media (prefers-reduced-motion: reduce) {
+  [data-section="hero"] { position: relative; }
+}

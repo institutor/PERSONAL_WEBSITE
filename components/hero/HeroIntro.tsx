@@ -11,6 +11,9 @@ import { orchestrator } from "@/lib/load-orchestrator";
  * edge with the lockup resting low, the bars fade in and their lines rise,
  * then the lockup floats to centre. Skip, reduced motion, a mid-page reload
  * and already-finished phases all share finalState() instead.
+ *
+ * Scroll: the hero is a sticky z-0 layer; while the sections slide over it,
+ * the lockup and I'M scrub to nothing across the first 85% of a viewport.
  */
 export function HeroIntro() {
   useGSAP(() => {
@@ -19,9 +22,10 @@ export function HeroIntro() {
     const imLetters = gsap.utils.toArray<HTMLElement>("[data-hero-im] [data-block-letter]", hero);
     const nameLetters = gsap.utils.toArray<HTMLElement>("[data-hero-lockup] [data-block-letter]", hero);
     const lockup = hero.querySelector<HTMLElement>("[data-hero-lockup]");
+    const im = hero.querySelector<HTMLElement>("[data-hero-im]");
     const bars = gsap.utils.toArray<HTMLElement>("[data-hero-bar]", hero);
     const lines = gsap.utils.toArray<HTMLElement>("[data-hero-lockup] [data-hero-line]", hero);
-    if (!lockup) return;
+    if (!lockup || !im) return;
 
     const docEl = document.documentElement;
     let unsubPhase: (() => void) | null = null;
@@ -69,6 +73,26 @@ export function HeroIntro() {
         .to(lines, { yPercent: 0, duration: 0.7, ease: "power3.out", stagger: 0.06 }, 0.92)
         .to(lockup, { y: 0, duration: 1.05, ease: "power3.inOut" }, 1.65);
     };
+
+    // Registered regardless of intro phase, so a mid-page reload is already
+    // faded (the matchMedia belongs to the useGSAP context and reverts with it).
+    const mm = gsap.matchMedia();
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
+      gsap.fromTo(
+        [lockup, im],
+        { autoAlpha: 1 },
+        {
+          autoAlpha: 0,
+          ease: "none",
+          scrollTrigger: {
+            start: 0,
+            end: () => window.innerHeight * 0.85,
+            scrub: 0.3,
+            invalidateOnRefresh: true,
+          },
+        },
+      );
+    });
 
     // The hero is pure markup: once fonts settle, its display is measured.
     document.fonts.ready.then(() => orchestrator.set("hero", 1));

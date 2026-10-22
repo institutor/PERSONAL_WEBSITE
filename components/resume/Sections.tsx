@@ -19,7 +19,7 @@ import { BackTicker, GapTitle } from "./Titles";
 
 function Sweeps() {
   return (
-    <section data-band className="band-ink relative overflow-hidden py-36 sm:py-44">
+    <section data-band className="relative overflow-hidden py-36 text-bone sm:py-44">
       <p
         data-sweep="34"
         className="display relative z-10 whitespace-nowrap text-[clamp(4.5rem,15vw,14rem)]"
@@ -460,11 +460,16 @@ export function Resume() {
   return (
     <main id="resume-root">
       <Hero />
-      <Sweeps />
-      <Trajectory />
-      <ExperienceHorizontal />
-      <CardDeck />
-      <Contact />
+      {/* everything after the pinned z-0 hero scrolls up over it (tree order).
+          No z-index here: a stacking context would bury the fixed z-[8]
+          square actor under every band. */}
+      <div className="relative">
+        <Sweeps />
+        <Trajectory />
+        <ExperienceHorizontal />
+        <CardDeck />
+        <Contact />
+      </div>
     </main>
   );
 }
