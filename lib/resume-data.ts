@@ -8,6 +8,8 @@ export const identity = {
   name: "Jiewen Huang",
   signature: "by Jiewen",
   tagline: "CS & Math @ Columbia '30.",
+  /** The hero's second bar, under the quote. */
+  heroLine: "Columbia University, Co'2030",
   location: "Brooklyn, NY",
   scholar: "QuestBridge National College Match Scholar",
   links: {
