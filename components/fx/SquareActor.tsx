@@ -211,12 +211,16 @@ export function SquareActor() {
         if (hidden) {
           gsap.set(sq, { autoAlpha: 0 });
         } else {
-          // back from the lens: in place, growing into the O from 15 %. At
-          // the full stop the lens hands back the actor's own box, so there
-          // it simply reappears.
+          // back from the lens: in place and settled (the damped state may
+          // still be mid-flight after a fast scroll), growing into the O
+          // from 15 %. At the full stop the lens hands back the actor's own
+          // box, so there it simply reappears.
           state.x = tx;
           state.y = ty;
-          if (ai > 0) state.s = ts * 0.15;
+          state.s = ai > 0 ? ts * 0.15 : ts;
+          state.r = 0;
+          state.round = morph.round;
+          state.spin = morph.spin;
           gsap.set(sq, { autoAlpha: 1 });
         }
       }

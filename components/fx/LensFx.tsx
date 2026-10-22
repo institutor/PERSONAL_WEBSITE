@@ -99,7 +99,12 @@ export function LensFx() {
     };
 
     const tick = () => {
-      const p = lensProgress(window.scrollY, s0, s1);
+      // a load within 0.4 vh of the top plays the full intro (HeroIntro's
+      // rule) with the period popping in at the full stop: no lens until
+      // it is over, even if the restored scroll is already past S0
+      const introAtTop =
+        document.documentElement.dataset.intro === "play" && window.scrollY <= window.innerHeight * 0.4;
+      const p = introAtTop ? 0 : lensProgress(window.scrollY, s0, s1);
       const enteredFromHero = prevP <= 0;
       prevP = p;
       if (p <= 0 || p >= 1) {
