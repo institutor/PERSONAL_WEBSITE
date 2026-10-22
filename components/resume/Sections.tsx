@@ -118,8 +118,8 @@ function ExperienceHorizontal() {
             <span>{naomi.period}</span>
           </div>
           <p className="statement mt-8 max-w-3xl text-[clamp(1.8rem,3.6vw,3.4rem)]">
-            NaomiAI ELA: a K-8 reading-intervention platform, live for 190 students in the South
-            Bronx.
+            NaomiAI ELA: a K-8 learning platform, built and deployed for 190 students at Legacy
+            College Prep.
           </p>
           <div className="mt-8 flex flex-wrap gap-10">
             {naomi.bullets.slice(1).map((b, i) => (
@@ -222,7 +222,7 @@ function CardDeck() {
         />
         <ul className="mt-12 border-t-[3px] border-ink">
           {awards.map((a) => (
-            <li key={a.title} className="flex items-baseline gap-6 border-b border-ink/15 py-3.5" data-card-rise>
+            <li key={`${a.title}·${a.detail}`} className="flex items-baseline gap-6 border-b border-ink/15 py-3" data-card-rise>
               <span className="display w-24 shrink-0 text-2xl">{a.big ?? "·"}</span>
               <span className="statement min-w-0 flex-1 text-lg">
                 {a.big ? a.detail : a.title}

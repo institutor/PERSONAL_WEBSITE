@@ -37,7 +37,18 @@ export default function ResumePrint() {
             <strong>{j.title}</strong>: {j.detail}
           </p>
         ))}
-        <p className="mt-1">QuestBridge National College Match Recipient</p>
+        <p className="mt-1">{identity.scholar}</p>
+      </Section>
+
+      <Section title="Honors & Awards">
+        <ul className="ml-4 mt-1 list-disc space-y-0.5">
+          {awards.map((a) => (
+            <li key={`${a.title}·${a.detail}`}>
+              {a.title}, {a.detail}
+              {a.year && ` (${a.year})`}
+            </li>
+          ))}
+        </ul>
       </Section>
 
       <Section title="Experience">
@@ -49,6 +60,21 @@ export default function ResumePrint() {
             </p>
             <ul className="ml-4 mt-1 list-disc space-y-0.5">
               {job.bullets.map((b, i) => (
+                <li key={i}>{b}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </Section>
+
+      <Section title="Research">
+        {programs.map((p) => (
+          <div key={p.name} className="mt-3 break-inside-avoid">
+            <p>
+              <strong>{p.name}</strong> <span className="float-right text-neutral-500">{p.period}</span>
+            </p>
+            <ul className="ml-4 mt-1 list-disc space-y-0.5">
+              {p.bullets.map((b, i) => (
                 <li key={i}>{b}</li>
               ))}
             </ul>
@@ -70,17 +96,6 @@ export default function ResumePrint() {
             </ul>
           </div>
         ))}
-      </Section>
-
-      <Section title="Programs & Awards">
-        {programs.map((p) => (
-          <p key={p.name} className="mt-1">
-            <strong>{p.name}</strong> ({p.period}): {p.detail}
-          </p>
-        ))}
-        <p className="mt-2">
-          {awards.map((a) => `${a.title}: ${a.detail} (${a.year})`).join(" · ")}
-        </p>
       </Section>
 
       <Section title="Teaching & Community">
