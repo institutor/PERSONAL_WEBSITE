@@ -13,6 +13,7 @@ import {
   outerRadius,
   renderRadius,
   smoothstep,
+  wrap90,
 } from "./lens-math.ts";
 
 const close = (x: number, y: number, eps = 1e-6) => Math.abs(x - y) < eps;
@@ -110,4 +111,13 @@ test("the actor returns only once the O sits inside the open window", () => {
   assert.equal(oInWindow(300, 22, 322), true);
   assert.equal(oInWindow(-300, 22, 322), true); // above the centre on the way back
   assert.equal(oInWindow(0, 22, 0), false); // a closed window shows nothing
+});
+
+test("rotation folds into ±45° (a rounded square repeats every 90°)", () => {
+  assert.equal(wrap90(0), 0);
+  assert.equal(wrap90(1080), 0);
+  assert.equal(wrap90(100), 10);
+  assert.equal(wrap90(-50), 40);
+  assert.equal(wrap90(44), 44);
+  assert.equal(wrap90(46), -44);
 });

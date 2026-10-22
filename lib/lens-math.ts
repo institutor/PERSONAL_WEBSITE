@@ -89,14 +89,6 @@ export function renderRadius(r: number, cover: number): number {
   return Math.min(r, cover);
 }
 
-const easeInOutQuad = (x: number) => (x < 0.5 ? 2 * x * x : 1 - (-2 * x + 2) ** 2 / 2);
-
-/** v2's straight handoff glide (LensFx still uses it until the v2.1 handoff lands). */
-export function diskATravel(p: number): { u: number; round: number } {
-  const u = easeInOutQuad(clamp01(p / LENS.travelEnd));
-  return { u, round: u };
-}
-
 /** 0 → 1 as disk A moves from the actor's live box onto the lens centre. */
 export function handoffBlend(p: number): number {
   return smoothstep((p - LENS.travelEnd) / LENS.handoffEase);
@@ -112,4 +104,9 @@ export function actorVisible(p: number): boolean {
     there, so it never pops up on a ring outside the page. */
 export function oInWindow(oOffset: number, slotHalf: number, rWindow: number): boolean {
   return rWindow > 0 && Math.abs(oOffset) + slotHalf <= rWindow;
+}
+
+/** An angle folded into [−45°, 45°): a rounded square looks the same every 90°. */
+export function wrap90(deg: number): number {
+  return ((((deg + 45) % 90) + 90) % 90) - 45;
 }

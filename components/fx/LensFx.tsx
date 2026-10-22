@@ -7,24 +7,26 @@ import {
   LENS,
   actorVisible,
   coverRadius,
-  diskATravel,
+  handoffBlend,
   lensEnd,
   lensProgress,
   lensRadii,
   oInWindow,
   renderRadius,
+  wrap90,
 } from "@/lib/lens-math";
 
 /**
  * The hero → TRAJECTORY lens (choreography: lib/lens-math.ts): a lens fixed
  * at mid-screen, on the O's column, while the page keeps scrolling beneath
- * it. Leaving the full stop, the square becomes disk A (bone): it takes over
- * from the actor's live box, rounds out while travelling to the centre and
- * swells over the fading JIEWEN; disk B (ink) and disk C (bone) appear
- * inside it, each half the one outside; then Trajectory's window opens
- * inside C (a clip-path circle in the window's own, scrolling, coordinates)
- * and covers the screen exactly as the O reaches the centre, where the actor
- * grows back in as one more bone circle.
+ * it. The period flies there itself (the lens slot rendered here is one of
+ * its marks), spinning into a circle over the fading JIEWEN; at p 0.15 disk A
+ * (bone) takes over from its live shape, blends onto the centre and swells;
+ * disk B (ink) and disk C (bone) appear inside it, each half the one outside;
+ * then Trajectory's window opens inside C (a clip-path circle in the window's
+ * own, scrolling, coordinates) and covers the screen exactly as the O reaches
+ * the centre, where the actor grows back in as one more bone circle. Scrolled
+ * back below 0.15, the actor takes disk A's shape over (data-lens-*).
  *
  * The disks are 2 × cover px and only ever scaled DOWN (radii clamp to
  * cover), so edges stay crisp. The actor is hidden through the rings via
@@ -42,7 +44,6 @@ export function LensFx() {
     const root = document.querySelector<HTMLElement>("[data-lens]");
     const win = document.querySelector<HTMLElement>("[data-lens-window]");
     const oSlot = win?.querySelector<HTMLElement>("[data-sq-slot]");
-    const fullStop = document.querySelector<HTMLElement>('[data-section="hero"] [data-sq-slot]');
     const actor = document.querySelector<HTMLElement>("[data-square-actor]");
     const lensSlot = document.querySelector<HTMLElement>("[data-sq-lens]");
     if (!root || !win || !oSlot) return;
@@ -103,19 +104,47 @@ export function LensFx() {
       lastClip = ""; // force a rewrite at the new centre
     };
 
-    // the box disk A starts from: the actor's last visible frame when the
-    // lens is entered from the hero, else the full stop itself
-    type Box = { x: number; y: number; half: number };
-    let handoff: Box | null = null;
-    let prevP = 0;
-    const boxOf = (r: DOMRect): Box => ({ x: r.left + r.width / 2, y: r.top + r.height / 2, half: r.width / 2 });
-    const slotBox = () => (fullStop ? boxOf(fullStop.getBoundingClientRect()) : null);
-    const actorBox = () => {
-      if (actor && actor.style.visibility !== "hidden" && Number(actor.style.opacity) > 0) {
-        const r = actor.getBoundingClientRect();
-        if (r.width > 0 && (r.left > 1 || r.top > 1)) return boxOf(r);
+    // disk A's start: the actor's live shape when it flew into the lens from
+    // below, else the exact centre (a reload or a jump past the handoff).
+    // Read from GSAP's transform cache: a rotated element's rect is too big.
+    type Shape = { x: number; y: number; r: number; round: number; rot: number };
+    let handoff: Shape | null = null;
+    let handoffFrom = 0; // handoffBlend at the frame the shape was taken
+    let prevP: number | null = null;
+    const centreShape = (): Shape => ({ x: cx, y: cy, r: rTravel, round: 1, rot: 0 });
+    const actorShape = (): Shape => {
+      if (!actor || actor.style.visibility === "hidden" || !(Number(actor.style.opacity) > 0)) return centreShape();
+      const g = (k: string) => Number(gsap.getProperty(actor, k)) || 0;
+      const half = actor.offsetWidth / 2;
+      if (!(g("scale") > 0)) return centreShape();
+      return {
+        x: g("x") + half,
+        y: g("y") + half,
+        r: half * g("scale"),
+        round: Math.min(1, (parseFloat(actor.style.borderRadius) || 0) / 50),
+        rot: wrap90(g("rotation")),
+      };
+    };
+
+    // disk A's shape, handed to the actor if the page scrolls back below the
+    // handoff; removed once the actor is visible again (the frame after it
+    // has read them — this tick runs before the actor's)
+    let shapeOnActor = false;
+    const giveShape = (sh: Shape | null) => {
+      if (!actor) return;
+      if (sh) {
+        Object.assign(actor.dataset, {
+          lensX: sh.x.toFixed(2),
+          lensY: sh.y.toFixed(2),
+          lensR: sh.r.toFixed(2),
+          lensRound: sh.round.toFixed(3),
+          lensRot: sh.rot.toFixed(2),
+        });
+        shapeOnActor = true;
+      } else if (shapeOnActor && actor.style.visibility !== "hidden") {
+        for (const k of ["lensX", "lensY", "lensR", "lensRound", "lensRot"]) delete actor.dataset[k];
+        shapeOnActor = false;
       }
-      return slotBox();
     };
 
     let lastHidden: boolean | null = null;
@@ -125,7 +154,7 @@ export function LensFx() {
       if (hidden) actor.dataset.lensHidden = "1";
       else delete actor.dataset.lensHidden;
     };
-    const place = (disk: HTMLElement, x: number, y: number, r: number, radius = "50%") => {
+    const place = (disk: HTMLElement, x: number, y: number, r: number, round = 1, rotation = 0) => {
       if (r <= 0) {
         gsap.set(disk, { display: "none" });
         return;
@@ -135,7 +164,8 @@ export function LensFx() {
         x: x - cover,
         y: y - cover,
         scale: r / cover,
-        borderRadius: radius,
+        rotation,
+        borderRadius: `${50 * round}%`,
       });
     };
 
@@ -149,9 +179,11 @@ export function LensFx() {
       const introAtTop =
         document.documentElement.dataset.intro === "play" && window.scrollY <= window.innerHeight * 0.4;
       const p = introAtTop ? 0 : lensProgress(window.scrollY, s0, s1);
-      const enteredFromHero = prevP <= 0;
+      const fromBelow = prevP !== null && prevP < LENS.travelEnd;
       prevP = p;
-      if (p <= 0 || p >= 1) {
+      giveShape(null);
+      if (p < LENS.travelEnd || p >= 1) {
+        // the actor flies the first leg itself; after the lens, the page
         rw = 0;
         root.style.display = "";
         clip(p >= 1 ? "none" : closed);
@@ -160,26 +192,32 @@ export function LensFx() {
         return;
       }
       root.style.display = "block";
-      if (!handoff) handoff = enteredFromHero ? actorBox() : slotBox();
+      if (!handoff) {
+        handoff = fromBelow ? actorShape() : centreShape();
+        handoffFrom = handoffBlend(p);
+      }
 
       const radii = lensRadii(p, rTravel, cover);
-      if (p < LENS.travelEnd && handoff) {
-        const { u, round } = diskATravel(p);
-        place(
-          diskA,
-          gsap.utils.interpolate(handoff.x, cx, u),
-          gsap.utils.interpolate(handoff.y, cy, u),
-          gsap.utils.interpolate(handoff.half, rTravel, u),
-          `${50 * round}%`
-        );
-      } else {
-        place(diskA, cx, cy, renderRadius(radii.a, cover));
-      }
+      const lerp = gsap.utils.interpolate;
+      // the blend restarts from wherever p was when the shape was taken: a
+      // fast scroll can overshoot 0.15 in one frame, and disk A must still
+      // start exactly on the actor
+      const b = handoffFrom >= 1 ? 1 : Math.max(0, (handoffBlend(p) - handoffFrom) / (1 - handoffFrom));
+      const a: Shape = {
+        x: lerp(handoff.x, cx, b),
+        y: lerp(handoff.y, cy, b),
+        r: renderRadius(lerp(handoff.r, radii.a, b), cover),
+        round: lerp(handoff.round, 1, b),
+        rot: lerp(handoff.rot, 0, b),
+      };
+      place(diskA, a.x, a.y, a.r, a.round, a.rot);
       place(diskB, cx, cy, renderRadius(radii.b, cover));
       place(diskC, cx, cy, renderRadius(radii.c, cover));
       rw = renderRadius(radii.window, cover);
       clip(windowClip());
-      hideActor(!(actorVisible(p) && oInWindow(oDocY - window.scrollY - cy, oHalf, rw)));
+      const hidden = !(actorVisible(p) && oInWindow(oDocY - window.scrollY - cy, oHalf, rw));
+      hideActor(hidden);
+      if (hidden && p < LENS.actorReturn) giveShape(a);
     };
     // only while the window is opening: closed and fully open (none) don't move
     recentreRef.current = () => {
@@ -212,7 +250,9 @@ export function LensFx() {
       window.removeEventListener("resize", onResize);
       window.clearTimeout(resizeTimer);
       win.style.clipPath = "";
-      if (actor) delete actor.dataset.lensHidden;
+      if (actor) {
+        for (const k of ["lensHidden", "lensX", "lensY", "lensR", "lensRound", "lensRot"]) delete actor.dataset[k];
+      }
     };
   });
 

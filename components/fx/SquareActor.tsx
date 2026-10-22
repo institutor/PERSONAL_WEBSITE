@@ -1,7 +1,7 @@
 "use client";
 
 import { ScrollTrigger, gsap, useGSAP } from "@/lib/gsap";
-import { LENS, lensEnd, lensSlotRange } from "@/lib/lens-math";
+import { LENS, lensEnd, lensSlotRange, wrap90 } from "@/lib/lens-math";
 import { squareMorph } from "@/lib/square-morph";
 
 /**
@@ -22,8 +22,6 @@ import { squareMorph } from "@/lib/square-morph";
  * bolted to the scrollbar.
  */
 const BASE = 24; // px — element's natural size; scale = slotWidth / BASE
-/** An angle folded into [−45°, 45°): a rounded square looks the same every 90°. */
-const wrap90 = (deg: number) => ((((deg + 45) % 90) + 90) % 90) - 45;
 
 export function SquareActor() {
   useGSAP(() => {
@@ -224,6 +222,16 @@ export function SquareActor() {
             state.round = Number(d.lensRound ?? 1);
             state.r = 0;
             state.spin = morph.spin + wrap90(Number(d.lensRot ?? 0) - morph.spin);
+            // this frame shows exactly disk A's last shape; damping resumes next frame
+            gsap.set(sq, {
+              autoAlpha: 1,
+              x: state.x,
+              y: state.y,
+              scale: state.s,
+              rotation: state.spin,
+              borderRadius: `${state.round * 50}%`,
+            });
+            return;
           } else {
             // back at the O: in place and settled (the damped state may
             // still be mid-flight after a fast scroll), growing in from 15 %
