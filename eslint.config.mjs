@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Git worktrees the Claude desktop app creates for side sessions (their
+    // own node_modules and .next live here).
+    ".claude/**",
   ]),
 ]);
 
