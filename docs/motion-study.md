@@ -46,3 +46,5 @@ Every observed design/artistic choice, numbered. ✦ = adopted in our overhaul (
 - Brand glyph: the **pixel square (■)** — ties the dissipation effect to the ornament system: sawtooth divider (kept from the reference image), ■ interrupting "BU■LD" in contact, pixel-cluster page markers, square-notch panel.
 - Bands: 01 ( the path ) cream · 02 ( shipped ) black, EXPE/RIENCE broken rows + NaomiAI as the giant notched ultramarine panel · 03 ( teams ) cream · 04 ( signal ) black, SIG/NAL rows + award list · 05 ( stack ) cream · 06 ( contact ) black, LET'S BU■LD + giant email + RESUME ▶▶▶▶▶.
 - Loader unchanged mechanically; checkmark recolors to ultramarine.
+- 2026-10-22: the hero is now the block-letter lockup (small I'M top-left; JIEWEN rising letter by letter out of the bottom edge, a bone quote bar and a shorter school bar, the lockup floating to centre), pinned while the sections scroll over it and fading to nothing — see [the block-hero spec](superpowers/specs/2026-10-22-block-hero-design.md).
+- The WebGL pixel-dissolve (and three.js) is retired; the loader's background glows are gone too (flat ink field).
