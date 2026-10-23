@@ -1,28 +1,15 @@
-const NAV = [
-  ["TRAJECTORY", "#trajectory"],
-  ["EXPERIENCE", "#experience"],
-  ["AWARDS", "#awards"],
-  ["SKILLS", "#skills"],
-  ["LEADERSHIP", "#leadership"],
-  ["CONTACT", "#contact"],
-] as const;
+import { identity } from "@/lib/resume-data";
 
 /**
- * Fixed top chrome — navigation only; blend-difference inverts it over any
- * band. Profile links live in the bottom bar and the contact section, so
- * they aren't repeated up here. (The block-J mark is the favicon only.)
+ * Fixed top chrome — one quiet line, the place: it pairs with the live New
+ * York clock in the bottom bar (where / when). No navigation: the page is a
+ * single scroll and the section anchors still work for deep links.
+ * Blend-difference inverts it over any band.
  */
 export function TopBar() {
   return (
     <header className="chrome fixed inset-x-0 top-0 z-40 flex items-center px-4 py-3 sm:px-6">
-      <nav aria-label="Sections" className="flex gap-4 text-[10px] font-medium tracking-[0.12em]">
-        {NAV.map(([label, href]) => (
-          <a key={href} href={href} className="hidden opacity-80 transition-opacity hover:opacity-100 md:inline">
-            {label}
-          </a>
-        ))}
-        <span className="md:hidden text-[10px] tracking-[0.14em]">JIEWEN HUANG · PORTFOLIO</span>
-      </nav>
+      <p className="text-[10px] font-medium tracking-[0.14em] opacity-80">{identity.location.toUpperCase()}</p>
     </header>
   );
 }
